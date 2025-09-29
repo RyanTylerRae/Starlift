@@ -1,3 +1,6 @@
+#nullable enable
+
+using Coherence.Toolkit;
 using UnityEngine;
 
 public class FirstPersonController : MonoBehaviour
@@ -5,7 +8,6 @@ public class FirstPersonController : MonoBehaviour
     [Header("Movement")]
     public float walkSpeed = 5f;
     public float runSpeed = 10f;
-    public float jumpHeight = 2f;
     public float gravity = -9.81f;
 
     [Header("Mouse Look")]
@@ -13,12 +15,19 @@ public class FirstPersonController : MonoBehaviour
     public float maxLookAngle = 90f;
 
     private CharacterController characterController;
+
+    public GameObject cameraArm;
     private Camera playerCamera;
     private Vector3 velocity;
     private float xRotation = 0f;
 
     void Start()
     {
+        if (TryGetComponent<CoherenceSync>(out var _sync) && _sync.HasStateAuthority)
+        {
+            Camera mainCamera = cameraArm.AddComponent<Camera>();
+        }
+
         characterController = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
 
@@ -54,16 +63,6 @@ public class FirstPersonController : MonoBehaviour
         float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
 
         characterController.Move(direction * speed * Time.deltaTime);
-
-        if (characterController.isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
-
-        if (Input.GetButtonDown("Jump") && characterController.isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-        }
 
         velocity.y += gravity * Time.deltaTime;
         characterController.Move(velocity * Time.deltaTime);

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 53
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6b58ca8e478745dfab801a85671962e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHubModuleQuickHelp: 1
+  portalToken: 
+  worldUDPPort: 32001
+  worldWebPort: 32002
+  roomsUDPPort: 42001
+  roomsWebPort: 42002
+  sendFrequency: 20
+  recvFrequency: 60
+  localRoomsCleanupTimeSeconds: 120
+  localWorldHostAuthority: 0
+  rsConsoleLogLevel: 2
+  rsLogToFile: 0
+  rsLogFilePath: Logs/rs_logs.txt
+  rsFileLogLevel: 1
+  reportAnalytics: 1
+  RSBundlingEnabled: 0
+  keepConnectionAlive: 0
+  activeSchemas: []
+  organization:
+    id: d3915l6ff8gga7djloag
+    name: Team Clover
+    slug: team-clover
+    projects:
+    - id: d3915l6ff8gga7djlob0
+      portal_token: aed9bb366dbd4aab97bc0484f32c971b
+      runtime_key: 9dd3856543734bc8ab11ddd1d02361dd
+      name: Default Project
+    - id: d3915q5bei2pqt1sr380
+      portal_token: c575f05692d3479180d77d71c3bafbee
+      runtime_key: 1a49c90637644e4ba236e01b10327b16
+      name: Starlift
+  multipleProjects: []

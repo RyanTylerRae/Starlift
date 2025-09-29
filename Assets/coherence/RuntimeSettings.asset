@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85b91f942a5214496b0e11eaedb54c36, type: 3}
   m_Name: RuntimeSettings
   m_EditorClassIdentifier: 
-  schemaID: a49c8ce95106173d143c662e85b512519e0e8ac6
+  schemaID: d2eddd7ae849012bcbf24f9c7cdef53f5114278b
   versionInfo: {fileID: 11400000, guid: 2191b6f902c97477baa32a7919010503, type: 2}
-  runtimeKey: 
+  runtimeKey: 1a49c90637644e4ba236e01b10327b16
   simulatorSlug: 
   localHost: 127.0.0.1
   localWorldUDPPort: 32001
@@ -29,8 +29,8 @@ MonoBehaviour:
   localDevelopmentMode: 1
   useDebugStreams: 0
   organizationID: 
-  projectID: 
-  projectName: 
+  projectID: d3915q5bei2pqt1sr380
+  projectName: Starlift
   organizationName: 
   transportType: 0
   transportConfiguration: 0
@@ -44,6 +44,7 @@ MonoBehaviour:
   playApiEndpoint: https://api.prod.coherence.io/v1/play
   schemas:
   - {fileID: -1758743643018166929, guid: 266a112c2c9e941a58a87a48e7a4f8cb, type: 3}
+  - {fileID: -1758743643018166929, guid: c0ba65d287a4fc942b6a07a192bb1369, type: 3}
   extraSchemas: []
   defaultTransportMode: 0
   defaultTransportModeMigrated: 0
