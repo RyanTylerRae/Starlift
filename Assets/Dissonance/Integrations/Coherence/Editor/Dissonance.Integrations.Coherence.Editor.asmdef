@@ -1,0 +1,22 @@
+{
+    "name": "Dissonance.Integrations.Coherence.Editor",
+    "rootNamespace": "",
+    "references": [
+        "CoherenceDissonance",
+        "DissonanceVoipEditor",
+        "DissonanceVoip",
+        "Coherence.Common",
+        "Coherence.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

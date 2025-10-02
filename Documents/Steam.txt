@@ -1,0 +1,3 @@
+steamcmd.exe
+login teamcloverllc
+run_app_build ..\scripts\app_build_4053070.vdf
