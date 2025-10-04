@@ -1,0 +1,8 @@
+Normal:
+- Equidistant movement
+- Footstep loop is the same for walking and sprinting, I can improve this
+- Fast walk is twice the speed of slow walk
+- X to use, Y for tools, A to jump, B for UI purposes
+- Center reticle is actually opaque, surprising
+- Haptic feedback on bumping into things with enough force, jump or walk
+- Space controls seem normal, the big thing is the button to match velocity
