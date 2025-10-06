@@ -23,7 +23,7 @@ namespace Dissonance.Demo
             //Get some bits from the indicator game object
             _indicator = Instantiate(Resources.Load<GameObject>("SpeechIndicator"));
             _indicator.transform.SetParent(transform);
-            _indicator.transform.localPosition = new Vector3(0, 3, 0);
+            _indicator.transform.localPosition = new Vector3(0, 4, 0);
 
             _light = _indicator.GetComponent<Light>();
             _transform = _indicator.GetComponent<Transform>();

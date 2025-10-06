@@ -1,31 +1,56 @@
 #nullable enable
 
 using Coherence.Toolkit;
+using Dissonance;
+using Dissonance.Integrations.Coherence;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FirstPersonController : MonoBehaviour
 {
     [Header("Movement")]
     public float walkSpeed = 5f;
     public float runSpeed = 10f;
-    public float gravity = -9.81f;
 
     [Header("Mouse Look")]
-    public float mouseSensitivity = 2f;
+    public float lookSensitivity = 2f;
     public float maxLookAngle = 90f;
 
-    private CharacterController characterController;
+    public float controllerLookMultiplier = 2.0f;
 
+    private float xRotation = 0f;
+
+    [Header("Player")]
+    private CharacterController characterController;
+    private PlayerInput playerInput;
+
+    [Header("Camera")]
     public GameObject cameraArm;
     private Camera playerCamera;
-    private Vector3 velocity;
-    private float xRotation = 0f;
+
+    [Header("Input Actions")]
+    private InputAction? moveAction;
+    private InputAction? lookAction;
+    private InputAction? sprintAction;
+
+    public bool IsUsingGamepad => playerInput != null && playerInput.currentControlScheme == "Gamepad";
 
     void Start()
     {
         if (TryGetComponent<CoherenceSync>(out var _sync) && _sync.HasStateAuthority)
         {
+            moveAction = InputSystem.actions.FindAction("Move");
+            lookAction = InputSystem.actions.FindAction("Look");
+            sprintAction = InputSystem.actions.FindAction("Sprint");
+
+            playerInput = GetComponent<PlayerInput>();
+            if (playerInput != null)
+            {
+                playerInput.SwitchCurrentActionMap("InGame");
+            }
+
             Camera mainCamera = cameraArm.AddComponent<Camera>();
+            cameraArm.AddComponent<AudioListener>();
         }
 
         characterController = GetComponent<CharacterController>();
@@ -43,28 +68,48 @@ public class FirstPersonController : MonoBehaviour
 
     void HandleMouseLook()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        Vector2? lookInput = lookAction?.ReadValue<Vector2>();
+        if (lookInput == null)
+        {
+            return;
+        }
 
-        xRotation -= mouseY;
+        float lookX, lookY;
+
+        if (IsUsingGamepad)
+        {
+            // Gamepad: use Time.deltaTime for smooth, frame-independent rotation
+            lookX = lookInput.Value.x * lookSensitivity * controllerLookMultiplier * Time.deltaTime;
+            lookY = lookInput.Value.y * lookSensitivity * controllerLookMultiplier * Time.deltaTime;
+        }
+        else
+        {
+            // Mouse: don't use Time.deltaTime (mouse delta is already frame-independent)
+            lookX = lookInput.Value.x * lookSensitivity;
+            lookY = lookInput.Value.y * lookSensitivity;
+        }
+
+        xRotation -= lookY;
         xRotation = Mathf.Clamp(xRotation, -maxLookAngle, maxLookAngle);
 
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        transform.Rotate(Vector3.up * mouseX);
+        transform.Rotate(Vector3.up * lookX);
     }
 
     void HandleMovement()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        Vector2? moveInput = moveAction?.ReadValue<Vector2>();
+        bool? sprintIsPressed = sprintAction?.IsPressed();
 
-        Vector3 direction = transform.right * horizontal + transform.forward * vertical;
+        if (moveInput == null || sprintIsPressed == null)
+        {
+            return;
+        }
 
-        float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+        Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;
+
+        float speed = sprintIsPressed.Value ? runSpeed : walkSpeed;
 
         characterController.Move(direction * speed * Time.deltaTime);
-
-        velocity.y += gravity * Time.deltaTime;
-        characterController.Move(velocity * Time.deltaTime);
     }
 }

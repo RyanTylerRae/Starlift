@@ -42,6 +42,9 @@ namespace Coherence.Generated
                 case 15: return Scene.FromInterop(data, dataSize, simFrames, simFramesCount);
                 case 16: return AssetId.FromInterop(data, dataSize, simFrames, simFramesCount);
                 case 17: return GenericScale.FromInterop(data, dataSize, simFrames, simFramesCount);
+                case 18: return _3112847ac5cbe18418428da285a7c8f1_10240161870904192361.FromInterop(data, dataSize, simFrames, simFramesCount);
+                case 19: return _7f069869d0ae84c4990981e44ebe046f_8723092471585999715.FromInterop(data, dataSize, simFrames, simFramesCount);
+                case 20: return _8ba6288ce78c7d545bd45c2c95156620_1473050850974972525.FromInterop(data, dataSize, simFrames, simFramesCount);
             }
 
             throw new ArgumentException($"Unkown component type {type}", nameof(type));
@@ -255,6 +258,41 @@ namespace Coherence.Generated
 
                     return;
                 }
+                case 18:
+                {
+                    var orig = (_3112847ac5cbe18418428da285a7c8f1_10240161870904192361)component;
+                    var val = new _3112847ac5cbe18418428da285a7c8f1_10240161870904192361.Interop();
+
+                    var pinnedplayerId = orig.playerId != null ? Encoding.UTF8.GetBytes(orig.playerId) : null; fixed (void* pinnedPtrplayerId = pinnedplayerId) { val.playerId = new ByteArray { Data = pinnedPtrplayerId, Length =  pinnedplayerId?.Length ?? 0 };
+                    val.isTracking = orig.isTracking ? (System.Byte)1 : (System.Byte)0;
+
+                    updater.UpdateComponent(entity, componentType, val, 17, component.FieldsMask, component.StoppedMask, frames);
+
+}                    return;
+                }
+                case 19:
+                {
+                    var orig = (_7f069869d0ae84c4990981e44ebe046f_8723092471585999715)component;
+                    var val = new _7f069869d0ae84c4990981e44ebe046f_8723092471585999715.Interop();
+
+                    var pinnedplayerId = orig.playerId != null ? Encoding.UTF8.GetBytes(orig.playerId) : null; fixed (void* pinnedPtrplayerId = pinnedplayerId) { val.playerId = new ByteArray { Data = pinnedPtrplayerId, Length =  pinnedplayerId?.Length ?? 0 };
+                    val.isTracking = orig.isTracking ? (System.Byte)1 : (System.Byte)0;
+
+                    updater.UpdateComponent(entity, componentType, val, 17, component.FieldsMask, component.StoppedMask, frames);
+
+}                    return;
+                }
+                case 20:
+                {
+                    var orig = (_8ba6288ce78c7d545bd45c2c95156620_1473050850974972525)component;
+                    var val = new _8ba6288ce78c7d545bd45c2c95156620_1473050850974972525.Interop();
+
+                    val.ClientID = orig.ClientID;
+
+                    updater.UpdateComponent(entity, componentType, val, 4, component.FieldsMask, component.StoppedMask, frames);
+
+                    return;
+                }
             }
 
             throw new NotImplementedException($"Failed to update a component with type {componentType}.");
@@ -270,7 +308,12 @@ namespace Coherence.Generated
                   case 3: return AdoptOrphan.FromInterop(data, dataSize);
                   case 4: return PersistenceReady.FromInterop(data, dataSize);
                   case 5: return SceneIndexChanged.FromInterop(data, dataSize);
-                  case 6: return _714b9f8fd47e343158014373676f77d0_97320cdaa6f641c98d6f57d68520c0e5.FromInterop(data, dataSize);
+                  case 6: return _67eae9fd323863c44881b3e7a47edb1a_5e6c62d7cb2a485583eeb8689aeb7657.FromInterop(data, dataSize);
+                  case 7: return _67eae9fd323863c44881b3e7a47edb1a_6b939c3d989540f596ab35651a52c521.FromInterop(data, dataSize);
+                  case 8: return _67eae9fd323863c44881b3e7a47edb1a_b8c9b31712ab46589dcd57ad91c205f6.FromInterop(data, dataSize);
+                  case 9: return _714b9f8fd47e343158014373676f77d0_97320cdaa6f641c98d6f57d68520c0e5.FromInterop(data, dataSize);
+                  case 10: return _8ba6288ce78c7d545bd45c2c95156620_1703ec94090b4a54bf349e11d80656c6.FromInterop(data, dataSize);
+                  case 11: return _8ba6288ce78c7d545bd45c2c95156620_a9e201ea5e5742e48ad0d35cc615ac0d.FromInterop(data, dataSize);
             }
 
             throw new ArgumentException($"Unkown command type {type}", nameof(type));
@@ -350,6 +393,45 @@ namespace Coherence.Generated
                 }
                 case 6:
                 {
+                    var orig = (_67eae9fd323863c44881b3e7a47edb1a_5e6c62d7cb2a485583eeb8689aeb7657)command;
+                    var val = new _67eae9fd323863c44881b3e7a47edb1a_5e6c62d7cb2a485583eeb8689aeb7657.Interop();
+
+                    fixed (void* pinnedPtrdata = orig.data) { val.data = new ByteArray { Data = pinnedPtrdata, Length =  orig.data?.Length ?? 0 };
+                    val.dataID = orig.dataID;
+                    val.index = orig.index;
+                    val.total = orig.total;
+                    val.senderId = orig.senderId;
+                    val.sendTime = orig.sendTime;
+
+                    return sender.SendCommand(entity, target, type, val, 34);
+
+}                }
+                case 7:
+                {
+                    var orig = (_67eae9fd323863c44881b3e7a47edb1a_6b939c3d989540f596ab35651a52c521)command;
+                    var val = new _67eae9fd323863c44881b3e7a47edb1a_6b939c3d989540f596ab35651a52c521.Interop();
+
+
+                    return sender.SendCommand(entity, target, type, val, 0);
+
+                }
+                case 8:
+                {
+                    var orig = (_67eae9fd323863c44881b3e7a47edb1a_b8c9b31712ab46589dcd57ad91c205f6)command;
+                    var val = new _67eae9fd323863c44881b3e7a47edb1a_b8c9b31712ab46589dcd57ad91c205f6.Interop();
+
+                    fixed (void* pinnedPtrdata = orig.data) { val.data = new ByteArray { Data = pinnedPtrdata, Length =  orig.data?.Length ?? 0 };
+                    val.dataID = orig.dataID;
+                    val.index = orig.index;
+                    val.total = orig.total;
+                    val.senderId = orig.senderId;
+                    val.sendTime = orig.sendTime;
+
+                    return sender.SendCommand(entity, target, type, val, 34);
+
+}                }
+                case 9:
+                {
                     var orig = (_714b9f8fd47e343158014373676f77d0_97320cdaa6f641c98d6f57d68520c0e5)command;
                     var val = new _714b9f8fd47e343158014373676f77d0_97320cdaa6f641c98d6f57d68520c0e5.Interop();
 
@@ -358,6 +440,36 @@ namespace Coherence.Generated
                     return sender.SendCommand(entity, target, type, val, 12);
 
                 }
+                case 10:
+                {
+                    var orig = (_8ba6288ce78c7d545bd45c2c95156620_1703ec94090b4a54bf349e11d80656c6)command;
+                    var val = new _8ba6288ce78c7d545bd45c2c95156620_1703ec94090b4a54bf349e11d80656c6.Interop();
+
+                    fixed (void* pinnedPtrdata = orig.data) { val.data = new ByteArray { Data = pinnedPtrdata, Length =  orig.data?.Length ?? 0 };
+                    val.dataId = orig.dataId;
+                    val.index = orig.index;
+                    val.total = orig.total;
+                    val.senderId = orig.senderId;
+                    val.sendTime = orig.sendTime;
+
+                    return sender.SendCommand(entity, target, type, val, 34);
+
+}                }
+                case 11:
+                {
+                    var orig = (_8ba6288ce78c7d545bd45c2c95156620_a9e201ea5e5742e48ad0d35cc615ac0d)command;
+                    var val = new _8ba6288ce78c7d545bd45c2c95156620_a9e201ea5e5742e48ad0d35cc615ac0d.Interop();
+
+                    fixed (void* pinnedPtrdata = orig.data) { val.data = new ByteArray { Data = pinnedPtrdata, Length =  orig.data?.Length ?? 0 };
+                    val.dataId = orig.dataId;
+                    val.index = orig.index;
+                    val.total = orig.total;
+                    val.senderId = orig.senderId;
+                    val.sendTime = orig.sendTime;
+
+                    return sender.SendCommand(entity, target, type, val, 34);
+
+}                }
             }
 
             throw new NotImplementedException($"Failed to send a command with type {type}.");
