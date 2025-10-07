@@ -692,7 +692,7 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Gamepad
-  m_DefaultActionMap: InGame
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: MovementGravity
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

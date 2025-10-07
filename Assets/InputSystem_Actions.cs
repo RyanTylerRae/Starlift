@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
+public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
 {
     public InputActionAsset asset { get; }
     public @InputSystem_Actions()
@@ -24,7 +24,7 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
     ""name"": ""InputSystem_Actions"",
     ""maps"": [
         {
-            ""name"": ""InGame"",
+            ""name"": ""MovementGravity"",
             ""id"": ""df70fa95-8a34-4494-b137-73ab6b9c7d37"",
             ""actions"": [
                 {
@@ -729,6 +729,40 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""MovementZeroG"",
+            ""id"": ""b0b50aa0-a80e-4018-ad4d-8b5a5a0b880e"",
+            ""actions"": [],
+            ""bindings"": []
+        },
+        {
+            ""name"": ""DEBUG"",
+            ""id"": ""ef8de49b-b49a-4f6b-9077-75c91128b54e"",
+            ""actions"": [
+                {
+                    ""name"": ""DebugSwapControlMode"",
+                    ""type"": ""Button"",
+                    ""id"": ""df3b6240-9967-428f-ae30-8232b8e4dc09"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""c1767ceb-99b0-45fc-9478-8802c91a0127"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse;Gamepad"",
+                    ""action"": ""DebugSwapControlMode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -794,12 +828,12 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
         }
     ]
 }");
-        // InGame
-        m_InGame = asset.FindActionMap("InGame", throwIfNotFound: true);
-        m_InGame_Move = m_InGame.FindAction("Move", throwIfNotFound: true);
-        m_InGame_Look = m_InGame.FindAction("Look", throwIfNotFound: true);
-        m_InGame_Jump = m_InGame.FindAction("Jump", throwIfNotFound: true);
-        m_InGame_Sprint = m_InGame.FindAction("Sprint", throwIfNotFound: true);
+        // MovementGravity
+        m_MovementGravity = asset.FindActionMap("MovementGravity", throwIfNotFound: true);
+        m_MovementGravity_Move = m_MovementGravity.FindAction("Move", throwIfNotFound: true);
+        m_MovementGravity_Look = m_MovementGravity.FindAction("Look", throwIfNotFound: true);
+        m_MovementGravity_Jump = m_MovementGravity.FindAction("Jump", throwIfNotFound: true);
+        m_MovementGravity_Sprint = m_MovementGravity.FindAction("Sprint", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -810,12 +844,19 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_MiddleClick = m_UI.FindAction("MiddleClick", throwIfNotFound: true);
         m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
+        // MovementZeroG
+        m_MovementZeroG = asset.FindActionMap("MovementZeroG", throwIfNotFound: true);
+        // DEBUG
+        m_DEBUG = asset.FindActionMap("DEBUG", throwIfNotFound: true);
+        m_DEBUG_DebugSwapControlMode = m_DEBUG.FindAction("DebugSwapControlMode", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
     {
-        UnityEngine.Debug.Assert(!m_InGame.enabled, "This will cause a leak and performance issues, InputSystem_Actions.InGame.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_MovementGravity.enabled, "This will cause a leak and performance issues, InputSystem_Actions.MovementGravity.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputSystem_Actions.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_MovementZeroG.enabled, "This will cause a leak and performance issues, InputSystem_Actions.MovementZeroG.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_DEBUG.enabled, "This will cause a leak and performance issues, InputSystem_Actions.DEBUG.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -874,30 +915,30 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // InGame
-    private readonly InputActionMap m_InGame;
-    private List<IInGameActions> m_InGameActionsCallbackInterfaces = new List<IInGameActions>();
-    private readonly InputAction m_InGame_Move;
-    private readonly InputAction m_InGame_Look;
-    private readonly InputAction m_InGame_Jump;
-    private readonly InputAction m_InGame_Sprint;
-    public struct InGameActions
+    // MovementGravity
+    private readonly InputActionMap m_MovementGravity;
+    private List<IMovementGravityActions> m_MovementGravityActionsCallbackInterfaces = new List<IMovementGravityActions>();
+    private readonly InputAction m_MovementGravity_Move;
+    private readonly InputAction m_MovementGravity_Look;
+    private readonly InputAction m_MovementGravity_Jump;
+    private readonly InputAction m_MovementGravity_Sprint;
+    public struct MovementGravityActions
     {
         private @InputSystem_Actions m_Wrapper;
-        public InGameActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Move => m_Wrapper.m_InGame_Move;
-        public InputAction @Look => m_Wrapper.m_InGame_Look;
-        public InputAction @Jump => m_Wrapper.m_InGame_Jump;
-        public InputAction @Sprint => m_Wrapper.m_InGame_Sprint;
-        public InputActionMap Get() { return m_Wrapper.m_InGame; }
+        public MovementGravityActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Move => m_Wrapper.m_MovementGravity_Move;
+        public InputAction @Look => m_Wrapper.m_MovementGravity_Look;
+        public InputAction @Jump => m_Wrapper.m_MovementGravity_Jump;
+        public InputAction @Sprint => m_Wrapper.m_MovementGravity_Sprint;
+        public InputActionMap Get() { return m_Wrapper.m_MovementGravity; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(InGameActions set) { return set.Get(); }
-        public void AddCallbacks(IInGameActions instance)
+        public static implicit operator InputActionMap(MovementGravityActions set) { return set.Get(); }
+        public void AddCallbacks(IMovementGravityActions instance)
         {
-            if (instance == null || m_Wrapper.m_InGameActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_InGameActionsCallbackInterfaces.Add(instance);
+            if (instance == null || m_Wrapper.m_MovementGravityActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MovementGravityActionsCallbackInterfaces.Add(instance);
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
@@ -912,7 +953,7 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
             @Sprint.canceled += instance.OnSprint;
         }
 
-        private void UnregisterCallbacks(IInGameActions instance)
+        private void UnregisterCallbacks(IMovementGravityActions instance)
         {
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
@@ -928,21 +969,21 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
             @Sprint.canceled -= instance.OnSprint;
         }
 
-        public void RemoveCallbacks(IInGameActions instance)
+        public void RemoveCallbacks(IMovementGravityActions instance)
         {
-            if (m_Wrapper.m_InGameActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_MovementGravityActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
-        public void SetCallbacks(IInGameActions instance)
+        public void SetCallbacks(IMovementGravityActions instance)
         {
-            foreach (var item in m_Wrapper.m_InGameActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_MovementGravityActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_InGameActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_MovementGravityActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
-    public InGameActions @InGame => new InGameActions(this);
+    public MovementGravityActions @MovementGravity => new MovementGravityActions(this);
 
     // UI
     private readonly InputActionMap m_UI;
@@ -1045,6 +1086,90 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // MovementZeroG
+    private readonly InputActionMap m_MovementZeroG;
+    private List<IMovementZeroGActions> m_MovementZeroGActionsCallbackInterfaces = new List<IMovementZeroGActions>();
+    public struct MovementZeroGActions
+    {
+        private @InputSystem_Actions m_Wrapper;
+        public MovementZeroGActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        public InputActionMap Get() { return m_Wrapper.m_MovementZeroG; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MovementZeroGActions set) { return set.Get(); }
+        public void AddCallbacks(IMovementZeroGActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MovementZeroGActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MovementZeroGActionsCallbackInterfaces.Add(instance);
+        }
+
+        private void UnregisterCallbacks(IMovementZeroGActions instance)
+        {
+        }
+
+        public void RemoveCallbacks(IMovementZeroGActions instance)
+        {
+            if (m_Wrapper.m_MovementZeroGActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMovementZeroGActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MovementZeroGActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MovementZeroGActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MovementZeroGActions @MovementZeroG => new MovementZeroGActions(this);
+
+    // DEBUG
+    private readonly InputActionMap m_DEBUG;
+    private List<IDEBUGActions> m_DEBUGActionsCallbackInterfaces = new List<IDEBUGActions>();
+    private readonly InputAction m_DEBUG_DebugSwapControlMode;
+    public struct DEBUGActions
+    {
+        private @InputSystem_Actions m_Wrapper;
+        public DEBUGActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @DebugSwapControlMode => m_Wrapper.m_DEBUG_DebugSwapControlMode;
+        public InputActionMap Get() { return m_Wrapper.m_DEBUG; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(DEBUGActions set) { return set.Get(); }
+        public void AddCallbacks(IDEBUGActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DEBUGActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DEBUGActionsCallbackInterfaces.Add(instance);
+            @DebugSwapControlMode.started += instance.OnDebugSwapControlMode;
+            @DebugSwapControlMode.performed += instance.OnDebugSwapControlMode;
+            @DebugSwapControlMode.canceled += instance.OnDebugSwapControlMode;
+        }
+
+        private void UnregisterCallbacks(IDEBUGActions instance)
+        {
+            @DebugSwapControlMode.started -= instance.OnDebugSwapControlMode;
+            @DebugSwapControlMode.performed -= instance.OnDebugSwapControlMode;
+            @DebugSwapControlMode.canceled -= instance.OnDebugSwapControlMode;
+        }
+
+        public void RemoveCallbacks(IDEBUGActions instance)
+        {
+            if (m_Wrapper.m_DEBUGActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IDEBUGActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DEBUGActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DEBUGActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public DEBUGActions @DEBUG => new DEBUGActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1090,7 +1215,7 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
             return asset.controlSchemes[m_XRSchemeIndex];
         }
     }
-    public interface IInGameActions
+    public interface IMovementGravityActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
@@ -1107,5 +1232,12 @@ public partial class @InputSystem_Actions : IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnMiddleClick(InputAction.CallbackContext context);
         void OnScrollWheel(InputAction.CallbackContext context);
+    }
+    public interface IMovementZeroGActions
+    {
+    }
+    public interface IDEBUGActions
+    {
+        void OnDebugSwapControlMode(InputAction.CallbackContext context);
     }
 }

@@ -1,0 +1,21 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class DebugControls : MonoBehaviour
+{
+    public void OnDebugSwapControlMode(InputValue value)
+    {
+        FirstPersonController playerController = Object.FindFirstObjectByType<FirstPersonController>(FindObjectsInactive.Exclude);
+
+        if (playerController.MovementMode == FirstPersonController.ControllerMovementMode.ZeroG)
+        {
+            playerController.SetMovementMode(FirstPersonController.ControllerMovementMode.Gravity);
+            Debug.Log("MoveMode: Gravity");
+        }
+        else
+        {
+            playerController.SetMovementMode(FirstPersonController.ControllerMovementMode.ZeroG);
+            Debug.Log("MoveMode: ZeroG");
+        }
+    }
+}

@@ -15,7 +15,6 @@ public class FirstPersonController : MonoBehaviour
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
     public float maxLookAngle = 90f;
-
     public float controllerLookMultiplier = 2.0f;
 
     private float xRotation = 0f;
@@ -35,19 +34,25 @@ public class FirstPersonController : MonoBehaviour
 
     public bool IsUsingGamepad => playerInput != null && playerInput.currentControlScheme == "Gamepad";
 
+    public enum ControllerMovementMode
+    {
+        Gravity,
+        ZeroG
+    }
+
+    private ControllerMovementMode movementMode = ControllerMovementMode.Gravity;
+    public ControllerMovementMode MovementMode
+    {
+        get => movementMode;
+    }
+
     void Start()
     {
         if (TryGetComponent<CoherenceSync>(out var _sync) && _sync.HasStateAuthority)
         {
-            moveAction = InputSystem.actions.FindAction("Move");
-            lookAction = InputSystem.actions.FindAction("Look");
-            sprintAction = InputSystem.actions.FindAction("Sprint");
-
             playerInput = GetComponent<PlayerInput>();
-            if (playerInput != null)
-            {
-                playerInput.SwitchCurrentActionMap("InGame");
-            }
+
+            SetMovementMode(ControllerMovementMode.Gravity);
 
             Camera mainCamera = cameraArm.AddComponent<Camera>();
             cameraArm.AddComponent<AudioListener>();
@@ -58,6 +63,28 @@ public class FirstPersonController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void SetMovementMode(ControllerMovementMode newMovementMode)
+    {
+        movementMode = newMovementMode;
+
+        if (movementMode == ControllerMovementMode.Gravity)
+        {
+            playerInput.SwitchCurrentActionMap("MovementGravity");
+
+            moveAction = playerInput.currentActionMap.FindAction("Move");
+            lookAction = playerInput.currentActionMap.FindAction("Look");
+            sprintAction = playerInput.currentActionMap.FindAction("Sprint");
+        }
+        else
+        {
+            playerInput.SwitchCurrentActionMap("MovementZeroG");
+
+            moveAction = null;
+            lookAction = null;
+            sprintAction = null;
+        }
     }
 
     void Update()
