@@ -711,8 +711,41 @@
         {
             "name": "MovementZeroG",
             "id": "b0b50aa0-a80e-4018-ad4d-8b5a5a0b880e",
-            "actions": [],
-            "bindings": []
+            "actions": [
+                {
+                    "name": "Stabilize",
+                    "type": "Button",
+                    "id": "3283cbce-cea7-47d5-b7de-8744b3f45f97",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d206c6e8-faac-459f-b0ea-05d41cb351b6",
+                    "path": "<Keyboard>/space",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Stabilize",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "56f55e55-1a7b-4211-bcb0-32a0482dd682",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Stabilize",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         },
         {
             "name": "DEBUG",

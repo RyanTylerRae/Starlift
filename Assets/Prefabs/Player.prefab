@@ -150,7 +150,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7542315045478018143}
-  - component: {fileID: 455399491770164781}
   - component: {fileID: 8951000721014338487}
   - component: {fileID: 3544571870899075731}
   - component: {fileID: 2140494683429531653}
@@ -160,6 +159,7 @@ GameObject:
   - component: {fileID: -8217873843730764807}
   - component: {fileID: 5018907751214449890}
   - component: {fileID: -1195255886293758487}
+  - component: {fileID: -3330819332357165361}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -184,31 +184,6 @@ Transform:
   - {fileID: 3149830879381995653}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!143 &455399491770164781
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7509877599165506846}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &8951000721014338487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,11 +196,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ef3528d233fd94eadd571fa4e4f27a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 12
-  runSpeed: 22
+  moveForce: 50
+  maxWalkSpeed: 6
+  maxRunSpeed: 12
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
+  stabilizeSpeedDecrease: 3
+  stabilizeTorqueMultiplier: 0.5
+  defaultGravity: {x: 0, y: -20, z: 0}
   cameraArm: {fileID: 1406748691932753418}
 --- !u!136 &3544571870899075731
 CapsuleCollider:
@@ -317,8 +296,6 @@ MonoBehaviour:
     boundComponents:
     - component: {fileID: 7542315045478018143}
       lodStepsActive: 1
-    - component: {fileID: 455399491770164781}
-      lodStepsActive: 1
     - component: {fileID: 8951000721014338487}
       lodStepsActive: 1
     - component: {fileID: 3544571870899075731}
@@ -344,6 +321,8 @@ MonoBehaviour:
     - component: {fileID: 5018907751214449890}
       lodStepsActive: 1
     - component: {fileID: -1195255886293758487}
+      lodStepsActive: 1
+    - component: {fileID: -3330819332357165361}
       lodStepsActive: 1
     GeneratesArchetypeDefinition: 0
   interpolationLocation: 1
@@ -522,7 +501,7 @@ MonoBehaviour:
     - rid: 4335384901180719175
       type: {class: DisableColliderComponentAction, ns: Coherence.Toolkit.ComponentActions, asm: Coherence.Toolkit}
       data:
-        component: {fileID: 455399491770164781}
+        component: {fileID: 0}
     - rid: 4335384901779718226
       type: {class: RotationBinding, ns: Coherence.Toolkit.Bindings.TransformBindings, asm: Coherence.Toolkit}
       data:
@@ -696,3 +675,30 @@ MonoBehaviour:
   m_DefaultActionMap: MovementGravity
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!54 &-3330819332357165361
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7509877599165506846}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0

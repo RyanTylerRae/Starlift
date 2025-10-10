@@ -733,8 +733,41 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         {
             ""name"": ""MovementZeroG"",
             ""id"": ""b0b50aa0-a80e-4018-ad4d-8b5a5a0b880e"",
-            ""actions"": [],
-            ""bindings"": []
+            ""actions"": [
+                {
+                    ""name"": ""Stabilize"",
+                    ""type"": ""Button"",
+                    ""id"": ""3283cbce-cea7-47d5-b7de-8744b3f45f97"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""d206c6e8-faac-459f-b0ea-05d41cb351b6"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Stabilize"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""56f55e55-1a7b-4211-bcb0-32a0482dd682"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Stabilize"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         },
         {
             ""name"": ""DEBUG"",
@@ -846,6 +879,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
         // MovementZeroG
         m_MovementZeroG = asset.FindActionMap("MovementZeroG", throwIfNotFound: true);
+        m_MovementZeroG_Stabilize = m_MovementZeroG.FindAction("Stabilize", throwIfNotFound: true);
         // DEBUG
         m_DEBUG = asset.FindActionMap("DEBUG", throwIfNotFound: true);
         m_DEBUG_DebugSwapControlMode = m_DEBUG.FindAction("DebugSwapControlMode", throwIfNotFound: true);
@@ -1090,10 +1124,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     // MovementZeroG
     private readonly InputActionMap m_MovementZeroG;
     private List<IMovementZeroGActions> m_MovementZeroGActionsCallbackInterfaces = new List<IMovementZeroGActions>();
+    private readonly InputAction m_MovementZeroG_Stabilize;
     public struct MovementZeroGActions
     {
         private @InputSystem_Actions m_Wrapper;
         public MovementZeroGActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Stabilize => m_Wrapper.m_MovementZeroG_Stabilize;
         public InputActionMap Get() { return m_Wrapper.m_MovementZeroG; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1103,10 +1139,16 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_MovementZeroGActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_MovementZeroGActionsCallbackInterfaces.Add(instance);
+            @Stabilize.started += instance.OnStabilize;
+            @Stabilize.performed += instance.OnStabilize;
+            @Stabilize.canceled += instance.OnStabilize;
         }
 
         private void UnregisterCallbacks(IMovementZeroGActions instance)
         {
+            @Stabilize.started -= instance.OnStabilize;
+            @Stabilize.performed -= instance.OnStabilize;
+            @Stabilize.canceled -= instance.OnStabilize;
         }
 
         public void RemoveCallbacks(IMovementZeroGActions instance)
@@ -1235,6 +1277,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     }
     public interface IMovementZeroGActions
     {
+        void OnStabilize(InputAction.CallbackContext context);
     }
     public interface IDEBUGActions
     {
