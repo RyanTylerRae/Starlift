@@ -160,6 +160,7 @@ GameObject:
   - component: {fileID: 5018907751214449890}
   - component: {fileID: -1195255886293758487}
   - component: {fileID: -3330819332357165361}
+  - component: {fileID: -5865880731905492888}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -196,15 +197,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ef3528d233fd94eadd571fa4e4f27a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForce: 50
-  maxWalkSpeed: 6
-  maxRunSpeed: 12
+  moveForce: 20
+  maxWalkSpeed: 4
+  maxRunSpeed: 8
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
-  stabilizeSpeedDecrease: 3
-  stabilizeTorqueMultiplier: 0.5
-  defaultGravity: {x: 0, y: -20, z: 0}
+  zeroGRollSpeed: 45
+  stabilizeMultiplier: 0.5
+  flightForce: 1
+  maxFlightSpeed: 6
   cameraArm: {fileID: 1406748691932753418}
 --- !u!136 &3544571870899075731
 CapsuleCollider:
@@ -323,6 +325,8 @@ MonoBehaviour:
     - component: {fileID: -1195255886293758487}
       lodStepsActive: 1
     - component: {fileID: -3330819332357165361}
+      lodStepsActive: 1
+    - component: {fileID: -5865880731905492888}
       lodStepsActive: 1
     GeneratesArchetypeDefinition: 0
   interpolationLocation: 1
@@ -702,3 +706,15 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &-5865880731905492888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7509877599165506846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca13061d0b4c5a84d9d7aa0590de6850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

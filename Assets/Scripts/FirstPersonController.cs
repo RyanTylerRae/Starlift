@@ -18,6 +18,7 @@ public class FirstPersonController : MonoBehaviour
     public float lookSensitivity = 2f;
     public float maxLookAngle = 90f;
     public float controllerLookMultiplier = 2.0f;
+    public float zeroGRollSpeed = 45f;
 
     private float xRotation = 0f;
 
@@ -29,17 +30,16 @@ public class FirstPersonController : MonoBehaviour
     }
 
     // flight
-    public float stabilizeSpeedDecrease;
-    public float stabilizeTorqueMultiplier;
+    public float stabilizeMultiplier;
 
-    // forces
-    public Vector3 defaultGravity;
-    private Vector3 gravity;
+    public float flightForce;
+    public float maxFlightSpeed;
 
     [Header("Player")]
     private CharacterController characterController;
     private PlayerInput playerInput;
     private Rigidbody _rigidbody;
+    private GravityController gravityController;
 
     [Header("Camera")]
     public GameObject cameraArm;
@@ -50,6 +50,14 @@ public class FirstPersonController : MonoBehaviour
     private InputAction? lookAction;
     private InputAction? sprintAction;
     private InputAction? stabilizeAction;
+    private InputAction? forwardThrustAction;
+    private InputAction? backwardThrustAction;
+    private InputAction? leftThrustAction;
+    private InputAction? rightThrustAction;
+    private InputAction? upThrustAction;
+    private InputAction? downThrustAction;
+    private InputAction? rotateLeftAction;
+    private InputAction? rotateRightAction;
 
     public bool IsUsingGamepad => playerInput != null && playerInput.currentControlScheme == "Gamepad";
 
@@ -72,6 +80,7 @@ public class FirstPersonController : MonoBehaviour
             playerInput = GetComponent<PlayerInput>();
             _rigidbody = GetComponent<Rigidbody>();
             characterController = GetComponent<CharacterController>();
+            gravityController = GetComponent<GravityController>();
 
             SetMovementMode(ControllerMovementMode.Gravity);
 
@@ -84,7 +93,6 @@ public class FirstPersonController : MonoBehaviour
         Cursor.visible = false;
 
         isGrounded = true;
-        gravity = defaultGravity;
     }
 
     public void SetMovementMode(ControllerMovementMode newMovementMode)
@@ -99,8 +107,15 @@ public class FirstPersonController : MonoBehaviour
             lookAction = playerInput.currentActionMap.FindAction("Look");
             sprintAction = playerInput.currentActionMap.FindAction("Sprint");
             stabilizeAction = null;
+            forwardThrustAction = null;
+            backwardThrustAction = null;
+            leftThrustAction = null;
+            rightThrustAction = null;
+            upThrustAction = null;
+            downThrustAction = null;
+            rotateLeftAction = null;
+            rotateRightAction = null;
 
-            gravity = defaultGravity;
             _rigidbody.freezeRotation = true;
             _rigidbody.rotation = Quaternion.identity;
         }
@@ -109,11 +124,18 @@ public class FirstPersonController : MonoBehaviour
             playerInput.SwitchCurrentActionMap("MovementZeroG");
 
             moveAction = null;
-            lookAction = null;
+            lookAction = playerInput.currentActionMap.FindAction("Look");
             sprintAction = null;
             stabilizeAction = playerInput.currentActionMap.FindAction("Stabilize");
+            forwardThrustAction = playerInput.currentActionMap.FindAction("ForwardThrust");
+            backwardThrustAction = playerInput.currentActionMap.FindAction("BackwardThrust");
+            leftThrustAction = playerInput.currentActionMap.FindAction("LeftThrust");
+            rightThrustAction = playerInput.currentActionMap.FindAction("RightThrust");
+            upThrustAction = playerInput.currentActionMap.FindAction("UpThrust");
+            downThrustAction = playerInput.currentActionMap.FindAction("DownThrust");
+            rotateLeftAction = playerInput.currentActionMap.FindAction("RotateLeft");
+            rotateRightAction = playerInput.currentActionMap.FindAction("RotateRight");
 
-            gravity = Vector3.zero;
             _rigidbody.freezeRotation = false;
 
             _rigidbody.AddForce(new Vector3(0, 25.0f, 0));
@@ -130,13 +152,38 @@ public class FirstPersonController : MonoBehaviour
 
     void Update()
     {
+        if (gravityController == null)
+        {
+            Debug.LogWarning("FirstPersonController does not have a sibling GravityController!");
+            return;
+        }
+
+        Vector3 gravity = gravityController.GetGravityVector();
+        if (MovementMode == ControllerMovementMode.ZeroG && gravity.sqrMagnitude > 0.0f)
+        {
+            SetMovementMode(ControllerMovementMode.Gravity);
+        }
+        else if (MovementMode == ControllerMovementMode.Gravity && gravity.sqrMagnitude < 0.01f)
+        {
+            SetMovementMode(ControllerMovementMode.ZeroG);
+        }
+
         if (MovementMode == ControllerMovementMode.Gravity)
         {
             HandleMouseLook();
             HandleMovement();
+
+            // orient player to align with gravity
+            Vector3 upVector = -gravity.normalized;
+            if (upVector.sqrMagnitude > 0.01f)
+            {
+                Quaternion targetRotation = Quaternion.FromToRotation(transform.up, upVector) * transform.rotation;
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            }
         }
         else
         {
+            HandleZeroGLook();
             HandleZeroGMovement();
         }
     }
@@ -181,14 +228,13 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
-        // @trae todo
+        // @trae todo - add grounded flag and logic
         // 1. IsGrounded flag actual check
         // 3. if !IsGrounded -> only allow look input, no air control (or maybe reduce it? x0.2 or something?)
 
         // apply gravity and movement forces based on input
         Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;
 
-        _rigidbody.AddForce(gravity);
         _rigidbody.AddForce(direction * moveForce);
 
         // clamp velocity in the XZ-direction to a maximum speed
@@ -207,6 +253,43 @@ public class FirstPersonController : MonoBehaviour
         _rigidbody.linearVelocity = velocity;
     }
 
+    void HandleZeroGLook()
+    {
+        Vector2? lookInput = lookAction?.ReadValue<Vector2>();
+        if (lookInput != null)
+        {
+            float lookX, lookY;
+
+            if (IsUsingGamepad)
+            {
+                // Gamepad: use Time.deltaTime for smooth, frame-independent rotation
+                lookX = lookInput.Value.x * lookSensitivity * controllerLookMultiplier * Time.deltaTime;
+                lookY = lookInput.Value.y * lookSensitivity * controllerLookMultiplier * Time.deltaTime;
+            }
+            else
+            {
+                // Mouse: don't use Time.deltaTime (mouse delta is already frame-independent)
+                lookX = lookInput.Value.x * lookSensitivity;
+                lookY = lookInput.Value.y * lookSensitivity;
+            }
+
+            // Apply pitch and yaw rotation to the root game object
+            transform.Rotate(Vector3.up, lookX, Space.World);
+            transform.Rotate(transform.right, -lookY, Space.World);
+        }
+
+        float rotateLeftInput = rotateLeftAction?.ReadValue<float>() ?? 0f;
+        float rotateRightInput = rotateRightAction?.ReadValue<float>() ?? 0f;
+
+        // Apply roll rotation around the camera's forward vector
+        float rollInput = rotateLeftInput - rotateRightInput;
+        if (Mathf.Abs(rollInput) > 0.01f)
+        {
+            float rollAmount = rollInput * zeroGRollSpeed * Time.deltaTime;
+            _rigidbody.transform.Rotate(playerCamera.transform.forward, rollAmount, Space.World);
+        }
+    }
+
     void HandleZeroGMovement()
     {
         bool? isStabilizePressed = stabilizeAction?.IsPressed();
@@ -216,20 +299,39 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
+        float forwardThrustInput = forwardThrustAction?.ReadValue<float>() ?? 0f;
+        float backwardThrustInput = backwardThrustAction?.ReadValue<float>() ?? 0f;
+        float leftThrustInput = leftThrustAction?.ReadValue<float>() ?? 0f;
+        float rightThrustInput = rightThrustAction?.ReadValue<float>() ?? 0f;
+        float upThrustInput = upThrustAction?.ReadValue<float>() ?? 0f;
+        float downThrustInput = downThrustAction?.ReadValue<float>() ?? 0f;
+
+        Vector3 velocity = _rigidbody.linearVelocity;
+
         if (isStabilizePressed.Value)
         {
-            // Dampen linear velocity
-            Vector3 velocity = _rigidbody.linearVelocity;
-            double speed = Math.Sqrt(velocity.sqrMagnitude);
+            Vector3 stabilizationForce = -velocity * (1.0f - stabilizeMultiplier);
+            _rigidbody.AddForce(stabilizationForce, ForceMode.Acceleration);
 
-            speed = Math.Clamp(speed - stabilizeSpeedDecrease * Time.deltaTime, 0.0, speed);
-            _rigidbody.linearVelocity = velocity.normalized * (float)speed;
-
-            // Dampen angular velocity
-            // Apply a counter-torque proportional to the current angular velocity
             Vector3 angularVelocity = _rigidbody.angularVelocity;
-            Vector3 stabilizationTorque = -angularVelocity * (1.0f - stabilizeTorqueMultiplier);
+            Vector3 stabilizationTorque = -angularVelocity * (1.0f - stabilizeMultiplier);
             _rigidbody.AddTorque(stabilizationTorque, ForceMode.Acceleration);
+        }
+
+        Vector3 thrustVector = Vector3.zero;
+        thrustVector += playerCamera.transform.forward * forwardThrustInput;
+        thrustVector += -playerCamera.transform.forward * backwardThrustInput;
+        thrustVector += -playerCamera.transform.right * leftThrustInput;
+        thrustVector += playerCamera.transform.right * rightThrustInput;
+        thrustVector += playerCamera.transform.up * upThrustInput;
+        thrustVector += -playerCamera.transform.up * downThrustInput;
+
+        _rigidbody.AddForce(thrustVector.normalized * flightForce);
+
+        velocity = _rigidbody.linearVelocity;
+        if (velocity.sqrMagnitude > maxFlightSpeed * maxFlightSpeed)
+        {
+            _rigidbody.linearVelocity = velocity.normalized * maxFlightSpeed;
         }
     }
 }

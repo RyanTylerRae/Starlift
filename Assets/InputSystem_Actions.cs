@@ -177,17 +177,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""3ea4d645-4504-4529-b061-ab81934c3752"",
-                    ""path"": ""<Joystick>/stick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""c1f7a91b-d0fd-4a62-997e-7fb9b69bf235"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
@@ -204,17 +193,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse;Touch"",
-                    ""action"": ""Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""3e5f5442-8668-4b27-a940-df99bad7e831"",
-                    ""path"": ""<Joystick>/{Hatswitch}"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -742,6 +720,87 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ForwardThrust"",
+                    ""type"": ""Button"",
+                    ""id"": ""a6582482-05f9-4d26-b545-73b64e34f004"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BackwardThrust"",
+                    ""type"": ""Button"",
+                    ""id"": ""7c977856-4441-4816-ba69-e1b239be3e21"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LeftThrust"",
+                    ""type"": ""Button"",
+                    ""id"": ""118f5c42-9cb6-4c78-b490-9c1f6ef855a3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightThrust"",
+                    ""type"": ""Button"",
+                    ""id"": ""9f3b1179-779c-4106-a811-81251e5dba64"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UpThrust"",
+                    ""type"": ""Button"",
+                    ""id"": ""25b10b3e-8fe3-443b-bea3-84c4abb73f31"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DownThrust"",
+                    ""type"": ""Button"",
+                    ""id"": ""70f7b561-a3a3-4f81-91e1-fd479122df46"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""Button"",
+                    ""id"": ""b01accf1-8c54-4c78-bf55-73747bbff6e0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotateLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""f880922f-eca6-4eb4-8bf1-530886639c52"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotateRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""bc573197-74be-48c6-81b0-84b0c9ce9b69"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -764,6 +823,116 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Stabilize"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a98be837-cd88-4667-85e5-3a97db295f31"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""BackwardThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5bbdc813-223f-4b02-8af2-f856a6e01c28"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""LeftThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a611fc31-f70f-4d67-993b-36a1a3a8b305"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RightThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5d632d9d-e771-4212-86ed-6287aede5cfd"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""UpThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1e1551ee-a4d0-486c-bbf1-bdede175cb5b"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""DownThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""84edc594-2509-4890-a9e5-fd6afa1c0c66"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9633d9a1-d693-4beb-a8ac-82241c21a57d"",
+                    ""path"": ""<Pointer>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse;Touch"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1e7a1513-8540-4e4d-bbf2-04dc7ce89c11"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RotateLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a5f89d87-29a4-4450-a163-2ac98b1321a6"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RotateRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""77b4bdfc-19f6-4eee-910b-853b045a9e9b"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ForwardThrust"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -880,6 +1049,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         // MovementZeroG
         m_MovementZeroG = asset.FindActionMap("MovementZeroG", throwIfNotFound: true);
         m_MovementZeroG_Stabilize = m_MovementZeroG.FindAction("Stabilize", throwIfNotFound: true);
+        m_MovementZeroG_ForwardThrust = m_MovementZeroG.FindAction("ForwardThrust", throwIfNotFound: true);
+        m_MovementZeroG_BackwardThrust = m_MovementZeroG.FindAction("BackwardThrust", throwIfNotFound: true);
+        m_MovementZeroG_LeftThrust = m_MovementZeroG.FindAction("LeftThrust", throwIfNotFound: true);
+        m_MovementZeroG_RightThrust = m_MovementZeroG.FindAction("RightThrust", throwIfNotFound: true);
+        m_MovementZeroG_UpThrust = m_MovementZeroG.FindAction("UpThrust", throwIfNotFound: true);
+        m_MovementZeroG_DownThrust = m_MovementZeroG.FindAction("DownThrust", throwIfNotFound: true);
+        m_MovementZeroG_Look = m_MovementZeroG.FindAction("Look", throwIfNotFound: true);
+        m_MovementZeroG_RotateLeft = m_MovementZeroG.FindAction("RotateLeft", throwIfNotFound: true);
+        m_MovementZeroG_RotateRight = m_MovementZeroG.FindAction("RotateRight", throwIfNotFound: true);
         // DEBUG
         m_DEBUG = asset.FindActionMap("DEBUG", throwIfNotFound: true);
         m_DEBUG_DebugSwapControlMode = m_DEBUG.FindAction("DebugSwapControlMode", throwIfNotFound: true);
@@ -1125,11 +1303,29 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_MovementZeroG;
     private List<IMovementZeroGActions> m_MovementZeroGActionsCallbackInterfaces = new List<IMovementZeroGActions>();
     private readonly InputAction m_MovementZeroG_Stabilize;
+    private readonly InputAction m_MovementZeroG_ForwardThrust;
+    private readonly InputAction m_MovementZeroG_BackwardThrust;
+    private readonly InputAction m_MovementZeroG_LeftThrust;
+    private readonly InputAction m_MovementZeroG_RightThrust;
+    private readonly InputAction m_MovementZeroG_UpThrust;
+    private readonly InputAction m_MovementZeroG_DownThrust;
+    private readonly InputAction m_MovementZeroG_Look;
+    private readonly InputAction m_MovementZeroG_RotateLeft;
+    private readonly InputAction m_MovementZeroG_RotateRight;
     public struct MovementZeroGActions
     {
         private @InputSystem_Actions m_Wrapper;
         public MovementZeroGActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Stabilize => m_Wrapper.m_MovementZeroG_Stabilize;
+        public InputAction @ForwardThrust => m_Wrapper.m_MovementZeroG_ForwardThrust;
+        public InputAction @BackwardThrust => m_Wrapper.m_MovementZeroG_BackwardThrust;
+        public InputAction @LeftThrust => m_Wrapper.m_MovementZeroG_LeftThrust;
+        public InputAction @RightThrust => m_Wrapper.m_MovementZeroG_RightThrust;
+        public InputAction @UpThrust => m_Wrapper.m_MovementZeroG_UpThrust;
+        public InputAction @DownThrust => m_Wrapper.m_MovementZeroG_DownThrust;
+        public InputAction @Look => m_Wrapper.m_MovementZeroG_Look;
+        public InputAction @RotateLeft => m_Wrapper.m_MovementZeroG_RotateLeft;
+        public InputAction @RotateRight => m_Wrapper.m_MovementZeroG_RotateRight;
         public InputActionMap Get() { return m_Wrapper.m_MovementZeroG; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1142,6 +1338,33 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Stabilize.started += instance.OnStabilize;
             @Stabilize.performed += instance.OnStabilize;
             @Stabilize.canceled += instance.OnStabilize;
+            @ForwardThrust.started += instance.OnForwardThrust;
+            @ForwardThrust.performed += instance.OnForwardThrust;
+            @ForwardThrust.canceled += instance.OnForwardThrust;
+            @BackwardThrust.started += instance.OnBackwardThrust;
+            @BackwardThrust.performed += instance.OnBackwardThrust;
+            @BackwardThrust.canceled += instance.OnBackwardThrust;
+            @LeftThrust.started += instance.OnLeftThrust;
+            @LeftThrust.performed += instance.OnLeftThrust;
+            @LeftThrust.canceled += instance.OnLeftThrust;
+            @RightThrust.started += instance.OnRightThrust;
+            @RightThrust.performed += instance.OnRightThrust;
+            @RightThrust.canceled += instance.OnRightThrust;
+            @UpThrust.started += instance.OnUpThrust;
+            @UpThrust.performed += instance.OnUpThrust;
+            @UpThrust.canceled += instance.OnUpThrust;
+            @DownThrust.started += instance.OnDownThrust;
+            @DownThrust.performed += instance.OnDownThrust;
+            @DownThrust.canceled += instance.OnDownThrust;
+            @Look.started += instance.OnLook;
+            @Look.performed += instance.OnLook;
+            @Look.canceled += instance.OnLook;
+            @RotateLeft.started += instance.OnRotateLeft;
+            @RotateLeft.performed += instance.OnRotateLeft;
+            @RotateLeft.canceled += instance.OnRotateLeft;
+            @RotateRight.started += instance.OnRotateRight;
+            @RotateRight.performed += instance.OnRotateRight;
+            @RotateRight.canceled += instance.OnRotateRight;
         }
 
         private void UnregisterCallbacks(IMovementZeroGActions instance)
@@ -1149,6 +1372,33 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Stabilize.started -= instance.OnStabilize;
             @Stabilize.performed -= instance.OnStabilize;
             @Stabilize.canceled -= instance.OnStabilize;
+            @ForwardThrust.started -= instance.OnForwardThrust;
+            @ForwardThrust.performed -= instance.OnForwardThrust;
+            @ForwardThrust.canceled -= instance.OnForwardThrust;
+            @BackwardThrust.started -= instance.OnBackwardThrust;
+            @BackwardThrust.performed -= instance.OnBackwardThrust;
+            @BackwardThrust.canceled -= instance.OnBackwardThrust;
+            @LeftThrust.started -= instance.OnLeftThrust;
+            @LeftThrust.performed -= instance.OnLeftThrust;
+            @LeftThrust.canceled -= instance.OnLeftThrust;
+            @RightThrust.started -= instance.OnRightThrust;
+            @RightThrust.performed -= instance.OnRightThrust;
+            @RightThrust.canceled -= instance.OnRightThrust;
+            @UpThrust.started -= instance.OnUpThrust;
+            @UpThrust.performed -= instance.OnUpThrust;
+            @UpThrust.canceled -= instance.OnUpThrust;
+            @DownThrust.started -= instance.OnDownThrust;
+            @DownThrust.performed -= instance.OnDownThrust;
+            @DownThrust.canceled -= instance.OnDownThrust;
+            @Look.started -= instance.OnLook;
+            @Look.performed -= instance.OnLook;
+            @Look.canceled -= instance.OnLook;
+            @RotateLeft.started -= instance.OnRotateLeft;
+            @RotateLeft.performed -= instance.OnRotateLeft;
+            @RotateLeft.canceled -= instance.OnRotateLeft;
+            @RotateRight.started -= instance.OnRotateRight;
+            @RotateRight.performed -= instance.OnRotateRight;
+            @RotateRight.canceled -= instance.OnRotateRight;
         }
 
         public void RemoveCallbacks(IMovementZeroGActions instance)
@@ -1278,6 +1528,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     public interface IMovementZeroGActions
     {
         void OnStabilize(InputAction.CallbackContext context);
+        void OnForwardThrust(InputAction.CallbackContext context);
+        void OnBackwardThrust(InputAction.CallbackContext context);
+        void OnLeftThrust(InputAction.CallbackContext context);
+        void OnRightThrust(InputAction.CallbackContext context);
+        void OnUpThrust(InputAction.CallbackContext context);
+        void OnDownThrust(InputAction.CallbackContext context);
+        void OnLook(InputAction.CallbackContext context);
+        void OnRotateLeft(InputAction.CallbackContext context);
+        void OnRotateRight(InputAction.CallbackContext context);
     }
     public interface IDEBUGActions
     {
