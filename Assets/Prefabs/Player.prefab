@@ -207,6 +207,7 @@ MonoBehaviour:
   stabilizeMultiplier: 0.5
   flightForce: 1
   maxFlightSpeed: 6
+  gravityAlignmentSpeed: 2
   cameraArm: {fileID: 1406748691932753418}
 --- !u!136 &3544571870899075731
 CapsuleCollider:

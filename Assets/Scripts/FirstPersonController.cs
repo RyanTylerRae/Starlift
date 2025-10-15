@@ -35,6 +35,9 @@ public class FirstPersonController : MonoBehaviour
     public float flightForce;
     public float maxFlightSpeed;
 
+    // gravity alignment
+    public float gravityAlignmentSpeed = 5f;
+
     [Header("Player")]
     private CharacterController characterController;
     private PlayerInput playerInput;
@@ -178,7 +181,7 @@ public class FirstPersonController : MonoBehaviour
             if (upVector.sqrMagnitude > 0.01f)
             {
                 Quaternion targetRotation = Quaternion.FromToRotation(transform.up, upVector) * transform.rotation;
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * gravityAlignmentSpeed);
             }
         }
         else
@@ -273,9 +276,9 @@ public class FirstPersonController : MonoBehaviour
                 lookY = lookInput.Value.y * lookSensitivity;
             }
 
-            // Apply pitch and yaw rotation to the root game object
-            transform.Rotate(Vector3.up, lookX, Space.World);
-            transform.Rotate(transform.right, -lookY, Space.World);
+            // Apply pitch and yaw rotation to the rigidbody using camera's forward as reference
+            _rigidbody.transform.Rotate(playerCamera.transform.up, lookX, Space.World);
+            _rigidbody.transform.Rotate(playerCamera.transform.right, -lookY, Space.World);
         }
 
         float rotateLeftInput = rotateLeftAction?.ReadValue<float>() ?? 0f;
