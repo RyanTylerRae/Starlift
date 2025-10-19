@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public enum EPowerPriority
@@ -7,32 +6,34 @@ public enum EPowerPriority
     Unassigned
 }
 
-public class PowerConsumer : MonoBehaviour, IPowerNode
+public class PowerConsumer : MonoBehaviour
 {
-    public float requiredPower;
+    public float requiredEnergy;
     public EPowerPriority priority;
     public bool hasPower;
+
+    // Made public so PowerProducer can check current energy level
     public float energyReceivedThisFrame;
 
-    public float ReportDemand()
+    // Called by PowerProducer to deliver energy
+    public void ReceiveEnergy(float amount)
     {
-        return requiredPower;
+        energyReceivedThisFrame += amount;
     }
 
-    public float ReceivePacket(PowerPacket powerPacket)
+    public void UseEnergy()
     {
-        energyReceivedThisFrame += powerPacket.energy;
-        return powerPacket.energy;
-    }
-
-    public void UpdatePower()
-    {
-        hasPower = energyReceivedThisFrame >= requiredPower;
+        hasPower = energyReceivedThisFrame >= requiredEnergy;
         energyReceivedThisFrame = 0.0f;
     }
 
-    public Transform GetTransform()
+    private void Start()
     {
-        return transform;
+        PowerController.Instance.AddPowerConsumer(this);
+    }
+
+    private void OnDestroy()
+    {
+        PowerController.Instance.RemovePowerConsumer(this);
     }
 }

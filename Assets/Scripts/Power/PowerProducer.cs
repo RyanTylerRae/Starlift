@@ -1,47 +1,59 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class PowerProducer : MonoBehaviour, IPowerNode
+public class PowerProducer : MonoBehaviour
 {
-    public float powerRate;
-    public List<IPowerNode> outputNodes = new();
+    public float energyOutputRate;
 
-    public void Start()
-    {
-        outputNodes.Add(Object.FindAnyObjectByType<PowerConsumer>());
-    }
+    // List of connection IDs representing output wire paths from this producer
+    public List<uint> outputConnections = new();
 
-    public float ReportDemand()
+    public void SendEnergy()
     {
-        return 0.0f;
-    }
+        float remainingEnergy = energyOutputRate;
 
-    public float ReceivePacket(PowerPacket powerPacket)
-    {
-        return 0.0f;
-    }
-
-    public void EmitPackets()
-    {
-        if (outputNodes.Count == 0)
+        // Collect all reachable consumers from all output connections
+        List<PowerConsumer> allConsumers = new();
+        foreach (uint connectionId in outputConnections)
         {
-            return;
+            List<PowerConsumer> consumersForConnection = PowerController.Instance.GetConsumersForConnection(connectionId);
+            foreach (PowerConsumer consumer in consumersForConnection)
+            {
+                if (!allConsumers.Contains(consumer))
+                {
+                    allConsumers.Add(consumer);
+                }
+            }
         }
 
-        float power = powerRate / outputNodes.Count;
+        // Sort by priority (Essential first, then others)
+        allConsumers = allConsumers.OrderBy(c => c.priority).ToList();
 
-        PowerUtils powerUtils = Object.FindFirstObjectByType<PowerUtils>();
-
-        foreach (var node in outputNodes)
+        // Distribute energy in priority order until we run out
+        foreach (PowerConsumer consumer in allConsumers)
         {
-            node.ReceivePacket(new PowerPacket() { energy = power });
+            if (remainingEnergy <= 0)
+                break;
 
-            powerUtils.QueueNumber(power, transform.position + ((transform.position - node.GetTransform().position) * 0.5f));
+            float energyNeeded = consumer.requiredEnergy - consumer.energyReceivedThisFrame;
+            float energyToSend = Mathf.Min(remainingEnergy, energyNeeded);
+
+            if (energyToSend > 0)
+            {
+                consumer.ReceiveEnergy(energyToSend);
+                remainingEnergy -= energyToSend;
+            }
         }
     }
 
-    public Transform GetTransform()
+    private void Start()
     {
-        return transform;
+        PowerController.Instance.AddPowerProducer(this);
+    }
+
+    private void OnDestroy()
+    {
+        PowerController.Instance.RemovePowerProducer(this);
     }
 }
