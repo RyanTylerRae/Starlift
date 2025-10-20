@@ -16,21 +16,19 @@ public class PowerController : Singleton<PowerController>
     // Maps connectionId to the producer that owns it
     private Dictionary<uint, PowerProducer> connectionToProducer = new();
 
-    public int updateInterval = 300;
-    private int tickCounter = 0;
+    public float updateIntervalSeconds = 1.0f;
+    private float lastUpdateTime = 0f;
 
     private uint nextUniqueId = 1;
 
     public void Update()
     {
-        tickCounter++;
-
-        if (tickCounter < updateInterval)
+        if (Time.time - lastUpdateTime < updateIntervalSeconds)
         {
             return;
         }
 
-        tickCounter = 0;
+        lastUpdateTime = Time.time;
 
         foreach (PowerProducer powerProducer in powerProducers)
         {

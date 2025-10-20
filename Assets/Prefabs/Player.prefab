@@ -719,3 +719,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca13061d0b4c5a84d9d7aa0590de6850, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minInitialForce: 15
+  maxInitialForce: 25
+  minInitialTorque: 0.2
+  maxInitialTorque: 0.5
+  forceConeDegrees: 15

@@ -3,17 +3,18 @@ using UnityEngine;
 
 public class WireNode : MonoBehaviour
 {
-    // Neighboring wire nodes this wire connects to
-    public List<WireNode> connectedWires = new();
+    // Editor-exposed lists for manual setup
+    public List<GameObject> wireObjectsToConnect = new();
+    public List<GameObject> producerObjectsToConnect = new();
+    public List<GameObject> consumerObjectsToConnect = new();
 
-    // Direct connections to producers (for wires at the source)
-    public List<PowerProducer> connectedProducers = new();
-
-    // Direct connections to consumers (for wires at the destination)
-    public List<PowerConsumer> connectedConsumers = new();
+    // Runtime connection lists (hidden from inspector)
+    [HideInInspector] public List<WireNode> connectedWires = new();
+    [HideInInspector] public List<PowerProducer> connectedProducers = new();
+    [HideInInspector] public List<PowerConsumer> connectedConsumers = new();
 
     // Track which connection IDs flow through this wire
-    public HashSet<uint> activeConnectionIds = new();
+    [HideInInspector] public HashSet<uint> activeConnectionIds = new();
 
     // Notify PowerController when connections change
     public void OnConnectionChanged()
@@ -25,6 +26,53 @@ public class WireNode : MonoBehaviour
     private void Start()
     {
         PowerController.Instance.RegisterWireNode(this);
+
+        // Convert GameObject lists to component references
+        connectedWires.Clear();
+        connectedProducers.Clear();
+        connectedConsumers.Clear();
+
+        foreach (GameObject wireObj in wireObjectsToConnect)
+        {
+            if (wireObj != null)
+            {
+                WireNode wireNode = wireObj.GetComponent<WireNode>();
+                if (wireNode != null && !connectedWires.Contains(wireNode))
+                {
+                    connectedWires.Add(wireNode);
+                }
+            }
+        }
+
+        foreach (GameObject producerObj in producerObjectsToConnect)
+        {
+            if (producerObj != null)
+            {
+                PowerProducer producer = producerObj.GetComponent<PowerProducer>();
+                if (producer != null && !connectedProducers.Contains(producer))
+                {
+                    connectedProducers.Add(producer);
+                }
+            }
+        }
+
+        foreach (GameObject consumerObj in consumerObjectsToConnect)
+        {
+            if (consumerObj != null)
+            {
+                PowerConsumer consumer = consumerObj.GetComponent<PowerConsumer>();
+                if (consumer != null && !connectedConsumers.Contains(consumer))
+                {
+                    connectedConsumers.Add(consumer);
+                }
+            }
+        }
+
+        // Rebuild pathways for any connected producers
+        foreach (PowerProducer producer in connectedProducers)
+        {
+            PowerController.Instance.RebuildProducerPaths(producer);
+        }
     }
 
     private void OnDestroy()

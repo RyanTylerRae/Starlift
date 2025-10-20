@@ -140,16 +140,6 @@ public class FirstPersonController : MonoBehaviour
             rotateRightAction = playerInput.currentActionMap.FindAction("RotateRight");
 
             _rigidbody.freezeRotation = false;
-
-            _rigidbody.AddForce(new Vector3(0, 25.0f, 0));
-
-            Vector3 randomVector = new Vector3(
-                UnityEngine.Random.Range(-1f, 1f),
-                UnityEngine.Random.Range(-1f, 1f),
-                UnityEngine.Random.Range(-1f, 1f)
-            );
-
-            _rigidbody.AddTorque(randomVector * 0.5f);
         }
     }
 
