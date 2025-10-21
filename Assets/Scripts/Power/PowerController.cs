@@ -53,7 +53,6 @@ public class PowerController : Singleton<PowerController>
     {
         powerProducers.Remove(powerProducer);
 
-        // Clean up all connections for this producer
         foreach (uint connectionId in powerProducer.outputConnections)
         {
             RemoveConnectionTracking(connectionId);
@@ -91,13 +90,11 @@ public class PowerController : Singleton<PowerController>
         wireNodes.Remove(wireNode);
     }
 
-    // Generate a new unique connection ID
     public uint GenerateConnectionId()
     {
         return nextUniqueId++;
     }
 
-    // Get all consumers reachable through a specific connection ID
     public List<PowerConsumer> GetConsumersForConnection(uint connectionId)
     {
         if (connectionMap.TryGetValue(connectionId, out List<PowerConsumer> consumers))
@@ -107,7 +104,7 @@ public class PowerController : Singleton<PowerController>
         return new List<PowerConsumer>();
     }
 
-    // Called when wire topology changes - recalculates which consumers are reachable from a connection
+    // called when wire topology changes - recalculates which consumers are reachable from a connection
     public void UpdateConnectionPath(uint connectionId, List<PowerConsumer> reachableConsumers)
     {
         if (connectionMap.ContainsKey(connectionId))
@@ -120,7 +117,7 @@ public class PowerController : Singleton<PowerController>
         }
     }
 
-    // Invalidate specific connections and rebuild them from their source producers
+    // invalidate specific connections and rebuild them from their source producers
     public void RebuildConnections(HashSet<uint> connectionIds)
     {
         // Group connections by their owning producer
@@ -134,37 +131,30 @@ public class PowerController : Singleton<PowerController>
             }
         }
 
-        // Rebuild paths for each affected producer
         foreach (PowerProducer producer in affectedProducers)
         {
             RebuildProducerPaths(producer);
         }
     }
 
-    // Rebuild all connection paths for a specific producer
-    // Called when wire topology changes
+    // rebuild all connection paths for a specific producer - alled when wire topology changes
     public void RebuildProducerPaths(PowerProducer producer)
     {
-        // Clear existing connections and wire tracking for this producer
         foreach (uint connectionId in producer.outputConnections)
         {
             RemoveConnectionTracking(connectionId);
         }
         producer.outputConnections.Clear();
 
-        // Find all wire nodes directly connected to this producer
         List<WireNode> startWires = FindWiresConnectedToProducer(producer);
 
-        // For each starting wire, traverse the network to find reachable consumers
         foreach (WireNode startWire in startWires)
         {
             uint connectionId = GenerateConnectionId();
             producer.outputConnections.Add(connectionId);
 
-            // Track which producer owns this connection
             connectionToProducer[connectionId] = producer;
 
-            // Traverse and register the connection with all wires in the path
             List<PowerConsumer> reachableConsumers = TraverseWireNetworkAndRegister(startWire, connectionId);
             UpdateConnectionPath(connectionId, reachableConsumers);
         }

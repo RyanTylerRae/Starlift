@@ -950,6 +950,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Embark"",
+                    ""type"": ""Button"",
+                    ""id"": ""e1295c87-7081-44af-8be0-88019a3a5ce3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -961,6 +970,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse;Gamepad"",
                     ""action"": ""DebugSwapControlMode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c18a8eb3-fcfc-4643-b5c6-f61a1aa4ebcf"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse;Gamepad"",
+                    ""action"": ""Embark"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1061,6 +1081,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         // DEBUG
         m_DEBUG = asset.FindActionMap("DEBUG", throwIfNotFound: true);
         m_DEBUG_DebugSwapControlMode = m_DEBUG.FindAction("DebugSwapControlMode", throwIfNotFound: true);
+        m_DEBUG_Embark = m_DEBUG.FindAction("Embark", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -1421,11 +1442,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_DEBUG;
     private List<IDEBUGActions> m_DEBUGActionsCallbackInterfaces = new List<IDEBUGActions>();
     private readonly InputAction m_DEBUG_DebugSwapControlMode;
+    private readonly InputAction m_DEBUG_Embark;
     public struct DEBUGActions
     {
         private @InputSystem_Actions m_Wrapper;
         public DEBUGActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
         public InputAction @DebugSwapControlMode => m_Wrapper.m_DEBUG_DebugSwapControlMode;
+        public InputAction @Embark => m_Wrapper.m_DEBUG_Embark;
         public InputActionMap Get() { return m_Wrapper.m_DEBUG; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1438,6 +1461,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @DebugSwapControlMode.started += instance.OnDebugSwapControlMode;
             @DebugSwapControlMode.performed += instance.OnDebugSwapControlMode;
             @DebugSwapControlMode.canceled += instance.OnDebugSwapControlMode;
+            @Embark.started += instance.OnEmbark;
+            @Embark.performed += instance.OnEmbark;
+            @Embark.canceled += instance.OnEmbark;
         }
 
         private void UnregisterCallbacks(IDEBUGActions instance)
@@ -1445,6 +1471,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @DebugSwapControlMode.started -= instance.OnDebugSwapControlMode;
             @DebugSwapControlMode.performed -= instance.OnDebugSwapControlMode;
             @DebugSwapControlMode.canceled -= instance.OnDebugSwapControlMode;
+            @Embark.started -= instance.OnEmbark;
+            @Embark.performed -= instance.OnEmbark;
+            @Embark.canceled -= instance.OnEmbark;
         }
 
         public void RemoveCallbacks(IDEBUGActions instance)
@@ -1541,5 +1570,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     public interface IDEBUGActions
     {
         void OnDebugSwapControlMode(InputAction.CallbackContext context);
+        void OnEmbark(InputAction.CallbackContext context);
     }
 }

@@ -18,4 +18,12 @@ public class DebugControls : MonoBehaviour
             Debug.Log("MoveMode: ZeroG");
         }
     }
+
+    public void OnEmbark(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            Object.FindFirstObjectByType<EmbarkController>()?.OnEmbark();
+        }
+    }
 }
