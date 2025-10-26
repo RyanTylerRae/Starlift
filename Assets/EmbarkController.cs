@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -6,6 +8,7 @@ public class EmbarkController : MonoBehaviour
 {
     [Header("Scene Settings")]
     [SerializeField] private string sceneToLoad = "Lobby";
+    public GameObject? textGameObject;
 
     private bool playerInRange = false;
 
@@ -13,6 +16,7 @@ public class EmbarkController : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            textGameObject?.SetActive(true);
             playerInRange = true;
         }
     }
@@ -21,6 +25,7 @@ public class EmbarkController : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            textGameObject?.SetActive(false);
             playerInRange = false;
         }
     }

@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TravelGraphController : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class TravelGraphController : MonoBehaviour
 
     public GameObject? startMarker = null;
     public GameObject? endMarker = null;
+
+    public float prevSqrDistance = 0.0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -116,6 +119,23 @@ public class TravelGraphController : MonoBehaviour
                 }
             }
         }
+
+        if (playerShip != null && currentNode != null)
+        {
+            Vector3 vec = currentNode.transform.position - playerShip.transform.position;
+
+            if (vec.sqrMagnitude < 0.01f & prevSqrDistance > 0.01f)
+            {
+                OnTraveledToNode();
+            }
+
+            prevSqrDistance = vec.sqrMagnitude;
+        }
+    }
+
+    private void OnTraveledToNode()
+    {
+        SceneManager.LoadScene("GameEntry");
     }
 
     public void SetCurrentNode(GameObject newNode)
