@@ -959,6 +959,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""KillPlayer"",
+                    ""type"": ""Button"",
+                    ""id"": ""56884238-a331-43c9-9f07-4d2ea35650ff"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -981,6 +990,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse;Gamepad"",
                     ""action"": ""Embark"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a7224e70-96b8-4789-af33-126d7244876e"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse;Gamepad"",
+                    ""action"": ""KillPlayer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1229,6 +1249,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_DEBUG = asset.FindActionMap("DEBUG", throwIfNotFound: true);
         m_DEBUG_DebugSwapControlMode = m_DEBUG.FindAction("DebugSwapControlMode", throwIfNotFound: true);
         m_DEBUG_Embark = m_DEBUG.FindAction("Embark", throwIfNotFound: true);
+        m_DEBUG_KillPlayer = m_DEBUG.FindAction("KillPlayer", throwIfNotFound: true);
         // MovementMap
         m_MovementMap = asset.FindActionMap("MovementMap", throwIfNotFound: true);
         m_MovementMap_MapMove = m_MovementMap.FindAction("MapMove", throwIfNotFound: true);
@@ -1595,12 +1616,14 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private List<IDEBUGActions> m_DEBUGActionsCallbackInterfaces = new List<IDEBUGActions>();
     private readonly InputAction m_DEBUG_DebugSwapControlMode;
     private readonly InputAction m_DEBUG_Embark;
+    private readonly InputAction m_DEBUG_KillPlayer;
     public struct DEBUGActions
     {
         private @InputSystem_Actions m_Wrapper;
         public DEBUGActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
         public InputAction @DebugSwapControlMode => m_Wrapper.m_DEBUG_DebugSwapControlMode;
         public InputAction @Embark => m_Wrapper.m_DEBUG_Embark;
+        public InputAction @KillPlayer => m_Wrapper.m_DEBUG_KillPlayer;
         public InputActionMap Get() { return m_Wrapper.m_DEBUG; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1616,6 +1639,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Embark.started += instance.OnEmbark;
             @Embark.performed += instance.OnEmbark;
             @Embark.canceled += instance.OnEmbark;
+            @KillPlayer.started += instance.OnKillPlayer;
+            @KillPlayer.performed += instance.OnKillPlayer;
+            @KillPlayer.canceled += instance.OnKillPlayer;
         }
 
         private void UnregisterCallbacks(IDEBUGActions instance)
@@ -1626,6 +1652,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Embark.started -= instance.OnEmbark;
             @Embark.performed -= instance.OnEmbark;
             @Embark.canceled -= instance.OnEmbark;
+            @KillPlayer.started -= instance.OnKillPlayer;
+            @KillPlayer.performed -= instance.OnKillPlayer;
+            @KillPlayer.canceled -= instance.OnKillPlayer;
         }
 
         public void RemoveCallbacks(IDEBUGActions instance)
@@ -1777,6 +1806,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     {
         void OnDebugSwapControlMode(InputAction.CallbackContext context);
         void OnEmbark(InputAction.CallbackContext context);
+        void OnKillPlayer(InputAction.CallbackContext context);
     }
     public interface IMovementMapActions
     {

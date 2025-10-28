@@ -29,7 +29,17 @@ public class PlayerSpawner : MonoBehaviour
     {
         if (playerPrefab != null)
         {
-            Instantiate(playerPrefab, transform.position + spawnOffset, transform.rotation);
+            var player = Instantiate(playerPrefab, transform.position + spawnOffset, transform.rotation);
+            var entity = player.GetComponentInChildren<Entity>();
+            if (entity != null)
+            {
+                entity.OnKilled += OnPlayerKilled;
+            }
         }
+    }
+
+    public void OnPlayerKilled(DamageEvent damageEvent)
+    {
+        SpawnPlayer();
     }
 }

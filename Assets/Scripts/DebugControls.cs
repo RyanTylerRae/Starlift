@@ -26,4 +26,18 @@ public class DebugControls : MonoBehaviour
             Object.FindFirstObjectByType<EmbarkController>()?.OnEmbark();
         }
     }
+
+    public void OnKillPlayer(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            FirstPersonController playerController = Object.FindFirstObjectByType<FirstPersonController>(FindObjectsInactive.Exclude);
+            var entity = playerController.gameObject.GetComponentInChildren<Entity>();
+            if (entity != null)
+            {
+                DamageEvent damageEvent = new();
+                entity.Kill(damageEvent);
+            }
+        }
+    }
 }
