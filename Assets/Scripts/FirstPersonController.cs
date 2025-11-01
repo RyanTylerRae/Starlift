@@ -1,9 +1,7 @@
 #nullable enable
 
 using System;
-using Coherence.Toolkit;
 using Dissonance;
-using Dissonance.Integrations.Coherence;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -78,19 +76,19 @@ public class FirstPersonController : MonoBehaviour
 
     void Start()
     {
-        if (TryGetComponent<CoherenceSync>(out var _sync) && _sync.HasStateAuthority)
-        {
-            playerInput = GetComponent<PlayerInput>();
-            _rigidbody = GetComponent<Rigidbody>();
-            characterController = GetComponent<CharacterController>();
-            gravityController = GetComponent<GravityController>();
+        //if (TryGetComponent<CoherenceSync>(out var _sync) && _sync.HasStateAuthority)
+        //{
+        playerInput = GetComponent<PlayerInput>();
+        _rigidbody = GetComponent<Rigidbody>();
+        characterController = GetComponent<CharacterController>();
+        gravityController = GetComponent<GravityController>();
 
-            SetMovementMode(ControllerMovementMode.Gravity);
+        SetMovementMode(ControllerMovementMode.Gravity);
 
-            Camera mainCamera = cameraArm.AddComponent<Camera>();
-            cameraArm.AddComponent<AudioListener>();
-            playerCamera = mainCamera;
-        }
+        Camera mainCamera = cameraArm.AddComponent<Camera>();
+        cameraArm.AddComponent<AudioListener>();
+        playerCamera = mainCamera;
+        //}
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
