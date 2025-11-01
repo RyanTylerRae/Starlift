@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -24,7 +26,7 @@ public class Part : MonoBehaviour
     [SerializeField]
     private string partName;
 
-    private PartData partData;
+    private PartData? partData = null;
 
     private void Start()
     {
@@ -54,15 +56,17 @@ public class Part : MonoBehaviour
         }
     }
 
-    public PartData GetPartData()
-    {
-        return partData;
-    }
-
     private void OnDrawGizmosSelected()
     {
-        if (partData == null || partData.connectionPoints == null)
+        if (partData == null)
+        {
+            LoadPartData();
+        }
+
+        if (partData == null || partData.connectionPoints.Count == 0)
+        {
             return;
+        }
 
         foreach (var connectionPoint in partData.connectionPoints)
         {
