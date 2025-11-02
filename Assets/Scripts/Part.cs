@@ -56,6 +56,11 @@ public class Part : MonoBehaviour
         }
     }
 
+    public PartData? GetPartData()
+    {
+        return partData;
+    }
+
     private void OnDrawGizmosSelected()
     {
         if (partData == null)
@@ -78,11 +83,14 @@ public class Part : MonoBehaviour
             Quaternion worldRotation = transform.rotation * localRotation;
 
             // Draw a square facing away from the connection point
-            DrawSquare(worldPos, worldRotation, connectionPoint.orientation, 0.2f);
+            DrawConnectionPointGizmo(worldPos, worldRotation, connectionPoint.orientation, 0.2f,
+                (color) => Gizmos.color = color,
+                (start, end) => Gizmos.DrawLine(start, end));
         }
     }
 
-    private void DrawSquare(Vector3 position, Quaternion rotation, float orientation, float size)
+    public static void DrawConnectionPointGizmo(Vector3 position, Quaternion rotation, float orientation, float size,
+        System.Action<Color> setColor, System.Action<Vector3, Vector3> drawLine)
     {
         // Calculate the four corners of the square
         Vector3 right = rotation * Vector3.right * size;
@@ -94,15 +102,11 @@ public class Part : MonoBehaviour
         Vector3 bottomLeft = position - right - up;
 
         // Draw the square
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(topLeft, topRight);
-        Gizmos.DrawLine(topRight, bottomRight);
-        Gizmos.DrawLine(bottomRight, bottomLeft);
-        Gizmos.DrawLine(bottomLeft, topLeft);
-
-        // Draw forward direction indicator (plane normal)
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(position, position + rotation * Vector3.forward * size);
+        setColor(Color.cyan);
+        drawLine(topLeft, topRight);
+        drawLine(topRight, bottomRight);
+        drawLine(bottomRight, bottomLeft);
+        drawLine(bottomLeft, topLeft);
 
         // Draw orientation indicator
         // Start with local up direction, add slight forward offset, then rotate by orientation around forward axis
@@ -111,7 +115,7 @@ public class Part : MonoBehaviour
         Vector3 rotatedDirection = orientationRotation * localDirection;
         Vector3 worldDirection = rotation * rotatedDirection;
 
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(position, position + worldDirection);
+        setColor(Color.yellow);
+        drawLine(position, position + worldDirection);
     }
 }

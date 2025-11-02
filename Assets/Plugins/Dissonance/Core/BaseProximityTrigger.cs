@@ -162,7 +162,7 @@ namespace Dissonance
             {
                 _self = Comms.FindPlayer(Comms.LocalPlayerName);
             }
-            
+
             // Check if triggering is currently allowed
             if (!CanTrigger)
             {
@@ -235,7 +235,7 @@ namespace Dissonance
             public void Update(IDissonancePlayer player)
             {
                 _player = player;
-                
+
                 var aabb = new Bounds(player.Position, new Vector3(Parent.Range, Parent.Range, Parent.Range) * 2);
                 var min = CellPos(aabb.min);
                 var max = CellPos(aabb.max);// + Vector3Int.one;
@@ -258,19 +258,19 @@ namespace Dissonance
 
                 // Join all cells which intersect the AABB
                 for (var x = min.x; x <= max.x; x++)
-                for (var y = min.y; y <= max.y; y++)
-                for (var z = min.z; z <= max.z; z++)
-                {
-                    var id = new Vector3Int(x, y, z);
-                    if (!Parent.AllowJoin(id))
-                        continue;
+                    for (var y = min.y; y <= max.y; y++)
+                        for (var z = min.z; z <= max.z; z++)
+                        {
+                            var id = new Vector3Int(x, y, z);
+                            if (!Parent.AllowJoin(id))
+                                continue;
 
-                    if (_keys.Add(id))
-                    {
-                        var handle = CreateHandle(id, GenerateName(id));
-                        _handles.Add((id, handle));
-                    }
-                }
+                            if (_keys.Add(id))
+                            {
+                                var handle = CreateHandle(id, GenerateName(id));
+                                _handles.Add((id, handle));
+                            }
+                        }
             }
 
             private static bool InBound(Vector3Int point, BoundsInt bounds)
