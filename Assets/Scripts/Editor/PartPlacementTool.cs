@@ -15,14 +15,12 @@ public static class PartPlacementTool
     private static Vector3 selectedPartLocalScale;
     private static Quaternion selectedPartLocalRotation;
 
-    // Preview state for placement
     private static bool hasValidPreview;
     private static Matrix4x4 previewTransform;
     private static int selectedConnectionPointIndex = 0;
 
     static PartPlacementTool()
     {
-        // Always start disabled when Editor opens
         isEnabled = false;
         SceneView.duringSceneGui += OnSceneGUI;
     }
@@ -49,14 +47,8 @@ public static class PartPlacementTool
         }
 
         UpdateSelectedPartPrefab();
-
-        // Draw all connection points in view
         DrawAllConnectionPoints(sceneView);
-
-        // Handle input for placing parts
         HandleInput();
-
-        // Force scene view to repaint
         sceneView.Repaint();
     }
 
@@ -90,7 +82,6 @@ public static class PartPlacementTool
                     selectedConnectionPointIndex--;
                 }
 
-                // Wrap around
                 if (selectedConnectionPointIndex < 0)
                 {
                     selectedConnectionPointIndex = connectionPointCount - 1;
@@ -107,16 +98,13 @@ public static class PartPlacementTool
 
     private static void PlacePartInstance()
     {
-        // Extract position and rotation from the preview transform
         Vector3 position = previewTransform.GetColumn(3);
         Quaternion rotation = previewTransform.rotation;
 
-        // Instantiate the prefab
         GameObject newInstance = (GameObject)PrefabUtility.InstantiatePrefab(selectedPartPrefab);
         newInstance.transform.position = position;
         newInstance.transform.rotation = rotation;
 
-        // Register with undo system
         Undo.RegisterCreatedObjectUndo(newInstance, "Place Part");
 
         // Don't select the new object - keep the prefab selected so user can continue placing
@@ -131,7 +119,6 @@ public static class PartPlacementTool
             return;
         }
 
-        // Clear cache
         selectedPartPrefab = null;
         selectedPart = null;
         selectedPartData = null;
@@ -153,11 +140,8 @@ public static class PartPlacementTool
         selectedPart = part;
         selectedPart.LoadPartData();
         selectedPartData = selectedPart.GetPartData();
-
-        // Reset connection point index when changing parts
         selectedConnectionPointIndex = 0;
 
-        // cache transform data
         selectedPartLocalScale = currentSelection.transform.localScale;
         selectedPartLocalRotation = currentSelection.transform.localRotation;
 
@@ -171,8 +155,6 @@ public static class PartPlacementTool
     private static void DrawAllConnectionPoints(SceneView sceneView)
     {
         Vector2 mousePos = Event.current.mousePosition;
-
-        // Reset preview state
         hasValidPreview = false;
 
         Part[] allParts = Object.FindObjectsByType<Part>(sortMode: FindObjectsSortMode.None);
@@ -181,11 +163,12 @@ public static class PartPlacementTool
             return;
         }
 
-        Vector3? closestWorldPos = null;
+        bool foundClosest = false;
+        Vector3 closestWorldPos = Vector3.zero;
         Quaternion closestWorldRotation = Quaternion.identity;
+        ConnectionPoint closestConnectionPoint = new ConnectionPoint();
         float closestDistance = float.MaxValue;
 
-        // draw gizmos for all parts and find the closest connection point to mouse cursor
         foreach (Part part in allParts)
         {
             // Force load part data if not already loaded
@@ -208,7 +191,6 @@ public static class PartPlacementTool
 
                 if (IsInViewFrustum(worldPos, sceneView.camera))
                 {
-                    // draw the connection point gizmo
                     Quaternion localRotation = Quaternion.Euler(connectionPoint.localEulerRot);
                     Quaternion worldRotation = part.transform.rotation * localRotation;
 
@@ -217,7 +199,6 @@ public static class PartPlacementTool
                         (start, end) => Handles.DrawLine(start, end)
                     );
 
-                    // Draw connection point label
                     string label = GetConnectionPointLabel(i);
                     GUIStyle labelStyle = new GUIStyle();
                     labelStyle.normal.textColor = Color.white;
@@ -233,20 +214,20 @@ public static class PartPlacementTool
                         closestDistance = distanceToMouse;
                         closestWorldPos = worldPos;
                         closestWorldRotation = worldRotation;
+                        closestConnectionPoint = connectionPoint;
+                        foundClosest = true;
                     }
                 }
             }
         }
 
-        if (closestWorldPos.HasValue && closestDistance < MOUSE_THRESHOLD)
+        if (foundClosest && closestDistance < MOUSE_THRESHOLD)
         {
             Handles.color = Color.green;
-            Handles.SphereHandleCap(0, closestWorldPos.Value, Quaternion.identity, 0.15f, EventType.Repaint);
+            Handles.SphereHandleCap(0, closestWorldPos, Quaternion.identity, 0.15f, EventType.Repaint);
 
-            // render the selected Part prefab wireframe at the connection point
             if (selectedPartMesh != null && selectedPartData != null && selectedPartData.connectionPoints != null && selectedPartData.connectionPoints.Count > 0)
             {
-                // Clamp the selected index in case the connection point count changed
                 if (selectedConnectionPointIndex >= selectedPartData.connectionPoints.Count)
                 {
                     selectedConnectionPointIndex = 0;
@@ -254,18 +235,16 @@ public static class PartPlacementTool
 
                 ConnectionPoint selectedCP = selectedPartData.connectionPoints[selectedConnectionPointIndex];
 
-                // calculate the aligned transform
                 Matrix4x4 matrix = CalculateAlignedTransform(
-                    closestWorldPos.Value,
+                    closestWorldPos,
                     closestWorldRotation,
+                    closestConnectionPoint,
                     selectedCP,
-                    selectedPartLocalRotation,
-                    selectedPartLocalScale
+                    selectedPartLocalRotation
                 );
 
                 DrawWireframeMesh(selectedPartMesh, matrix, Color.green);
 
-                // Draw labels for all connection points on the preview
                 for (int i = 0; i < selectedPartData.connectionPoints.Count; i++)
                 {
                     var cp = selectedPartData.connectionPoints[i];
@@ -280,7 +259,6 @@ public static class PartPlacementTool
                     Handles.Label(worldPos, label, labelStyle);
                 }
 
-                // Store the preview state for placement
                 hasValidPreview = true;
                 previewTransform = matrix;
             }
@@ -290,36 +268,42 @@ public static class PartPlacementTool
     private static Matrix4x4 CalculateAlignedTransform(
         Vector3 targetWorldPos,
         Quaternion targetWorldRotation,
+        ConnectionPoint targetConnectionPoint,
         ConnectionPoint sourceConnectionPoint,
-        Quaternion partLocalRotation,
-        Vector3 partLocalScale)
+        Quaternion partLocalRotation)
     {
-        // Goal: Align source connection point with target connection point
-        // - Forwards should be opposite (facing each other)
-        // - Orientations should be opposite (0° to 180°, 90° to 270°, etc.)
+        // Start with target connection point transform, apply its orientation,
+        // flip the forward vector, then apply inverse transformations (orientation, rotation, position)
+        // to find the new actor's world transform.
 
-        // Step 1: Get source connection point's local rotation
+        Vector3 currentPos = targetWorldPos;
+        Quaternion currentRot = targetWorldRotation;
+
+        // Apply target's orientation (rotation around forward axis)
+        Quaternion targetOrientation = Quaternion.Euler(0, 0, targetConnectionPoint.orientation);
+        currentRot = currentRot * targetOrientation;
+
+        // Flip to opposite forward direction
+        Vector3 targetForward = currentRot * Vector3.forward;
+        Vector3 targetUp = currentRot * Vector3.up;
+        currentRot = Quaternion.LookRotation(-targetForward, targetUp);
+
+        // Apply inverse of source orientation
+        Quaternion sourceOrientation = Quaternion.Euler(0, 0, sourceConnectionPoint.orientation);
+        currentRot = currentRot * Quaternion.Inverse(sourceOrientation);
+
+        // Apply inverse of source connection point's local rotation
         Quaternion sourceLocalRotation = Quaternion.Euler(sourceConnectionPoint.localEulerRot);
+        currentRot = currentRot * Quaternion.Inverse(sourceLocalRotation);
 
-        // Step 2: Flip 180° so connection points face each other
-        // Rotate around an axis perpendicular to forward
-        Quaternion flip180 = Quaternion.AngleAxis(180f, Vector3.right);
+        // Apply inverse of part's local rotation
+        currentRot = currentRot * Quaternion.Inverse(partLocalRotation);
 
-        // Step 3: Account for opposite orientations
-        // Since we want orientations to be opposite, rotate 180° around forward axis
-        Quaternion orientationFlip = Quaternion.AngleAxis(180f, Vector3.forward);
+        // Apply inverse position offset
+        Vector3 offsetInWorld = currentRot * sourceConnectionPoint.localPos;
+        currentPos = currentPos - offsetInWorld;
 
-        // Step 4: Calculate part's world rotation
-        // Start with target rotation, apply flips, then remove source's local rotation, then apply part's local rotation
-        Quaternion partWorldRotation = targetWorldRotation * flip180 * orientationFlip * Quaternion.Inverse(sourceLocalRotation) * partLocalRotation;
-
-        // Step 5: Calculate where the source connection point would end up in world space
-        Vector3 sourceOffsetWorld = partWorldRotation * Vector3.Scale(sourceConnectionPoint.localPos, partLocalScale);
-
-        // Step 6: Position the part so the source connection point ends up at target position
-        Vector3 partWorldPosition = targetWorldPos - sourceOffsetWorld;
-
-        return Matrix4x4.TRS(partWorldPosition, partWorldRotation, partLocalScale);
+        return Matrix4x4.TRS(currentPos, currentRot, Vector3.one);
     }
 
     private static void DrawWireframeMesh(Mesh mesh, Matrix4x4 matrix, Color color)
@@ -329,15 +313,12 @@ public static class PartPlacementTool
         Vector3[] vertices = mesh.vertices;
         int[] triangles = mesh.triangles;
 
-        // Draw each triangle edge
         for (int i = 0; i < triangles.Length; i += 3)
         {
-            // Get the three vertices of the triangle
             Vector3 v0 = matrix.MultiplyPoint3x4(vertices[triangles[i]]);
             Vector3 v1 = matrix.MultiplyPoint3x4(vertices[triangles[i + 1]]);
             Vector3 v2 = matrix.MultiplyPoint3x4(vertices[triangles[i + 2]]);
 
-            // Draw the three edges
             Handles.DrawLine(v0, v1);
             Handles.DrawLine(v1, v2);
             Handles.DrawLine(v2, v0);
@@ -351,10 +332,8 @@ public static class PartPlacementTool
             return false;
         }
 
-        // Convert world position to viewport point
         Vector3 viewportPoint = camera.WorldToViewportPoint(worldPosition);
 
-        // Check if point is within viewport bounds and in front of camera
         return viewportPoint.x >= 0 && viewportPoint.x <= 1 &&
                viewportPoint.y >= 0 && viewportPoint.y <= 1 &&
                viewportPoint.z > 0;
@@ -362,16 +341,7 @@ public static class PartPlacementTool
 
     private static string GetConnectionPointLabel(int index)
     {
-        // Generate labels: A, B, C, ... Z, AA, AB, etc.
-        if (index < 26)
-        {
-            return ((char)('A' + index)).ToString();
-        }
-        else
-        {
-            int firstChar = (index / 26) - 1;
-            int secondChar = index % 26;
-            return ((char)('A' + firstChar)).ToString() + ((char)('A' + secondChar)).ToString();
-        }
+        Debug.Assert(index < 26);
+        return ((char)('A' + index)).ToString();
     }
 }

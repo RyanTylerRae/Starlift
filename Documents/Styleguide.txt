@@ -1,1 +1,2 @@
 - For single line conditional statements, always enclose in braces.
+- Avoid adding superfluous comments. Code can document itself in most cases.
