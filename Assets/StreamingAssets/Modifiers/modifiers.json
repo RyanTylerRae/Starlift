@@ -1,0 +1,8 @@
+{
+	"modifiers": {
+		"oxygen": {
+			"minValue": 0.0,
+			"maxValue": 100.0
+		}
+	}
+}
