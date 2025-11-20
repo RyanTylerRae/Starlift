@@ -109,14 +109,14 @@ public class Modifiers : MonoBehaviour
     public void ResetModifier(ModifierType type)
     {
         int index = (int)type;
-        modifiers[index].currentValue = Mathf.Clamp(modifiers[index].initialValue, modifiers[index].minValue, modifiers[index].maxValue);
+        modifiers[index].currentValue = modifiers[index].maxValue;
     }
 
     public void ResetAll()
     {
         for (int i = 0; i < modifiers.Length; i++)
         {
-            modifiers[i].currentValue = Mathf.Clamp(modifiers[i].initialValue, modifiers[i].minValue, modifiers[i].maxValue);
+            modifiers[i].currentValue = modifiers[i].maxValue;
         }
     }
 
@@ -129,5 +129,15 @@ public class Modifiers : MonoBehaviour
     public float Get(ModifierType type)
     {
         return modifiers[(int)type].currentValue;
+    }
+
+    public float GetMin(ModifierType type)
+    {
+        return modifiers[(int)type].minValue;
+    }
+
+    public float GetMax(ModifierType type)
+    {
+        return modifiers[(int)type].maxValue;
     }
 }

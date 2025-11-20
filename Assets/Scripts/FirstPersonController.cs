@@ -44,7 +44,7 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Camera")]
     public GameObject cameraArm;
-    private Camera playerCamera;
+    public Camera playerCamera;
 
     // input actions
     private InputAction? moveAction;

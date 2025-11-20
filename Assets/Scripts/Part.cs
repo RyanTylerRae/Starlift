@@ -23,8 +23,7 @@ public class Part : MonoBehaviour
     // Predefined path to the parts folder in StreamingAssets
     private const string PARTS_FOLDER_PATH = "Parts";
 
-    [SerializeField]
-    private string partName;
+    [SerializeField] private string partName;
 
     private PartData? partData = null;
 
