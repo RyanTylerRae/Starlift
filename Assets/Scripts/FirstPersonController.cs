@@ -86,7 +86,7 @@ public class FirstPersonController : MonoBehaviour
         SetMovementMode(ControllerMovementMode.Gravity);
 
         Camera mainCamera = cameraArm.AddComponent<Camera>();
-        cameraArm.AddComponent<AudioListener>();
+        cameraArm.AddComponent<AkAudioListener>();
         playerCamera = mainCamera;
         //}
 
