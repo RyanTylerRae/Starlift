@@ -1,0 +1,36 @@
+{
+ "ProjectInfo": {
+  "Project": {
+   "Name": "Starlift_WwiseProject",
+   "GUID": "{E4B5E398-8775-4858-B6FA-773B43D2A338}",
+   "Generator": "2025.1.3.9039"
+  },
+  "CacheRoot": "../.cache",
+  "Platforms": [
+   {
+    "Name": "Mac",
+    "GUID": "{B3398C15-6BC6-4620-9B70-498A64240A18}",
+    "BasePlatform": "Mac",
+    "BasePlatformGUID": "{9C6217D5-DD11-4795-87C1-6CE02853C540}",
+    "Path": "Mac"
+   },
+   {
+    "Name": "Windows",
+    "GUID": "{1BD5A4CA-2367-417A-82B2-5B6107F708D8}",
+    "BasePlatform": "Windows",
+    "BasePlatformGUID": "{6E0CB257-C6C8-4C5C-8366-2740DFC441EB}",
+    "Path": "Windows"
+   }
+  ],
+  "Languages": [
+   {
+    "Name": "English(US)",
+    "Id": "684519430",
+    "GUID": "{667CDD6E-039B-4995-91FD-7939D328C38C}",
+    "Default": "true",
+    "UseAsStandIn": "true"
+   }
+  ],
+  "FileHash": "{7DA69DD3-2A84-4DE6-B7A9-1F23383758A3}"
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "3161908922",
+    "Type": "User",
+    "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
+    "Language": "SFX",
+    "Hash": "{40CC15E8-8A7D-C017-077D-56C9BF092654}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
+    "ShortName": "Main",
+    "Path": "Main.bnk",
+    "Media": [
+     {
+      "Id": "352168993",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Piano_Satori_Maiden.wav",
+      "CachePath": "2E/{2E59EE5B-764D-1C35-6DCE-72DC4FEB9046}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "2351864238",
+      "Name": "Play_TestEvent",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_TestEvent",
+      "GUID": "{FBD72AD2-C46E-4AB9-90A4-F7184A62C459}",
+      "DurationType": "OneShot",
+      "DurationMin": "163.44098",
+      "DurationMax": "163.44098",
+      "MediaRefs": [
+       {
+        "Id": "352168993"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{112D8A48-FD1D-9018-DD1B-72B6A5104DBE}"
+ }
+}

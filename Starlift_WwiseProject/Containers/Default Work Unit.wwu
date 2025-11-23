@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{C6853DD4-2788-423F-A974-124AFC8BB75D}" SchemaVersion="133">
+	<Containers>
+		<WorkUnit Name="Default Work Unit" ID="{C6853DD4-2788-423F-A974-124AFC8BB75D}" PersistMode="Standalone">
+			<ChildrenList>
+				<Sound Name="Piano_Satori_Maiden" ID="{2BF5326E-BA47-40E8-A403-664C0E4DCB9D}" ShortID="614966805">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Piano_Satori_Maiden" ID="{1272F3D2-06F1-482E-BD4F-5DE8D45FD04C}">
+							<Language>SFX</Language>
+							<AudioFile>Piano_Satori_Maiden.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="352168993"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Piano_Satori_Maiden" ID="{1272F3D2-06F1-482E-BD4F-5DE8D45FD04C}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</Containers>
+</WwiseDocument>
