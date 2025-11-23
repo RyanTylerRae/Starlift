@@ -1,0 +1,6 @@
+Event	ID	Name			Wwise Object Path	Notes
+	2351864238	Play_TestEvent			\Default Work Unit\Play_TestEvent	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	352168993	Piano_Satori_Maiden	.cache\2E\{2E59EE5B-764D-1C35-6DCE-72DC4FEB9046}.wem		\Containers\Default Work Unit\Piano_Satori_Maiden		31380764
+

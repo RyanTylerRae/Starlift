@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" SchemaVersion="133">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_TestEvent" ID="{FBD72AD2-C46E-4AB9-90A4-F7184A62C459}">
+					<ChildrenList>
+						<Action Name="" ID="{8C5F3E1F-8AFC-498B-B242-B55232973221}" ShortID="417698405">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Piano_Satori_Maiden" ID="{2BF5326E-BA47-40E8-A403-664C0E4DCB9D}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>
