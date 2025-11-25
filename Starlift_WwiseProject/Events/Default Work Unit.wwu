@@ -39,6 +39,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="play_oxygen_replenish" ID="{66F627F8-1672-4108-9D49-E11AC79B333C}">
+					<ChildrenList>
+						<Action Name="" ID="{556F87F6-9EEA-43A2-B1CF-AB64EEB50765}" ShortID="614722623">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="oxygen_replenish" ID="{F48F1259-FCF9-4675-86F1-F6DB60336680}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

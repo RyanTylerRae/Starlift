@@ -1,5 +1,6 @@
 Event	ID	Name			Wwise Object Path	Notes
 	130567783	play_breathing_death			\Default Work Unit\play_breathing_death	
+	2303161985	play_oxygen_replenish			\Default Work Unit\play_oxygen_replenish	
 	2817166606	stop_blend_breathing			\Default Work Unit\stop_blend_breathing	
 	3591904104	play_blend_breathing			\Default Work Unit\play_blend_breathing	
 
@@ -8,6 +9,7 @@ Game Parameter	ID	Name			Wwise Object Path	Notes
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	106386982	breathing	.cache\EC\{EC5700C9-7164-036B-2B0F-01F710C72128}.wem		\Containers\Default Work Unit\BlendContainers\Blend_Breathing\breathing		2222176
+	829844053	oxygen_replenish	.cache\D8\{D83D8296-C217-AD4E-196D-C81E5DF77266}.wem		\Containers\Default Work Unit\Audio\oxygen_replenish		356448
 	987918517	breathing_hard	.cache\0D\{0D8C8F93-E823-870D-A783-661486806BE4}.wem		\Containers\Default Work Unit\BlendContainers\Blend_Breathing\breathing_hard		1642592
 	1073171051	breathing_death	.cache\A4\{A473AE3A-C2BC-9EA3-FC55-8F14667FBE54}.wem		\Containers\Default Work Unit\Audio\breathing_death		745568
 

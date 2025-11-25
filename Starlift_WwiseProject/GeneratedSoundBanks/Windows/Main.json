@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{B2AFFC5B-E67A-2B1B-CBB3-B8C6FC4FFB6B}",
+    "Hash": "{B521C3D3-C460-4E3E-3240-F1AF93FE9D9A}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -22,6 +22,14 @@
       "Location": "Memory",
       "ShortName": "breathing.wav",
       "CachePath": "EC/{EC5700C9-7164-036B-2B0F-01F710C72128}.wem"
+     },
+     {
+      "Id": "829844053",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "oxygen_replenish.wav",
+      "CachePath": "D8/{D83D8296-C217-AD4E-196D-C81E5DF77266}.wem"
      },
      {
       "Id": "987918517",
@@ -71,6 +79,20 @@
       ]
      },
      {
+      "Id": "2303161985",
+      "Name": "play_oxygen_replenish",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_oxygen_replenish",
+      "GUID": "{66F627F8-1672-4108-9D49-E11AC79B333C}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.020136",
+      "DurationMax": "2.020136",
+      "MediaRefs": [
+       {
+        "Id": "829844053"
+       }
+      ]
+     },
+     {
       "Id": "2817166606",
       "Name": "stop_blend_breathing",
       "ObjectPath": "\\Events\\Default Work Unit\\stop_blend_breathing",
@@ -78,15 +100,7 @@
       "MaxAttenuation": "0",
       "DurationType": "OneShot",
       "DurationMin": "0",
-      "DurationMax": "0",
-      "MediaRefs": [
-       {
-        "Id": "106386982"
-       },
-       {
-        "Id": "987918517"
-       }
-      ]
+      "DurationMax": "0"
      }
     ],
     "GameParameters": [
@@ -99,6 +113,6 @@
     ]
    }
   ],
-  "FileHash": "{0CD6EE8D-1499-155E-A506-CCC25C3DD5E0}"
+  "FileHash": "{BE5F5090-0D2D-8AF3-6E7B-1A36AFFDF8A8}"
  }
 }

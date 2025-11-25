@@ -186,6 +186,28 @@
 								<ActiveSource Name="breathing_death" ID="{170C02FB-88E2-49C7-99DE-567A456CBCE2}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
+						<Sound Name="oxygen_replenish" ID="{F48F1259-FCF9-4675-86F1-F6DB60336680}" ShortID="363677240">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="oxygen_replenish" ID="{CDB141AA-3C09-4260-9066-FC48074332A6}">
+									<Language>SFX</Language>
+									<AudioFile>oxygen_replenish.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="829844053"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="oxygen_replenish" ID="{CDB141AA-3C09-4260-9066-FC48074332A6}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
 					</ChildrenList>
 				</Folder>
 			</ChildrenList>

@@ -50,6 +50,7 @@ public class OxygenPocket : MonoBehaviour
         }
         else
         {
+            AkUnitySoundEngine.PostEvent("play_oxygen_replenish", gameObject);
             Debug.Log("Player entered oxygen pocket - replenishing oxygen");
         }
     }

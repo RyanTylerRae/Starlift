@@ -5,10 +5,10 @@
 			<ChildrenList>
 				<SoundBank Name="Main" ID="{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}">
 					<ObjectInclusionList>
-						<ObjectRef Name="breathing_death" ID="{936DD85E-9F73-401F-8EB1-85B0E43B3B7E}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="breathing" ID="{45A56B52-8FF8-435D-9088-B8CD01B65009}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Blend_Breathing" ID="{A20B8963-9ABA-49C9-B834-C8F559C8E7EB}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="breathing_hard" ID="{7E38DD5F-159E-4F6F-81CD-CAB500403300}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="play_oxygen_replenish" ID="{66F627F8-1672-4108-9D49-E11AC79B333C}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="stop_blend_breathing" ID="{963C0590-F3CE-47C0-9F7C-3BBD2F47FD43}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="play_breathing_death" ID="{98D1C7B2-BE69-4C93-A5C3-F02D02132A9C}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="play_blend_breathing" ID="{32435D69-0F9F-4DCE-8C2C-BA25C5B9B93B}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

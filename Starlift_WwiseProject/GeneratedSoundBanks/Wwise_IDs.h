@@ -15,6 +15,7 @@ namespace AK
     {
         static const AkUniqueID PLAY_BLEND_BREATHING = 3591904104U;
         static const AkUniqueID PLAY_BREATHING_DEATH = 130567783U;
+        static const AkUniqueID PLAY_OXYGEN_REPLENISH = 2303161985U;
         static const AkUniqueID STOP_BLEND_BREATHING = 2817166606U;
     } // namespace EVENTS
 
