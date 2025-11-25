@@ -3,28 +3,191 @@
 	<Containers>
 		<WorkUnit Name="Default Work Unit" ID="{C6853DD4-2788-423F-A974-124AFC8BB75D}" PersistMode="Standalone">
 			<ChildrenList>
-				<Sound Name="Piano_Satori_Maiden" ID="{2BF5326E-BA47-40E8-A403-664C0E4DCB9D}" ShortID="614966805">
-					<ReferenceList>
-						<Reference Name="Conversion">
-							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
-						</Reference>
-						<Reference Name="OutputBus">
-							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
-						</Reference>
-					</ReferenceList>
+				<Folder Name="BlendContainers" ID="{E73C6E47-C1A0-4F9D-9426-2D695D4409AB}" ShortID="748189263">
 					<ChildrenList>
-						<AudioFileSource Name="Piano_Satori_Maiden" ID="{1272F3D2-06F1-482E-BD4F-5DE8D45FD04C}">
-							<Language>SFX</Language>
-							<AudioFile>Piano_Satori_Maiden.wav</AudioFile>
-							<MediaIDList>
-								<MediaID ID="352168993"/>
-							</MediaIDList>
-						</AudioFileSource>
+						<BlendContainer Name="Blend_Breathing" ID="{A20B8963-9ABA-49C9-B834-C8F559C8E7EB}" ShortID="630164979">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="breathing" ID="{45A56B52-8FF8-435D-9088-B8CD01B65009}" ShortID="502275235">
+									<PropertyList>
+										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="breathing" ID="{CD5E7381-1893-4546-B668-45B45C7A53DE}">
+											<Language>SFX</Language>
+											<AudioFile>breathing.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="106386982"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ObjectLists>
+										<ObjectList Name="RTPC">
+											<RTPC Name="" ID="{8A670C22-23D9-445D-BB29-4FF1373FFFB1}" ShortID="59111709">
+												<PropertyList>
+													<Property Name="PropertyName" Type="string" Value="Volume"/>
+												</PropertyList>
+												<ReferenceList>
+													<Reference Name="ControlInput">
+														<ObjectRef Name="PlayerOxygenAmount" ID="{C5980316-CDA1-4E44-B0AA-E82ACF3E7FF1}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+													</Reference>
+													<Reference Name="Curve">
+														<Custom>
+															<Curve Name="" ID="{C261AFB5-2143-41E9-AEB6-570E0489C1F8}">
+																<PropertyList>
+																	<Property Name="Flags" Type="int32" Value="3"/>
+																</PropertyList>
+																<PointList>
+																	<Point>
+																		<XPos>0</XPos>
+																		<YPos>-200</YPos>
+																		<Flags>5</Flags>
+																		<SegmentShape>Log3</SegmentShape>
+																	</Point>
+																	<Point>
+																		<XPos>30</XPos>
+																		<YPos>-200</YPos>
+																		<Flags>0</Flags>
+																		<SegmentShape>Exp3</SegmentShape>
+																	</Point>
+																	<Point>
+																		<XPos>35</XPos>
+																		<YPos>0</YPos>
+																		<Flags>0</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>100</XPos>
+																		<YPos>0</YPos>
+																		<Flags>37</Flags>
+																	</Point>
+																</PointList>
+															</Curve>
+														</Custom>
+													</Reference>
+												</ReferenceList>
+											</RTPC>
+										</ObjectList>
+									</ObjectLists>
+									<ActiveSourceList>
+										<ActiveSource Name="breathing" ID="{CD5E7381-1893-4546-B668-45B45C7A53DE}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="breathing_hard" ID="{7E38DD5F-159E-4F6F-81CD-CAB500403300}" ShortID="410007398">
+									<PropertyList>
+										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="breathing_hard" ID="{3831A45D-DC8E-4174-9471-3FEF30B1D924}">
+											<Language>SFX</Language>
+											<AudioFile>breathing_hard.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="987918517"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ObjectLists>
+										<ObjectList Name="RTPC">
+											<RTPC Name="" ID="{FE0F6302-CDD5-47B8-B3E2-53E99477E258}" ShortID="755294513">
+												<PropertyList>
+													<Property Name="PropertyName" Type="string" Value="Volume"/>
+												</PropertyList>
+												<ReferenceList>
+													<Reference Name="ControlInput">
+														<ObjectRef Name="PlayerOxygenAmount" ID="{C5980316-CDA1-4E44-B0AA-E82ACF3E7FF1}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+													</Reference>
+													<Reference Name="Curve">
+														<Custom>
+															<Curve Name="" ID="{9E902654-D319-4178-9571-DE9363702275}">
+																<PropertyList>
+																	<Property Name="Flags" Type="int32" Value="3"/>
+																</PropertyList>
+																<PointList>
+																	<Point>
+																		<XPos>0</XPos>
+																		<YPos>0</YPos>
+																		<Flags>5</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>35</XPos>
+																		<YPos>0</YPos>
+																		<Flags>0</Flags>
+																		<SegmentShape>Log3</SegmentShape>
+																	</Point>
+																	<Point>
+																		<XPos>40</XPos>
+																		<YPos>-200</YPos>
+																		<Flags>0</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>100</XPos>
+																		<YPos>-200</YPos>
+																		<Flags>37</Flags>
+																	</Point>
+																</PointList>
+															</Curve>
+														</Custom>
+													</Reference>
+												</ReferenceList>
+											</RTPC>
+										</ObjectList>
+									</ObjectLists>
+									<ActiveSourceList>
+										<ActiveSource Name="breathing_hard" ID="{3831A45D-DC8E-4174-9471-3FEF30B1D924}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</BlendContainer>
 					</ChildrenList>
-					<ActiveSourceList>
-						<ActiveSource Name="Piano_Satori_Maiden" ID="{1272F3D2-06F1-482E-BD4F-5DE8D45FD04C}" Platform="Linked"/>
-					</ActiveSourceList>
-				</Sound>
+				</Folder>
+				<Folder Name="Audio" ID="{982D98F4-2346-4435-9100-DCE49A54150A}" ShortID="1019853436">
+					<ChildrenList>
+						<Sound Name="breathing_death" ID="{936DD85E-9F73-401F-8EB1-85B0E43B3B7E}" ShortID="627998761">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="breathing_death" ID="{170C02FB-88E2-49C7-99DE-567A456CBCE2}">
+									<Language>SFX</Language>
+									<AudioFile>breathing_death.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="1073171051"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="breathing_death" ID="{170C02FB-88E2-49C7-99DE-567A456CBCE2}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</Containers>

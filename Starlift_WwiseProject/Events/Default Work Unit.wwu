@@ -3,12 +3,37 @@
 	<Events>
 		<WorkUnit Name="Default Work Unit" ID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" PersistMode="Standalone">
 			<ChildrenList>
-				<Event Name="Play_TestEvent" ID="{FBD72AD2-C46E-4AB9-90A4-F7184A62C459}">
+				<Event Name="play_blend_breathing" ID="{32435D69-0F9F-4DCE-8C2C-BA25C5B9B93B}">
 					<ChildrenList>
-						<Action Name="" ID="{8C5F3E1F-8AFC-498B-B242-B55232973221}" ShortID="417698405">
+						<Action Name="" ID="{89EB42C0-C82E-4C50-98EB-CC3F4E21A498}" ShortID="1012559971">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="Piano_Satori_Maiden" ID="{2BF5326E-BA47-40E8-A403-664C0E4DCB9D}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+									<ObjectRef Name="Blend_Breathing" ID="{A20B8963-9ABA-49C9-B834-C8F559C8E7EB}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="stop_blend_breathing" ID="{963C0590-F3CE-47C0-9F7C-3BBD2F47FD43}">
+					<ChildrenList>
+						<Action Name="" ID="{BF36586B-D697-444A-A9F6-C2BDE0A4CC7A}" ShortID="782299498">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Blend_Breathing" ID="{A20B8963-9ABA-49C9-B834-C8F559C8E7EB}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="play_breathing_death" ID="{98D1C7B2-BE69-4C93-A5C3-F02D02132A9C}">
+					<ChildrenList>
+						<Action Name="" ID="{4C77CA29-A18F-4557-B625-1E02814E71A7}" ShortID="309368570">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="breathing_death" ID="{936DD85E-9F73-401F-8EB1-85B0E43B3B7E}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>

@@ -757,4 +757,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 1.666667
+  usagePerSecond: 5

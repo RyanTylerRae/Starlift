@@ -1,6 +1,13 @@
 Event	ID	Name			Wwise Object Path	Notes
-	2351864238	Play_TestEvent			\Default Work Unit\Play_TestEvent	
+	130567783	play_breathing_death			\Default Work Unit\play_breathing_death	
+	2817166606	stop_blend_breathing			\Default Work Unit\stop_blend_breathing	
+	3591904104	play_blend_breathing			\Default Work Unit\play_blend_breathing	
+
+Game Parameter	ID	Name			Wwise Object Path	Notes
+	2812181674	PlayerOxygenAmount			\Default Work Unit\PlayerOxygenAmount	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	352168993	Piano_Satori_Maiden	.cache\2E\{2E59EE5B-764D-1C35-6DCE-72DC4FEB9046}.wem		\Containers\Default Work Unit\Piano_Satori_Maiden		31380764
+	106386982	breathing	.cache\EC\{EC5700C9-7164-036B-2B0F-01F710C72128}.wem		\Containers\Default Work Unit\BlendContainers\Blend_Breathing\breathing		2222176
+	987918517	breathing_hard	.cache\0D\{0D8C8F93-E823-870D-A783-661486806BE4}.wem		\Containers\Default Work Unit\BlendContainers\Blend_Breathing\breathing_hard		1642592
+	1073171051	breathing_death	.cache\A4\{A473AE3A-C2BC-9EA3-FC55-8F14667FBE54}.wem		\Containers\Default Work Unit\Audio\breathing_death		745568
 

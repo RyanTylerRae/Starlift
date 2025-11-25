@@ -13,8 +13,15 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID PLAY_TESTEVENT = 2351864238U;
+        static const AkUniqueID PLAY_BLEND_BREATHING = 3591904104U;
+        static const AkUniqueID PLAY_BREATHING_DEATH = 130567783U;
+        static const AkUniqueID STOP_BLEND_BREATHING = 2817166606U;
     } // namespace EVENTS
+
+    namespace GAME_PARAMETERS
+    {
+        static const AkUniqueID PLAYEROXYGENAMOUNT = 2812181674U;
+    } // namespace GAME_PARAMETERS
 
     namespace BANKS
     {
