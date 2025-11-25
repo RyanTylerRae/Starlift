@@ -50,6 +50,11 @@ public class OxygenSystem : MonoBehaviour
         {
             oxygenAmount = 0.0f;
 
+            if (TryGetComponent(out Entity entity))
+            {
+                entity.SendDamageEvent(gameObject, 999, DamageType.None);
+            }
+
             if (isAudioPlaying)
             {
                 AkUnitySoundEngine.PostEvent("stop_blend_breathing", gameObject);
