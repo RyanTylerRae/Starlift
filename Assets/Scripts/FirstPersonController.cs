@@ -4,6 +4,7 @@ using System;
 using Dissonance;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class FirstPersonController : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Camera")]
     public GameObject cameraArm;
-    public Camera playerCamera;
+    public Camera? playerCamera;
 
     // input actions
     private InputAction? moveAction;
@@ -86,6 +87,8 @@ public class FirstPersonController : MonoBehaviour
         SetMovementMode(ControllerMovementMode.Gravity);
 
         Camera mainCamera = cameraArm.AddComponent<Camera>();
+        mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
+
         cameraArm.AddComponent<AkAudioListener>();
         playerCamera = mainCamera;
         //}

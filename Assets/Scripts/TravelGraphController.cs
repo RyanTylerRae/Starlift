@@ -20,7 +20,6 @@ public class TravelGraphController : MonoBehaviour
     private List<GameObject> debugBoxNodes = new();
 
     private int currentNodeIdx = -1;
-    private GameObject? selectedNode = null;
     private GameObject? finalNode = null;
 
     public GameObject? playerShip = null;
