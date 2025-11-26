@@ -8,6 +8,6 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class FisheyeCamera : MonoBehaviour
 {
-    [Range(0f, 1f)]
+    [Range(-1f, 1f)]
     public float distortionStrength = 0.3f;
 }

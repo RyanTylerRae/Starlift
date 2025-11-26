@@ -19,7 +19,9 @@ public class FisheyeRenderPass : ScriptableRenderPass
     public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
     {
         if (fisheyeMaterial == null)
+        {
             return;
+        }
 
         var resourceData = frameData.Get<UniversalResourceData>();
         var cameraData = frameData.Get<UniversalCameraData>();
@@ -29,7 +31,9 @@ public class FisheyeRenderPass : ScriptableRenderPass
         FisheyeCamera? fisheyeCamera = camera.GetComponent<FisheyeCamera>();
 
         if (fisheyeCamera == null)
+        {
             return;
+        }
 
         // Check if we have an intermediate texture available
         if (resourceData.isActiveTargetBackBuffer)
