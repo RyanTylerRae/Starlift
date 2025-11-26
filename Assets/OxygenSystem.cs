@@ -52,7 +52,7 @@ public class OxygenSystem : MonoBehaviour
 
             if (TryGetComponent(out Entity entity))
             {
-                entity.SendDamageEvent(gameObject, 999, DamageType.None);
+                entity.SendDamageEvent(gameObject, 100, DamageType.Suffocating);
             }
 
             if (isAudioPlaying)

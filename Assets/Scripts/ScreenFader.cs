@@ -18,7 +18,6 @@ public class ScreenFader : MonoBehaviour
 
         targetOpacity = Mathf.Clamp01(targetOpacity);
 
-
         if (duration > 0.0f)
         {
             Color startColor = fadeImage.color;

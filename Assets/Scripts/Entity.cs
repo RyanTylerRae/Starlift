@@ -36,6 +36,11 @@ public class Entity : MonoBehaviour
         {
             isKilled = true;
 
+            if (TryGetComponent(out FirstPersonController controller))
+            {
+                controller.enabled = false;
+            }
+
             var context = System.Threading.SynchronizationContext.Current;
 
             await Task.Run(async () =>
@@ -46,7 +51,8 @@ public class Entity : MonoBehaviour
                 {
                     if (TryGetComponent(out ScreenFader screenFader))
                     {
-                        await screenFader.FadeToOpacity(1.0f, 2.0f);
+                        await screenFader.FadeToOpacity(targetOpacity: 1.0f, 2.0f);
+                        await Task.Delay(2000);
                     }
 
                     OnKilled.Invoke(damageEvent);
