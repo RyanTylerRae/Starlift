@@ -762,6 +762,9 @@ MonoBehaviour:
   flightForce: 1
   maxFlightSpeed: 6
   gravityAlignmentSpeed: 2
+  jumpTier1Time: 1
+  jumpTier2Time: 2
+  jumpTier3Time: 3
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
 --- !u!136 &3544571870899075731

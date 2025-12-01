@@ -21,13 +21,6 @@ public class FirstPersonController : MonoBehaviour
 
     private float xRotation = 0f;
 
-    // jump
-    private bool isGrounded;
-    public bool IsGrounded
-    {
-        get => isGrounded;
-    }
-
     // flight
     public float stabilizeMultiplier;
 
@@ -37,6 +30,12 @@ public class FirstPersonController : MonoBehaviour
     // gravity alignment
     public float gravityAlignmentSpeed = 5f;
 
+    // jump charge
+    private float jumpPressStartTime = 0f;
+    public float jumpTier1Time = 0f;
+    public float jumpTier2Time = 0f;
+    public float jumpTier3Time = 0f;
+
     [Header("Player")]
     private CharacterController characterController;
     private PlayerInput playerInput;
@@ -45,11 +44,12 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Camera")]
     public GameObject cameraArm;
-    public Camera? playerCamera;
+    public Camera playerCamera;
 
     // input actions
     private InputAction? moveAction;
     private InputAction? lookAction;
+    private InputAction? jumpAction;
     private InputAction? sprintAction;
     private InputAction? stabilizeAction;
     private InputAction? forwardThrustAction;
@@ -95,8 +95,6 @@ public class FirstPersonController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        isGrounded = true;
     }
 
     public void SetMovementMode(ControllerMovementMode newMovementMode)
@@ -109,7 +107,16 @@ public class FirstPersonController : MonoBehaviour
 
             moveAction = playerInput.currentActionMap.FindAction("Move");
             lookAction = playerInput.currentActionMap.FindAction("Look");
+            jumpAction = playerInput.currentActionMap.FindAction("Jump");
             sprintAction = playerInput.currentActionMap.FindAction("Sprint");
+
+            // Subscribe to jump action events
+            if (jumpAction != null)
+            {
+                jumpAction.started += OnJumpStarted;
+                jumpAction.canceled += OnJumpCanceled;
+            }
+
             stabilizeAction = null;
             forwardThrustAction = null;
             backwardThrustAction = null;
@@ -129,6 +136,7 @@ public class FirstPersonController : MonoBehaviour
 
             moveAction = null;
             lookAction = playerInput.currentActionMap.FindAction("Look");
+            jumpAction = null;
             sprintAction = null;
             stabilizeAction = playerInput.currentActionMap.FindAction("Stabilize");
             forwardThrustAction = playerInput.currentActionMap.FindAction("ForwardThrust");
@@ -165,7 +173,11 @@ public class FirstPersonController : MonoBehaviour
         if (MovementMode == ControllerMovementMode.Gravity)
         {
             HandleMouseLook();
-            HandleMovement();
+
+            if (jumpPressStartTime == 0.0f)
+            {
+                HandleMovement();
+            }
 
             // orient player to align with gravity
             Vector3 upVector = -gravity.normalized;
@@ -212,6 +224,45 @@ public class FirstPersonController : MonoBehaviour
         transform.Rotate(Vector3.up * lookX);
     }
 
+    private void OnJumpStarted(InputAction.CallbackContext context)
+    {
+        jumpPressStartTime = Time.time;
+    }
+
+    private void OnJumpCanceled(InputAction.CallbackContext context)
+    {
+        float pressDuration = Time.time - jumpPressStartTime;
+        jumpPressStartTime = 0.0f;
+
+        Debug.Log($"Jump was held for: {pressDuration} seconds");
+        // Use pressDuration for your jump mechanics
+
+        float jumpForce = 0.0f;
+        if (pressDuration > jumpTier3Time)
+        {
+            jumpForce = 500.0f;
+            Debug.Log($"Jump tier 3!");
+        }
+        else if (pressDuration > jumpTier2Time)
+        {
+            jumpForce = 300.0f;
+            Debug.Log($"Jump tier 2!");
+        }
+        else if (pressDuration > jumpTier1Time)
+        {
+            jumpForce = 150.0f;
+            Debug.Log($"Jump tier 1!");
+        }
+
+        if (jumpForce > 0.0f)
+        {
+            Vector3 gravity = gravityController.GetGravityVector();
+            Vector3 upVector = -1.0f * gravity.normalized;
+
+            _rigidbody.AddForce(upVector * jumpForce);
+        }
+    }
+
     void HandleMovement()
     {
         Vector2? moveInput = moveAction?.ReadValue<Vector2>();
@@ -221,10 +272,6 @@ public class FirstPersonController : MonoBehaviour
         {
             return;
         }
-
-        // @trae todo - add grounded flag and logic
-        // 1. IsGrounded flag actual check
-        // 3. if !IsGrounded -> only allow look input, no air control (or maybe reduce it? x0.2 or something?)
 
         // apply gravity and movement forces based on input
         Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;
@@ -237,7 +284,7 @@ public class FirstPersonController : MonoBehaviour
         velocity.y = 0.0f;
 
         float maxSpeed = sprintIsPressed.Value ? maxRunSpeed : maxWalkSpeed;
-        if (isGrounded && velocity.sqrMagnitude > maxSpeed * maxSpeed)
+        if (velocity.sqrMagnitude > maxSpeed * maxSpeed)
         {
             velocity.Normalize();
             velocity *= maxSpeed;
@@ -326,6 +373,15 @@ public class FirstPersonController : MonoBehaviour
         if (velocity.sqrMagnitude > maxFlightSpeed * maxFlightSpeed)
         {
             _rigidbody.linearVelocity = velocity.normalized * maxFlightSpeed;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (jumpAction != null)
+        {
+            jumpAction.started -= OnJumpStarted;
+            jumpAction.canceled -= OnJumpCanceled;
         }
     }
 }
