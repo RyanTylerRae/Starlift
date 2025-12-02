@@ -762,9 +762,9 @@ MonoBehaviour:
   flightForce: 1
   maxFlightSpeed: 6
   gravityAlignmentSpeed: 2
-  jumpTier1Time: 1
-  jumpTier2Time: 2
-  jumpTier3Time: 3
+  jumpTier1Time: 0.4
+  jumpTier2Time: 0.5
+  jumpTier3Time: 0.6
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
 --- !u!136 &3544571870899075731
@@ -932,6 +932,18 @@ MonoBehaviour:
     initialValue: 0
     minValue: 0
     maxValue: 100
+  - name: jumpCharge_tier1
+    initialValue: 0
+    minValue: 0
+    maxValue: 1
+  - name: jumpCharge_tier2
+    initialValue: 0
+    minValue: 0
+    maxValue: 1
+  - name: jumpCharge_tier3
+    initialValue: 0
+    minValue: 0
+    maxValue: 1
 --- !u!114 &8298962411141869644
 MonoBehaviour:
   m_ObjectHideFlags: 0

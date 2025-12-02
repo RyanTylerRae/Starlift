@@ -61,6 +61,8 @@ public class FirstPersonController : MonoBehaviour
     private InputAction? rotateLeftAction;
     private InputAction? rotateRightAction;
 
+    private Modifiers? modifiers = null;
+
     public bool IsUsingGamepad => playerInput != null && playerInput.currentControlScheme == "Gamepad";
 
     public enum ControllerMovementMode
@@ -77,6 +79,8 @@ public class FirstPersonController : MonoBehaviour
 
     void Start()
     {
+        modifiers = GetComponent<Modifiers>();
+
         //if (TryGetComponent<CoherenceSync>(out var _sync) && _sync.HasStateAuthority)
         //{
         playerInput = GetComponent<PlayerInput>();
@@ -160,6 +164,23 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
+        if (modifiers != null)
+        {
+            float pressDuration = 0.0f;
+            if (jumpPressStartTime > 0.0f && MovementMode == ControllerMovementMode.Gravity)
+            {
+                pressDuration = Time.time - jumpPressStartTime;
+            }
+
+            float tier1Norm = Math.Clamp(pressDuration / jumpTier1Time, 0.0f, 1.0f);
+            float tier2Norm = Math.Clamp((pressDuration - jumpTier1Time) / jumpTier2Time, 0.0f, 1.0f);
+            float tier3Norm = Math.Clamp((pressDuration - jumpTier1Time - jumpTier2Time) / jumpTier3Time, 0.0f, 1.0f);
+
+            modifiers.Set(ModifierType.JumpCharge_Tier1, tier1Norm);
+            modifiers.Set(ModifierType.JumpCharge_Tier2, tier2Norm);
+            modifiers.Set(ModifierType.JumpCharge_Tier3, tier3Norm);
+        }
+
         Vector3 gravity = gravityController.GetGravityVector();
         if (MovementMode == ControllerMovementMode.ZeroG && gravity.sqrMagnitude > 0.0f)
         {
@@ -238,12 +259,12 @@ public class FirstPersonController : MonoBehaviour
         // Use pressDuration for your jump mechanics
 
         float jumpForce = 0.0f;
-        if (pressDuration > jumpTier3Time)
+        if (pressDuration > jumpTier3Time + jumpTier2Time + jumpTier1Time)
         {
             jumpForce = 500.0f;
             Debug.Log($"Jump tier 3!");
         }
-        else if (pressDuration > jumpTier2Time)
+        else if (pressDuration > jumpTier2Time + jumpTier1Time)
         {
             jumpForce = 300.0f;
             Debug.Log($"Jump tier 2!");

@@ -6,13 +6,26 @@ using UnityEngine.UI;
 public class PlayerHUD : MonoBehaviour
 {
     private GameObject? player = null;
-    public MeshRenderer oxygenProgressRenderer;
-    private Material? oxygenProgressMaterialInstance = null;
+    public MeshRenderer oxygenProgressRendererForeground;
+    private Material? oxygenProgressForegroundMaterialInstance = null;
+    public MeshRenderer oxygenProgressRendererBackground;
+    private Material? oxygenProgressBackgroundMaterialInstance = null;
+
+    public MeshRenderer jumpTier1Renderer;
+    private Material? jumpTier1MaterialInstance = null;
+    public MeshRenderer jumpTier2Renderer;
+    private Material? jumpTier2MaterialInstance = null;
+    public MeshRenderer jumpTier3Renderer;
+    private Material? jumpTier3MaterialInstance = null;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
     {
-        oxygenProgressMaterialInstance = oxygenProgressRenderer.material;
+        oxygenProgressForegroundMaterialInstance = oxygenProgressRendererForeground.material;
+        oxygenProgressBackgroundMaterialInstance = oxygenProgressRendererBackground.material;
+        jumpTier1MaterialInstance = jumpTier1Renderer.material;
+        jumpTier2MaterialInstance = jumpTier2Renderer.material;
+        jumpTier3MaterialInstance = jumpTier3Renderer.material;
     }
 
     // Update is called once per frame
@@ -29,9 +42,29 @@ public class PlayerHUD : MonoBehaviour
 
         if (player.TryGetComponent(out Modifiers modifiers))
         {
-            if (oxygenProgressMaterialInstance != null)
+            if (oxygenProgressForegroundMaterialInstance != null)
             {
-                oxygenProgressMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
+                oxygenProgressForegroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
+            }
+
+            if (oxygenProgressBackgroundMaterialInstance != null)
+            {
+                oxygenProgressBackgroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
+            }
+
+            if (jumpTier1MaterialInstance != null)
+            {
+                jumpTier1MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier1));
+            }
+
+            if (jumpTier2MaterialInstance != null)
+            {
+                jumpTier2MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier2));
+            }
+
+            if (jumpTier3MaterialInstance != null)
+            {
+                jumpTier3MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier3));
             }
         }
     }
