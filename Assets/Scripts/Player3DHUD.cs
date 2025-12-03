@@ -17,6 +17,8 @@ public class PlayerHUD : MonoBehaviour
     private Material? jumpTier2MaterialInstance = null;
     public MeshRenderer jumpTier3Renderer;
     private Material? jumpTier3MaterialInstance = null;
+    public MeshRenderer magneticChargeRenderer;
+    private Material? magneticChargeMaterialInstance = null;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
@@ -26,6 +28,7 @@ public class PlayerHUD : MonoBehaviour
         jumpTier1MaterialInstance = jumpTier1Renderer.material;
         jumpTier2MaterialInstance = jumpTier2Renderer.material;
         jumpTier3MaterialInstance = jumpTier3Renderer.material;
+        magneticChargeMaterialInstance = magneticChargeRenderer.material;
     }
 
     // Update is called once per frame
@@ -65,6 +68,11 @@ public class PlayerHUD : MonoBehaviour
             if (jumpTier3MaterialInstance != null)
             {
                 jumpTier3MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier3));
+            }
+
+            if (magneticChargeMaterialInstance != null)
+            {
+                magneticChargeMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.MagneticCharge));
             }
         }
     }

@@ -11,7 +11,8 @@ public enum ModifierType
     Oxygen,
     JumpCharge_Tier1,
     JumpCharge_Tier2,
-    JumpCharge_Tier3
+    JumpCharge_Tier3,
+    MagneticCharge
 }
 
 [Serializable]
@@ -53,6 +54,7 @@ public class Modifiers : MonoBehaviour
         { "jumpCharge_tier1", ModifierType.JumpCharge_Tier1 },
         { "jumpCharge_tier2", ModifierType.JumpCharge_Tier2 },
         { "jumpCharge_tier3", ModifierType.JumpCharge_Tier3 },
+        { "magnetic_charge", ModifierType.MagneticCharge },
     };
 
     private static Dictionary<ModifierType, string> ModifierTypeToStringMap = new()
@@ -61,6 +63,7 @@ public class Modifiers : MonoBehaviour
         { ModifierType.JumpCharge_Tier1, "jumpCharge_tier1" },
         { ModifierType.JumpCharge_Tier2, "jumpCharge_tier2" },
         { ModifierType.JumpCharge_Tier3, "jumpCharge_tier3" },
+        { ModifierType.MagneticCharge, "magnetic_charge" },
     };
 
     void Start()

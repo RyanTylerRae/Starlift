@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections;
 using Dissonance;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -179,12 +180,28 @@ public class FirstPersonController : MonoBehaviour
             modifiers.Set(ModifierType.JumpCharge_Tier1, tier1Norm);
             modifiers.Set(ModifierType.JumpCharge_Tier2, tier2Norm);
             modifiers.Set(ModifierType.JumpCharge_Tier3, tier3Norm);
+
+            if (MovementMode == ControllerMovementMode.ZeroG)
+            {
+                modifiers.Set(ModifierType.MagneticCharge, 0.0f);
+            }
+            else
+            {
+                float magneticCharge = Math.Clamp((jumpTier1Time - pressDuration) / jumpTier1Time, 0.0f, 1.0f);
+                if (magneticCharge <= 0.0f && modifiers.Get(ModifierType.MagneticCharge) > 0.0f)
+                {
+                    TriggerCameraShake(0.05f, 0.1f, 8);
+                }
+
+                modifiers.Set(ModifierType.MagneticCharge, magneticCharge);
+            }
         }
 
         Vector3 gravity = gravityController.GetGravityVector();
         if (MovementMode == ControllerMovementMode.ZeroG && gravity.sqrMagnitude > 0.0f)
         {
             SetMovementMode(ControllerMovementMode.Gravity);
+            TriggerCameraShake(0.05f, 0.1f, 8);
         }
         else if (MovementMode == ControllerMovementMode.Gravity && gravity.sqrMagnitude < 0.01f)
         {
@@ -395,6 +412,31 @@ public class FirstPersonController : MonoBehaviour
         {
             _rigidbody.linearVelocity = velocity.normalized * maxFlightSpeed;
         }
+    }
+
+    public void TriggerCameraShake(float duration, float magnitude, int delayMs)
+    {
+        StartCoroutine(DoCameraShake(duration, magnitude, delayMs));
+    }
+
+    private IEnumerator DoCameraShake(float duration, float magnitude, int delayMs)
+    {
+        Vector3 originalPos = playerCamera.transform.localPosition;
+        float elapsed = 0.0f;
+        float delaySeconds = delayMs / 1000.0f;
+
+        while (elapsed < duration)
+        {
+            float x = UnityEngine.Random.Range(-1f, 1f) * magnitude;
+            float y = UnityEngine.Random.Range(-1f, 1f) * magnitude;
+
+            playerCamera.transform.localPosition = originalPos + new Vector3(x, y, 0);
+
+            yield return new WaitForSeconds(delaySeconds);
+            elapsed += delaySeconds;
+        }
+
+        playerCamera.transform.localPosition = originalPos;
     }
 
     private void OnDestroy()

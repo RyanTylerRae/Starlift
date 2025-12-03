@@ -944,6 +944,10 @@ MonoBehaviour:
     initialValue: 0
     minValue: 0
     maxValue: 1
+  - name: magnetic_charge
+    initialValue: 0
+    minValue: 0
+    maxValue: 1
 --- !u!114 &8298962411141869644
 MonoBehaviour:
   m_ObjectHideFlags: 0
