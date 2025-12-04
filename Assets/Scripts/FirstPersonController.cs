@@ -31,11 +31,16 @@ public class FirstPersonController : MonoBehaviour
     // gravity alignment
     public float gravityAlignmentSpeed = 5f;
 
+    // camera angle tracking
+    private float cameraAngleFromGravity = 0f;
+    public float CameraAngleFromGravity => cameraAngleFromGravity;
+
     // jump charge
     private float jumpPressStartTime = 0f;
     public float jumpTier1Time = 0f;
     public float jumpTier2Time = 0f;
     public float jumpTier3Time = 0f;
+    public float jumpDirectionalAngleThreshold = 135f;
 
     [Header("Player")]
     private CharacterController characterController;
@@ -65,6 +70,8 @@ public class FirstPersonController : MonoBehaviour
     private Modifiers? modifiers = null;
 
     public bool IsUsingGamepad => playerInput != null && playerInput.currentControlScheme == "Gamepad";
+
+    public bool ShouldDisplayJumpTarget => CameraAngleFromGravity > jumpDirectionalAngleThreshold && MovementMode == ControllerMovementMode.Gravity;
 
     public enum ControllerMovementMode
     {
@@ -198,6 +205,13 @@ public class FirstPersonController : MonoBehaviour
         }
 
         Vector3 gravity = gravityController.GetGravityVector();
+
+        // Calculate camera angle from gravity direction
+        if (gravity.sqrMagnitude > 0.01f)
+        {
+            cameraAngleFromGravity = Vector3.Angle(playerCamera.transform.forward, gravity);
+        }
+
         if (MovementMode == ControllerMovementMode.ZeroG && gravity.sqrMagnitude > 0.0f)
         {
             SetMovementMode(ControllerMovementMode.Gravity);
@@ -294,10 +308,21 @@ public class FirstPersonController : MonoBehaviour
 
         if (jumpForce > 0.0f)
         {
-            Vector3 gravity = gravityController.GetGravityVector();
-            Vector3 upVector = -1.0f * gravity.normalized;
+            Vector3 jumpDirection;
 
-            _rigidbody.AddForce(upVector * jumpForce);
+            // If camera angle exceeds threshold, jump in camera direction
+            if (cameraAngleFromGravity > jumpDirectionalAngleThreshold)
+            {
+                jumpDirection = playerCamera.transform.forward;
+            }
+            else
+            {
+                // Otherwise jump against gravity
+                Vector3 gravity = gravityController.GetGravityVector();
+                jumpDirection = -1.0f * gravity.normalized;
+            }
+
+            _rigidbody.AddForce(jumpDirection * jumpForce);
         }
     }
 

@@ -6,6 +6,10 @@ using UnityEngine.UI;
 public class PlayerHUD : MonoBehaviour
 {
     private GameObject? player = null;
+    public GameObject? jumpTargetWidget = null;
+    public float jumpTargetRaycastDistance = 100f;
+    public Vector3 jumpTargetRotationOffset = Vector3.zero;
+
     public MeshRenderer oxygenProgressRendererForeground;
     private Material? oxygenProgressForegroundMaterialInstance = null;
     public MeshRenderer oxygenProgressRendererBackground;
@@ -40,6 +44,36 @@ public class PlayerHUD : MonoBehaviour
             if (player == null)
             {
                 return;
+            }
+        }
+
+        if (jumpTargetWidget != null)
+        {
+            if (player.TryGetComponent(out FirstPersonController playerController))
+            {
+                jumpTargetWidget.SetActive(playerController.ShouldDisplayJumpTarget);
+
+                if (playerController.ShouldDisplayJumpTarget && playerController.playerCamera != null)
+                {
+                    // Raycast from player camera
+                    Ray ray = new Ray(playerController.playerCamera.transform.position, playerController.playerCamera.transform.forward);
+                    RaycastHit hit;
+
+                    if (Physics.Raycast(ray, out hit, jumpTargetRaycastDistance))
+                    {
+                        // Get hit point in player camera's local space
+                        Vector3 playerCameraLocalHit = playerController.playerCamera.transform.InverseTransformPoint(hit.point);
+                        // Use that same local offset for the widget relative to HUD camera
+                        jumpTargetWidget.transform.localPosition = playerCameraLocalHit;
+
+                        // Get normal in player camera's local space
+                        Vector3 playerCameraLocalNormal = playerController.playerCamera.transform.InverseTransformDirection(hit.normal);
+                        // Use that same local direction for the widget, with rotation offset applied
+                        Quaternion normalRotation = Quaternion.LookRotation(playerCameraLocalNormal);
+                        Quaternion offsetRotation = Quaternion.Euler(jumpTargetRotationOffset);
+                        jumpTargetWidget.transform.localRotation = normalRotation * offsetRotation;
+                    }
+                }
             }
         }
 
