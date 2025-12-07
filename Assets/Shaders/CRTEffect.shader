@@ -48,11 +48,11 @@ Shader "Custom/CRTEffect"
                 // Scanlines (horizontal lines)
                 float scanline = sin(uv.y * _ScanlineCount * 3.14159) * 0.5 + 0.5;
                 scanline = lerp(1.0, scanline, _ScanlineIntensity);
-                color.rgb *= scanline;
+                color.rgba *= scanline;
 
                 // Interlacing flicker effect (every other line slightly dimmer)
                 float interlace = step(0.5, frac(uv.y * _ScanlineCount * 0.5));
-                color.rgb *= lerp(0.95, 1.0, interlace);
+                color.rgba *= lerp(0.95, 1.0, interlace);
 
                 // Vignette (darkening at edges)
                 float2 vignetteUV = uv * (1.0 - uv.yx);

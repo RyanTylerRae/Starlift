@@ -53,11 +53,21 @@ public class OxygenPocket : MonoBehaviour
             AkUnitySoundEngine.PostEvent("play_oxygen_replenish", gameObject);
             Debug.Log("Player entered oxygen pocket - replenishing oxygen");
         }
+
+        if (player.TryGetComponent(out PlayerHelmetController helmetController))
+        {
+            helmetController.RaiseHelmet();
+        }
     }
 
     private void OnPlayerExitPocket(GameObject player)
     {
         playerOxygenSystem = null;
         Debug.Log("Player exited oxygen pocket - stopping oxygen replenishment");
+
+        if (player.TryGetComponent(out PlayerHelmetController helmetController))
+        {
+            helmetController.LowerHelmet();
+        }
     }
 }
