@@ -3,7 +3,8 @@ Shader "Custom/FisheyeEffect"
     Properties
     {
         _BlitTexture ("Texture", 2D) = "white" {}
-        _Strength ("Distortion Strength", Float) = 0.3
+        _HorizontalStrength ("Horizontal Distortion", Float) = 0.3
+        _VerticalStrength ("Vertical Distortion", Float) = 0.3
     }
 
     SubShader
@@ -24,7 +25,8 @@ Shader "Custom/FisheyeEffect"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
-            float _Strength;
+            float _HorizontalStrength;
+            float _VerticalStrength;
 
             half4 Frag(Varyings input) : SV_Target
             {
@@ -37,8 +39,8 @@ Shader "Custom/FisheyeEffect"
                 // Calculate distance from center
                 float dist = length(offset);
 
-                // Apply barrel distortion
-                float distortion = 1.0 + _Strength * (dist * dist);
+                // Apply barrel distortion with separate horizontal and vertical strength
+                float2 distortion = 1.0 + float2(_HorizontalStrength, _VerticalStrength) * (dist * dist);
                 float2 distortedUV = center + offset * distortion;
 
                 // Sample texture with distorted UVs (using Blit.hlsl's texture)

@@ -9,5 +9,7 @@ using UnityEngine;
 public class FisheyeCamera : MonoBehaviour
 {
     [Range(-1f, 1f)]
-    public float distortionStrength = 0.3f;
+    public float horizontalDistortionStrength = 0.3f;
+    [Range(-1f, 1f)]
+    public float verticalDistortionStrength = 0.3f;
 }

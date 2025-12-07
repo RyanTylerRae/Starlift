@@ -43,7 +43,8 @@ public class FisheyeRenderPass : ScriptableRenderPass
         }
 
         // Set material parameters
-        fisheyeMaterial.SetFloat("_Strength", fisheyeCamera.distortionStrength);
+        fisheyeMaterial.SetFloat("_HorizontalStrength", fisheyeCamera.horizontalDistortionStrength);
+        fisheyeMaterial.SetFloat("_VerticalStrength", fisheyeCamera.verticalDistortionStrength);
 
         // Get source texture
         var source = resourceData.activeColorTexture;
