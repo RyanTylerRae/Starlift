@@ -15,6 +15,21 @@ MonoBehaviour:
   m_Active: 1
   material: {fileID: 2100000, guid: 5a7d22619ed51114d93e1efc66412097, type: 2}
   renderPassEvent: 550
+--- !u!114 &-6890639419509230250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8524bc748425fb44b780e779d07a322, type: 3}
+  m_Name: CRTEffectRendererFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  material: {fileID: 2100000, guid: a457a785d41b54540a9927518d742245, type: 2}
+  renderPassEvent: 550
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42,7 +57,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 7833122117494664109}
   - {fileID: -8241859811363569882}
-  m_RendererFeatureMap: ad6b866f10d7b46c263f1b372b089f8d
+  - {fileID: -6890639419509230250}
+  m_RendererFeatureMap: ad6b866f10d7b46c263f1b372b089f8d5635d9c4f4875fa0
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
