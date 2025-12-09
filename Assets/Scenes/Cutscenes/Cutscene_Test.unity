@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 95361607}
   - component: {fileID: 95361606}
   - component: {fileID: 95361605}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PlanetA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -238,7 +238,7 @@ GameObject:
   - component: {fileID: 122966476}
   - component: {fileID: 122966475}
   - component: {fileID: 122966477}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -323,7 +323,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1966801858}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &122966477
 MonoBehaviour:
@@ -361,7 +361,7 @@ GameObject:
   - component: {fileID: 158531971}
   - component: {fileID: 158531970}
   - component: {fileID: 158531973}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Blast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -489,7 +489,7 @@ GameObject:
   m_Component:
   - component: {fileID: 295721664}
   - component: {fileID: 295721663}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WwiseGlobal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -547,7 +547,7 @@ GameObject:
   - component: {fileID: 678818122}
   - component: {fileID: 678818121}
   - component: {fileID: 678818123}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CutsceneAudioManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -621,7 +621,7 @@ GameObject:
   m_Component:
   - component: {fileID: 781364132}
   - component: {fileID: 781364133}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: AudioBanks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -678,7 +678,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1059218526}
   - component: {fileID: 1059218525}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: TimelineAsset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -740,7 +740,7 @@ GameObject:
   - component: {fileID: 1112238748}
   - component: {fileID: 1112238747}
   - component: {fileID: 1112238750}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -870,7 +870,7 @@ GameObject:
   - component: {fileID: 1131330113}
   - component: {fileID: 1131330112}
   - component: {fileID: 1131330111}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PlanetB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -981,7 +981,7 @@ GameObject:
   - component: {fileID: 1340047784}
   - component: {fileID: 1340047783}
   - component: {fileID: 1340047785}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -1027,7 +1027,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 128
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1205,7 +1205,7 @@ GameObject:
   - component: {fileID: 1477713939}
   - component: {fileID: 1477713938}
   - component: {fileID: 1477713941}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ship
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1332,7 +1332,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1577821032}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: '[ WWISE ]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1364,7 +1364,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1966801858}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: '[ ENVIRONMENT ]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1389,6 +1389,7 @@ Transform:
   - {fileID: 1477713937}
   - {fileID: 158531969}
   - {fileID: 1112238746}
+  - {fileID: 122966476}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
@@ -1396,7 +1397,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1340047780}
-  - {fileID: 122966476}
   - {fileID: 295721664}
   - {fileID: 1966801858}
   - {fileID: 1059218526}
