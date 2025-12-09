@@ -13,15 +13,22 @@ public class OxygenSystem : MonoBehaviour
     void Start()
     {
         modifiers = GetComponent<Modifiers>();
-
-        AkUnitySoundEngine.PostEvent("play_blend_breathing", gameObject);
         isAudioPlaying = true;
     }
 
     void OnDestroy()
     {
-        AkUnitySoundEngine.PostEvent("stop_blend_breathing", gameObject);
         isAudioPlaying = false;
+    }
+
+    void OnEnable()
+    {
+        AkUnitySoundEngine.PostEvent("play_blend_breathing", gameObject);
+    }
+
+    void OnDisable()
+    {
+        AkUnitySoundEngine.PostEvent("stop_blend_breathing", gameObject);
     }
 
     // Update is called once per frame

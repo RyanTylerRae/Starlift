@@ -7,7 +7,7 @@ public static class StarliftStatics
 {
     public static GameObject? FindPlayer()
     {
-        FirstPersonController? controller = UnityEngine.Object.FindFirstObjectByType<FirstPersonController>();
+        FirstPersonController? controller = UnityEngine.Object.FindFirstObjectByType<FirstPersonController>(FindObjectsInactive.Include);
         return controller?.gameObject;
     }
 

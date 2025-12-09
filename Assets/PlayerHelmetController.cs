@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Collections;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class PlayerHelmetController : MonoBehaviour
@@ -8,10 +9,25 @@ public class PlayerHelmetController : MonoBehaviour
     public Animator? helmetAnimator;
     public GameObject? hudObject;
     public string helmetLowerStateName = "Lower Helmet"; // Set this to match your animator state name
+    private AnimatorStateInfo? cachedAnimatorStateInfo = null;
 
     public void Start()
     {
         StartCoroutine(WaitForHelmetAnimation());
+    }
+
+    public void Update()
+    {
+        cachedAnimatorStateInfo = helmetAnimator?.GetCurrentAnimatorStateInfo(0) ?? null;
+    }
+
+    public void OnEnable()
+    {
+        if (cachedAnimatorStateInfo != null)
+        {
+            helmetAnimator?.Play(cachedAnimatorStateInfo.Value.fullPathHash, 0, cachedAnimatorStateInfo.Value.normalizedTime);
+            helmetAnimator?.Update(0.0f);
+        }
     }
 
     public void LowerHelmet()

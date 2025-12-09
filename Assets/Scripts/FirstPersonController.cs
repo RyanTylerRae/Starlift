@@ -100,6 +100,8 @@ public class FirstPersonController : MonoBehaviour
 
         Camera mainCamera = cameraArm.AddComponent<Camera>();
         mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
+        mainCamera.depth = -1.0f;
+
 
         cameraArm.AddComponent<AkAudioListener>();
         playerCamera = mainCamera;
