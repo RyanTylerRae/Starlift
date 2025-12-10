@@ -1,0 +1,29 @@
+{
+  "welcome_message": {
+    "en": "Hello world!",
+    "es": "¡Hola mundo!",
+    "fr": "Bonjour le monde!",
+    "de": "Hallo Welt!",
+    "ja": "ハローワールド！",
+    "zh-CN": "你好世界！",
+    "ko": "헬로 월드!"
+  },
+  "subtitle_test_01": {
+    "en": "This is a test.",
+    "es": "Esta es una prueba.",
+    "fr": "Ceci est un test.",
+    "de": "Dies ist ein Test.",
+    "ja": "これはテストです。",
+    "zh-CN": "这是一个测试。",
+    "ko": "이것은 테스트입니다."
+  },
+  "subtitle_test_02": {
+    "en": "We've been trying to reach you about your car's extended warranty and raid shadow legends.",
+    "es": "Hemos estado intentando comunicarnos con usted sobre la garantía extendida de su automóvil y raid shadow legends.",
+    "fr": "Nous avons essayé de vous joindre au sujet de la garantie prolongée de votre voiture et raid shadow legends.",
+    "de": "Wir haben versucht, Sie bezüglich der erweiterten Garantie Ihres Autos und raid shadow legends zu erreichen.",
+    "ja": "お車の延長保証とレイド・シャドウ・レジェンドについてご連絡しようとしております。",
+    "zh-CN": "我们一直在尝试联系您关于您汽车的延长保修和raid shadow legends。",
+    "ko": "귀하의 자동차 연장 보증 및 raid shadow legends에 대해 연락을 드리고자 했습니다."
+  }
+}
