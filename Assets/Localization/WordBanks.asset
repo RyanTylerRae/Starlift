@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: WordBanks
   m_EditorClassIdentifier: 
   localizationBanks:
-  - {fileID: -6750239444755058063, guid: dd3b4fa6e84af6f43813ca19e0737c6c, type: 3}
+  - {fileID: -6750239444755058063, guid: 033f839304c8b794d9edb9c6a11247b0, type: 3}

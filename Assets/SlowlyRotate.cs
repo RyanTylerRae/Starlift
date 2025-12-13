@@ -7,6 +7,6 @@ public class SlowlyRotate : MonoBehaviour
 
     void Update()
     {
-        transform.Rotate(rotationAxis, 360.0f * rotationsPerSecond * Time.deltaTime);
+        transform.Rotate(rotationAxis.normalized, 360.0f * rotationsPerSecond * Time.deltaTime);
     }
 }

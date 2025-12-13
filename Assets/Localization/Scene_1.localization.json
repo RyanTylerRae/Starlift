@@ -1,0 +1,102 @@
+{
+  "line_1A_arrived": {
+    "en": "We've arrived.",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  },
+  "line_1B_isee": {
+    "en": "I can see that. My chart shows nothing but empty space, I didn't think there was a planet here.",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  },
+  "line_1B_therewasnt": {
+    "en": "There wasn't a Cycle ago.",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  },
+  "line_1B_noinfo": {
+    "en": "There's no information in the Company database at least. If you could access the system network then, maybe ...",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  },
+  "line_1B_nothappening": {
+    "en": "Yeah. We both know that's not happening.",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  }
+  ,
+  "line_1C_sorry": {
+    "en": "I'm sorry. But until your debts are paid off, transmissions will be strictly regulated.",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  },
+  "line_1C_sigh": {
+    "en": "[sighs]",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  },
+  "line_1C_uthebest": {
+    "en": "The Company calculated likelihood of your survival to be 67%, the highest among all available indentured settlers. You are our best.",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  },
+  "line_1C_lookup": {
+    "en": "Now, look up. Here it comes.",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  },
+  "line_1C_lovethis": {
+    "en": "I do love this part.",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  },
+  "line_1C_letsgo": {
+    "en": "Let's get down there.",
+    "es": "",
+    "fr": "",
+    "de": "",
+    "ja": "",
+    "zh-CN": "",
+    "ko": ""
+  }
+}

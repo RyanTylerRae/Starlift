@@ -862,6 +862,7 @@ MonoBehaviour:
   sceneNames:
   - Scene_1A
   - Scene_1B
+  - Scene_1C
 --- !u!65 &1029138446
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -585,6 +585,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5717407100827681411, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5717407100827681411, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6016966989428342939, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -608,6 +616,26 @@ PrefabInstance:
     - target: {fileID: 7078476337574425062, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
       propertyPath: m_Color.a
       value: 0.21176471
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744111316061334620, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744111316061334620, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744111316061334620, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744111316061334620, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744111316061334620, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8619991776312864324, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
       propertyPath: m_SizeDelta.x
@@ -1467,6 +1495,8 @@ PlayableDirector:
     value: {fileID: 1335297456}
   - key: {fileID: -7870979346499304843, guid: 1001548aeaf6b754eb2ea74f5b77c37e, type: 2}
     value: {fileID: 430958748}
+  - key: {fileID: -1197103270425007352, guid: 1001548aeaf6b754eb2ea74f5b77c37e, type: 2}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References:
     - b4500065b32b86e4297446b3e8907656: {fileID: 1608701985}

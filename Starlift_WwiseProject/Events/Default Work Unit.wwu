@@ -50,6 +50,135 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Folder Name="dialogue" ID="{1AFEA50A-EE84-4044-94E7-A50A2D30838B}" ShortID="405685633">
+					<ChildrenList>
+						<Folder Name="scene_1" ID="{D2FEE831-C15A-44C8-8EB1-87777D448131}" ShortID="641031753">
+							<ChildrenList>
+								<Event Name="play_line_1A_arrived" ID="{B636C0B6-E6BB-4F10-B0CA-B4AC2DABD030}">
+									<ChildrenList>
+										<Action Name="" ID="{74877B02-D2ED-4B40-941D-115C5612A001}" ShortID="233251722">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="line_1A_arrived" ID="{7EFF4D7F-6834-44CE-8A48-610AF47C76BD}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1B_isee" ID="{06B3175E-61C3-4528-BEC8-D4A92BDB4EEF}">
+									<ChildrenList>
+										<Action Name="" ID="{F7B20C00-8706-45CC-A5D4-B5F01A762937}" ShortID="472953920">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="line_1B_isee" ID="{FFF3334D-6D14-466C-B62B-FF5717775698}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1B_therewasnt" ID="{08F8EE4A-E2D7-4314-8FD4-77B7D85E5D77}">
+									<ChildrenList>
+										<Action Name="" ID="{A13B4D64-7967-4BDB-A4F1-FFE07C3E41DC}" ShortID="819890792">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="line_1B_therewasnt" ID="{B2A74CE5-5611-46C9-9AE8-4A0D61D87305}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1B_noinfo" ID="{F07ED012-DA8D-464F-97A6-72F1D9DFE395}">
+									<ChildrenList>
+										<Action Name="" ID="{2B6A92C4-8248-4C2C-8ED4-215C00C5261B}" ShortID="809617001">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Line_1B_noinfo" ID="{FE29FCA0-B424-4B0C-A256-01FBEC12976B}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1B_nothappening" ID="{9B1F3431-05CA-4E20-B98A-83C88177D124}">
+									<ChildrenList>
+										<Action Name="" ID="{05D6798A-2B8D-49E8-B9A6-308A1BD8F9DB}" ShortID="1001508861">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Line_1B_nothappening" ID="{B774FD69-88A2-4645-AE53-48A2A018F09E}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1C_sorry" ID="{DCC72C97-E5AA-402A-843D-2428598C6E1E}">
+									<ChildrenList>
+										<Action Name="" ID="{68E6B4B0-8347-4C3A-89D1-07F5B461F5B3}" ShortID="294655912">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="line_1C_sorry" ID="{20AC83F1-21FA-422C-A369-2448E79A993A}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1C_sigh" ID="{A5593477-932A-4078-B024-0931E08E9CA2}">
+									<ChildrenList>
+										<Action Name="" ID="{5A0DBA77-5F68-4D5D-9BB1-C5E6C356A50A}" ShortID="295020184">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="line_1C_sigh" ID="{C7651FD5-8E4B-40D4-ABC0-485BD927A3E9}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1C_uthebest" ID="{A7A9B14D-29B3-4CD7-AFFB-69375ADA15D2}">
+									<ChildrenList>
+										<Action Name="" ID="{90FA4675-4ED1-4A14-B08C-CECE4831523C}" ShortID="288477286">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="line_1C_uthebest" ID="{73BFA9AE-3140-4D95-90A7-B53096735A49}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1C_lookup" ID="{68BDCE5B-3BA5-4A9E-9230-BF45BFB79028}">
+									<ChildrenList>
+										<Action Name="" ID="{A8FF685D-36F5-4CB9-9205-55A29269D6BA}" ShortID="1073352368">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Line_1C_lookup" ID="{0B311C25-6138-4D78-8CA6-29AF9352FD2F}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1C_lovethis" ID="{F94540BC-B5D1-46A6-8A8B-3EB2F1AF064F}">
+									<ChildrenList>
+										<Action Name="" ID="{EF40A2DC-A374-46E6-B662-81C5C95E1943}" ShortID="160220896">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="line_1C_lovethis" ID="{31AF0765-BB4A-4939-A6C8-631CCB32F75B}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_line_1C_letsgo" ID="{A6B24ECD-649E-4478-AAD2-5960C96ECD13}">
+									<ChildrenList>
+										<Action Name="" ID="{DA67A56F-CA55-4026-B62C-480749458E9C}" ShortID="371787131">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="line_1C_letsgo" ID="{51C37C9B-75FD-41D2-9DF6-F48CBFEB2D11}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
+					</ChildrenList>
+				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

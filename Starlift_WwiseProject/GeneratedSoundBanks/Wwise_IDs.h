@@ -15,6 +15,17 @@ namespace AK
     {
         static const AkUniqueID PLAY_BLEND_BREATHING = 3591904104U;
         static const AkUniqueID PLAY_BREATHING_DEATH = 130567783U;
+        static const AkUniqueID PLAY_LINE_1A_ARRIVED = 3461298551U;
+        static const AkUniqueID PLAY_LINE_1B_ISEE = 2974145203U;
+        static const AkUniqueID PLAY_LINE_1B_NOINFO = 2356089724U;
+        static const AkUniqueID PLAY_LINE_1B_NOTHAPPENING = 2461422256U;
+        static const AkUniqueID PLAY_LINE_1B_THEREWASNT = 3051217546U;
+        static const AkUniqueID PLAY_LINE_1C_LETSGO = 1395652314U;
+        static const AkUniqueID PLAY_LINE_1C_LOOKUP = 980341684U;
+        static const AkUniqueID PLAY_LINE_1C_LOVETHIS = 4060026150U;
+        static const AkUniqueID PLAY_LINE_1C_SIGH = 182560379U;
+        static const AkUniqueID PLAY_LINE_1C_SORRY = 1813665153U;
+        static const AkUniqueID PLAY_LINE_1C_UTHEBEST = 1403434038U;
         static const AkUniqueID PLAY_OXYGEN_REPLENISH = 2303161985U;
         static const AkUniqueID STOP_BLEND_BREATHING = 2817166606U;
     } // namespace EVENTS
