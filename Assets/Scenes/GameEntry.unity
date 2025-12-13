@@ -860,7 +860,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneNames:
-  - Cutscene_Test
+  - Scene_1A
+  - Scene_1B
 --- !u!65 &1029138446
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -25,7 +25,9 @@ MonoBehaviour:
   - m_enabled: 1
     m_path: Assets/Scenes/GameEntry.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/Cutscenes/Cutscene_Test.unity
+    m_path: Assets/Scenes/Cutscenes/Scene_1A.unity
+  - m_enabled: 1
+    m_path: Assets/Scenes/Cutscenes/Scene_1B.unity
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
     m_Settings:
