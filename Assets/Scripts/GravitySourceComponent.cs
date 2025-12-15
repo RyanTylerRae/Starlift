@@ -1,23 +1,26 @@
 #nullable enable
 
-using NUnit.Framework;
 using UnityEngine;
 
 public class GravitySourceComponent : MonoBehaviour
 {
-    [Header("Collider")]
     public Collider triggerCollider;
+
+    public Collider meshCollider;
 
     public enum GravityMode
     {
         Plane,
-        Point
+        Point,
+        Mesh
     }
 
     [Header("Gravity Settings")]
     public GravityMode gravityMode;
     public Vector3 direction = new();
     public float G_multiplier = 1.0f;
+
+    public float maxDistanceToSurface = 1.0f;
 
     // @todo trae - move global gravity somewhere else
     public float defaultGravity = -10.0f;
@@ -37,26 +40,9 @@ public class GravitySourceComponent : MonoBehaviour
         {
             Debug.LogWarning("GravityComponent on {gameObject.name}: A valid direction is required for plane gravity.");
         }
-
-        // add self to all overlapping GravityControllers at initialization
-        Collider[] overlappingColliders = Physics.OverlapBox(
-            triggerCollider.bounds.center,
-            triggerCollider.bounds.extents,
-            triggerCollider.transform.rotation
-        );
-
-        // foreach (Collider collider in overlappingColliders)
-        // {
-        //     GravityController gravityController = collider.GetComponent<GravityController>();
-        //     if (gravityController != null)
-        //     {
-        //         gravityController.AddGravitySource(this);
-        //         Debug.Log($"GravitySourceComponent on {gameObject.name}: Added to {collider.gameObject.name} on Start");
-        //     }
-        // }
     }
 
-    public Vector3 GetGravityVector(GameObject gameObject)
+    public Vector3 GetGravityVector(Vector3 point)
     {
         if (!isGravityEnabled)
         {
@@ -67,10 +53,22 @@ public class GravitySourceComponent : MonoBehaviour
         {
             return direction * defaultGravity * G_multiplier;
         }
-        else
+        else if (gravityMode == GravityMode.Point)
         {
-            return (transform.position - gameObject.transform.position).normalized * defaultGravity * G_multiplier;
+            return (transform.position - point).normalized * defaultGravity * G_multiplier;
         }
+        else if (gravityMode == GravityMode.Mesh)
+        {
+            Vector3 closestPoint = meshCollider.ClosestPoint(point);
+            Vector3 normal = point - closestPoint;
+
+            if (normal.sqrMagnitude < maxDistanceToSurface * maxDistanceToSurface)
+            {
+                return normal.normalized * defaultGravity * G_multiplier;
+            }
+        }
+
+        return Vector3.zero;
     }
 
     void OnTriggerEnter(Collider other)

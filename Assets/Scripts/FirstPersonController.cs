@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using Dissonance;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -41,6 +42,9 @@ public class FirstPersonController : MonoBehaviour
     public float jumpTier2Time = 0f;
     public float jumpTier3Time = 0f;
     public float jumpDirectionalAngleThreshold = 135f;
+
+    [Header("Physics Sub-stepping")]
+    public float substepDistance = 0.05f;
 
     [Header("Player")]
     private CharacterController characterController;
@@ -248,6 +252,62 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
+    public void FixedUpdate()
+    {
+        // if we are in Gravity mode, apply sub-stepping to move across surfaces smoothly
+        // we will move in increments, and reproject to find the new surface normal at each step
+        if (MovementMode != ControllerMovementMode.Gravity)
+        {
+            return;
+        }
+
+        GravitySourceComponent? gravitySource = gravityController?.GetActiveGravitySource();
+        if (gravitySource == null)
+        {
+            Debug.Log("FirstPersonController: FixedUpdate - no gravity source");
+            return;
+        }
+
+        Vector3 velocity = _rigidbody.linearVelocity;
+        Vector3 position = _rigidbody.position;
+
+        // calculate relative velocity to the gravity source and the distance it represents
+        Vector3 gravitySourceVelocity = Vector3.zero;
+        if (gravitySource.TryGetComponent(out Rigidbody rBody))
+        {
+            gravitySourceVelocity = rBody.linearVelocity;
+        }
+
+        Vector3 relativeVelocity = velocity - gravitySourceVelocity;
+        float totalDistance = relativeVelocity.magnitude * Time.fixedDeltaTime;
+
+        int substeps = Mathf.Max(1, Mathf.CeilToInt(totalDistance / substepDistance));
+        float subDeltaTime = Time.fixedDeltaTime / substeps;
+
+        for (int i = 0; i < substeps; i++)
+        {
+            // manually integrate position: p = p + v * dt
+            position += velocity * subDeltaTime;
+
+            // Adjust velocity based on current position
+            velocity = AdjustVelocityPerSubstep(gravitySource, velocity, position, subDeltaTime);
+        }
+
+        velocity = ClampVelocityInGravity(velocity);
+
+        // apply final state to rigidbody, included the new adjusted velocity
+        _rigidbody.position = position;
+        _rigidbody.linearVelocity = gravitySourceVelocity + velocity;
+    }
+
+    private Vector3 AdjustVelocityPerSubstep(GravitySourceComponent gravitySource, Vector3 velocity, Vector3 position, float deltaTime)
+    {
+        Vector3 gravityVector = gravitySource.GetGravityVector(position);
+        Vector3 normal = -gravityVector.normalized;
+
+        return velocity - Vector3.Dot(velocity, normal) * normal;
+    }
+
     void HandleMouseLook()
     {
         Vector2? lookInput = lookAction?.ReadValue<Vector2>();
@@ -348,15 +408,26 @@ public class FirstPersonController : MonoBehaviour
         float yComponent = velocity.y;
         velocity.y = 0.0f;
 
-        float maxSpeed = sprintIsPressed.Value ? maxRunSpeed : maxWalkSpeed;
-        if (velocity.sqrMagnitude > maxSpeed * maxSpeed)
-        {
-            velocity.Normalize();
-            velocity *= maxSpeed;
-        }
+        velocity = ClampVelocityInGravity(velocity);
 
         velocity.y = yComponent;
         _rigidbody.linearVelocity = velocity;
+    }
+
+    private Vector3 ClampVelocityInGravity(Vector3 velocity)
+    {
+        bool? sprintIsPressed = sprintAction?.IsPressed();
+        if (sprintIsPressed != null)
+        {
+            float maxSpeed = sprintIsPressed.Value ? maxRunSpeed : maxWalkSpeed;
+            if (velocity.sqrMagnitude > maxSpeed * maxSpeed)
+            {
+                velocity.Normalize();
+                velocity *= maxSpeed;
+            }
+        }
+
+        return velocity;
     }
 
     void HandleZeroGLook()

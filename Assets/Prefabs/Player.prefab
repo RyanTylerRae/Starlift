@@ -753,9 +753,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ef3528d233fd94eadd571fa4e4f27a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForce: 20
-  maxWalkSpeed: 4
-  maxRunSpeed: 8
+  moveForce: 10
+  maxWalkSpeed: 2
+  maxRunSpeed: 4
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
@@ -768,6 +768,7 @@ MonoBehaviour:
   jumpTier2Time: 0.5
   jumpTier3Time: 0.6
   jumpDirectionalAngleThreshold: 135
+  substepDistance: 0.05
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
 --- !u!136 &3544571870899075731

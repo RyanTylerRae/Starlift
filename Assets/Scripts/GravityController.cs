@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -97,11 +99,20 @@ public class GravityController : MonoBehaviour
     public void AddGravitySource(GravitySourceComponent gravityComponent)
     {
         gravitySources.Add(gravityComponent);
+
+        // Parent to the gravity source to follow its transform
+        transform.SetParent(gravityComponent.transform, true);
     }
 
     public void RemoveGravitySource(GravitySourceComponent gravityComponent)
     {
         gravitySources.Remove(gravityComponent);
+
+        // Unparent when leaving the gravity source
+        if (gravitySources.Count == 0)
+        {
+            transform.SetParent(null, true);
+        }
     }
 
     public Vector3 GetGravityVector()
@@ -111,9 +122,19 @@ public class GravityController : MonoBehaviour
         // only use the last gravity source added for now
         if (gravitySources.Count > 0)
         {
-            gravity = gravitySources.Last().GetGravityVector(gameObject);
+            gravity = gravitySources.Last().GetGravityVector(gameObject.transform.position);
         }
 
         return gravity;
+    }
+
+    public GravitySourceComponent? GetActiveGravitySource()
+    {
+        if (gravitySources.Count > 0)
+        {
+            return gravitySources.Last();
+        }
+
+        return null;
     }
 }
