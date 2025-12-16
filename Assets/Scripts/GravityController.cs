@@ -17,6 +17,7 @@ public class GravityController : MonoBehaviour
     private Rigidbody _rigidBody;
     private bool hadGravityLastFrame;
     private Vector3 lastGravityDirection = Vector3.down;
+    private GameObject? intermediateParent;
 
     public void Start()
     {
@@ -100,18 +101,35 @@ public class GravityController : MonoBehaviour
     {
         gravitySources.Add(gravityComponent);
 
-        // Parent to the gravity source to follow its transform
-        transform.SetParent(gravityComponent.transform, true);
+        // Create intermediate parent with inverse scale to cancel out gravity source's scale
+        intermediateParent = new GameObject("GravityParent_" + gameObject.name);
+        intermediateParent.transform.SetParent(gravityComponent.transform, false);
+
+        Vector3 sourceScale = gravityComponent.transform.lossyScale;
+        intermediateParent.transform.localScale = new Vector3(
+            1f / sourceScale.x,
+            1f / sourceScale.y,
+            1f / sourceScale.z
+        );
+
+        // Parent to intermediate parent to follow rotation/position without scale
+        transform.SetParent(intermediateParent.transform, true);
     }
 
     public void RemoveGravitySource(GravitySourceComponent gravityComponent)
     {
         gravitySources.Remove(gravityComponent);
 
-        // Unparent when leaving the gravity source
+        // Unparent and clean up intermediate parent when no gravity sources remain
         if (gravitySources.Count == 0)
         {
             transform.SetParent(null, true);
+
+            if (intermediateParent != null)
+            {
+                Destroy(intermediateParent);
+                intermediateParent = null;
+            }
         }
     }
 

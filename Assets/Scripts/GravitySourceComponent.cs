@@ -1,92 +1,68 @@
 #nullable enable
 
+using System.Collections;
 using UnityEngine;
 
-public class GravitySourceComponent : MonoBehaviour
+public abstract class GravitySourceComponent : MonoBehaviour
 {
-    public Collider triggerCollider;
-
-    public Collider meshCollider;
-
-    public enum GravityMode
-    {
-        Plane,
-        Point,
-        Mesh
-    }
-
     [Header("Gravity Settings")]
-    public GravityMode gravityMode;
-    public Vector3 direction = new();
     public float G_multiplier = 1.0f;
-
-    public float maxDistanceToSurface = 1.0f;
 
     // @todo trae - move global gravity somewhere else
     public float defaultGravity = -10.0f;
 
     public bool isGravityEnabled = true;
 
-    void Start()
+    private Coroutine? disableCoroutine;
+
+    public abstract Vector3 GetGravityVector(Vector3 point);
+
+    public abstract void Update();
+
+    public void DisableForSeconds(float seconds)
     {
-        if (!triggerCollider.isTrigger)
+        if (disableCoroutine != null)
         {
-            Debug.LogWarning($"GravityComponent on {gameObject.name}: Assigned collider is not set as a trigger!");
+            StopCoroutine(disableCoroutine);
         }
 
-        direction = direction.normalized;
-
-        if (gravityMode == GravityMode.Plane && direction.sqrMagnitude < 0.01)
-        {
-            Debug.LogWarning("GravityComponent on {gameObject.name}: A valid direction is required for plane gravity.");
-        }
+        disableCoroutine = StartCoroutine(DisableCoroutine(seconds));
     }
 
-    public Vector3 GetGravityVector(Vector3 point)
+    private IEnumerator DisableCoroutine(float seconds)
     {
-        if (!isGravityEnabled)
-        {
-            return Vector3.zero;
-        }
-
-        if (gravityMode == GravityMode.Plane)
-        {
-            return direction * defaultGravity * G_multiplier;
-        }
-        else if (gravityMode == GravityMode.Point)
-        {
-            return (transform.position - point).normalized * defaultGravity * G_multiplier;
-        }
-        else if (gravityMode == GravityMode.Mesh)
-        {
-            Vector3 closestPoint = meshCollider.ClosestPoint(point);
-            Vector3 normal = point - closestPoint;
-
-            if (normal.sqrMagnitude < maxDistanceToSurface * maxDistanceToSurface)
-            {
-                return normal.normalized * defaultGravity * G_multiplier;
-            }
-        }
-
-        return Vector3.zero;
+        isGravityEnabled = false;
+        yield return new WaitForSeconds(seconds);
+        isGravityEnabled = true;
+        disableCoroutine = null;
     }
 
-    void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"GravityComponent on {gameObject.name}: {other.gameObject.name} entered trigger");
+        OnTriggerEnterInternal(other.gameObject);
+    }
 
-        GravityController gravityController = other.gameObject.GetComponent<GravityController>();
+    public void OnTriggerExit(Collider other)
+    {
+        OnTriggerExitInternal(other.gameObject);
+    }
+
+    protected void OnTriggerEnterInternal(GameObject gameObject)
+    {
+        Debug.Log($"GravityComponent on {gameObject.name}: {gameObject.name} entered trigger");
+
+        GravityController gravityController = gameObject.GetComponent<GravityController>();
         if (gravityController != null)
         {
             gravityController.AddGravitySource(this);
         }
     }
 
-    void OnTriggerExit(Collider other)
+    protected void OnTriggerExitInternal(GameObject gameObject)
     {
-        Debug.Log($"GravityComponent on {gameObject.name}: {other.gameObject.name} exited trigger");
+        Debug.Log($"GravityComponent on {gameObject.name}: {gameObject.name} exited trigger");
 
-        GravityController gravityController = other.gameObject.GetComponent<GravityController>();
+        GravityController gravityController = gameObject.GetComponent<GravityController>();
         if (gravityController != null)
         {
             gravityController.RemoveGravitySource(this);

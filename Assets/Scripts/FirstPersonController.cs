@@ -385,6 +385,13 @@ public class FirstPersonController : MonoBehaviour
             }
 
             _rigidbody.AddForce(jumpDirection * jumpForce);
+
+            // Disable active gravity source for 0.5 seconds on tier 1+ jump
+            GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
+            if (activeSource != null)
+            {
+                activeSource.DisableForSeconds(0.5f);
+            }
         }
     }
 

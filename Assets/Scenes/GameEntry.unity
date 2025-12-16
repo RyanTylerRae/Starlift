@@ -282,8 +282,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 171492930}
-  - component: {fileID: 171492929}
   - component: {fileID: 171492928}
+  - component: {fileID: 171492931}
   m_Layer: 0
   m_Name: GravityZone
   m_TagString: Untagged
@@ -312,26 +312,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &171492929
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 171492927}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3ee455c6f8dee940b4c17e4e80fea33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  triggerCollider: {fileID: 171492928}
-  meshCollider: {fileID: 0}
-  gravityMode: 0
-  direction: {x: 0, y: 1, z: 0}
-  G_multiplier: 1
-  maxDistanceToSurface: 1
-  defaultGravity: -10
-  isGravityEnabled: 1
 --- !u!4 &171492930
 Transform:
   m_ObjectHideFlags: 0
@@ -347,6 +327,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 40525742}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &171492931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171492927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43258a6a0361ed042b19ed927c843283, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  G_multiplier: 1
+  defaultGravity: 10
+  isGravityEnabled: 1
+  triggerCollider: {fileID: 171492928}
+  direction: {x: 0, y: -1, z: 0}
 --- !u!4 &354495498 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4821971333048981815, guid: 73e114c69d27c9548b2d5ab84722f726, type: 3}
@@ -713,8 +710,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 757021077}
-  - component: {fileID: 757021079}
   - component: {fileID: 757021078}
+  - component: {fileID: 757021079}
   m_Layer: 0
   m_Name: GravityZone (1)
   m_TagString: Untagged
@@ -767,17 +764,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 757021076}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3ee455c6f8dee940b4c17e4e80fea33, type: 3}
+  m_Script: {fileID: 11500000, guid: 43258a6a0361ed042b19ed927c843283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  triggerCollider: {fileID: 757021078}
-  meshCollider: {fileID: 0}
-  gravityMode: 0
-  direction: {x: 0, y: -1, z: 0}
   G_multiplier: 1
-  maxDistanceToSurface: 1
-  defaultGravity: -10
+  defaultGravity: 10
   isGravityEnabled: 1
+  triggerCollider: {fileID: 757021078}
+  direction: {x: 0, y: 1, z: 0}
 --- !u!1 &773296914
 GameObject:
   m_ObjectHideFlags: 0
@@ -1003,7 +997,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotationAxis: {x: 0.3, y: 0.2, z: 0.8}
   rotationsPerSecond: 0.04166667
---- !u!114 &1175568526
+--- !u!114 &1175568525
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1012,38 +1006,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1175568523}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3ee455c6f8dee940b4c17e4e80fea33, type: 3}
+  m_Script: {fileID: 11500000, guid: 66d134e8e88563842bda09e8f56048f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  triggerCollider: {fileID: 1175568527}
-  meshCollider: {fileID: 62801866}
-  gravityMode: 2
-  direction: {x: 0, y: 0, z: 0}
   G_multiplier: 1
-  maxDistanceToSurface: 2
   defaultGravity: -10
   isGravityEnabled: 1
---- !u!135 &1175568527
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1175568523}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 7.89
-  m_Center: {x: 0, y: 0, z: 0}
+  meshCollider: {fileID: 62801866}
+  maxDistanceToSurface: 1
 --- !u!1 &1234567895
 GameObject:
   m_ObjectHideFlags: 0
@@ -1494,10 +1464,7 @@ PrefabInstance:
       addedObject: {fileID: 1175568524}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ea686b26e7669f9418d902470d58ce73, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1175568526}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ea686b26e7669f9418d902470d58ce73, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1175568527}
+      addedObject: {fileID: 1175568525}
     - targetCorrespondingSourceObject: {fileID: -648033670242171620, guid: ea686b26e7669f9418d902470d58ce73, type: 3}
       insertIndex: -1
       addedObject: {fileID: 62801866}
