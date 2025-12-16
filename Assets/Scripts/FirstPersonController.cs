@@ -46,6 +46,9 @@ public class FirstPersonController : MonoBehaviour
     [Header("Physics Sub-stepping")]
     public float substepDistance = 0.05f;
 
+    // Desired movement velocity from input (used in FixedUpdate)
+    private Vector3 desiredMovementVelocity = Vector3.zero;
+
     [Header("Player")]
     private CharacterController characterController;
     private PlayerInput playerInput;
@@ -278,7 +281,12 @@ public class FirstPersonController : MonoBehaviour
             gravitySourceVelocity = rBody.linearVelocity;
         }
 
-        Vector3 relativeVelocity = velocity - gravitySourceVelocity;
+        // Replace horizontal velocity with desired movement + gravity source velocity (to make it absolute)
+        // Keep vertical component for gravity. Gravity source velocity will be added back at end.
+        float verticalVelocity = velocity.y - gravitySourceVelocity.y;
+        velocity = desiredMovementVelocity + new Vector3(0, verticalVelocity, 0);
+
+        Vector3 relativeVelocity = velocity;
         float totalDistance = relativeVelocity.magnitude * Time.fixedDeltaTime;
 
         int substeps = Mathf.Max(1, Mathf.CeilToInt(totalDistance / substepDistance));
@@ -402,23 +410,18 @@ public class FirstPersonController : MonoBehaviour
 
         if (moveInput == null || sprintIsPressed == null)
         {
+            desiredMovementVelocity = Vector3.zero;
             return;
         }
 
-        // apply gravity and movement forces based on input
+        // Calculate movement direction in world space
         Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;
 
-        _rigidbody.AddForce(direction * moveForce);
+        // Calculate movement speed based on sprint state
+        float moveSpeed = sprintIsPressed.Value ? maxRunSpeed : maxWalkSpeed;
 
-        // clamp velocity in the XZ-direction to a maximum speed
-        Vector3 velocity = _rigidbody.linearVelocity;
-        float yComponent = velocity.y;
-        velocity.y = 0.0f;
-
-        velocity = ClampVelocityInGravity(velocity);
-
-        velocity.y = yComponent;
-        _rigidbody.linearVelocity = velocity;
+        // Store desired movement velocity (will be applied in FixedUpdate)
+        desiredMovementVelocity = direction * moveSpeed * moveInput.Value.magnitude;
     }
 
     private Vector3 ClampVelocityInGravity(Vector3 velocity)
