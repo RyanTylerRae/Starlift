@@ -226,6 +226,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""13673fe1-eb5c-4ddd-ad0e-52336c5c707e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Look"",
                     ""type"": ""Value"",
                     ""id"": ""d90deb2a-cc57-41e0-a4b5-b1ab1e1378c9"",
@@ -354,6 +363,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fa3d22f9-dc38-45f5-9115-0c6ed53d3926"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e35ca112-37ed-4bae-bacb-da7a43a3ab0e"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
@@ -1383,6 +1414,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         // MovementGravity
         m_MovementGravity = asset.FindActionMap("MovementGravity", throwIfNotFound: true);
         m_MovementGravity_Move = m_MovementGravity.FindAction("Move", throwIfNotFound: true);
+        m_MovementGravity_Jump = m_MovementGravity.FindAction("Jump", throwIfNotFound: true);
         m_MovementGravity_Look = m_MovementGravity.FindAction("Look", throwIfNotFound: true);
         m_MovementGravity_Sprint = m_MovementGravity.FindAction("Sprint", throwIfNotFound: true);
         // UI
@@ -1550,6 +1582,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_MovementGravity;
     private List<IMovementGravityActions> m_MovementGravityActionsCallbackInterfaces = new List<IMovementGravityActions>();
     private readonly InputAction m_MovementGravity_Move;
+    private readonly InputAction m_MovementGravity_Jump;
     private readonly InputAction m_MovementGravity_Look;
     private readonly InputAction m_MovementGravity_Sprint;
     public struct MovementGravityActions
@@ -1557,6 +1590,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         private @InputSystem_Actions m_Wrapper;
         public MovementGravityActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_MovementGravity_Move;
+        public InputAction @Jump => m_Wrapper.m_MovementGravity_Jump;
         public InputAction @Look => m_Wrapper.m_MovementGravity_Look;
         public InputAction @Sprint => m_Wrapper.m_MovementGravity_Sprint;
         public InputActionMap Get() { return m_Wrapper.m_MovementGravity; }
@@ -1571,6 +1605,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
@@ -1584,6 +1621,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
@@ -1997,6 +2037,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     public interface IMovementGravityActions
     {
         void OnMove(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
     }

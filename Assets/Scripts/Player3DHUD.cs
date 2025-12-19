@@ -59,7 +59,7 @@ public class PlayerHUD : MonoBehaviour
                     Ray ray = new Ray(playerController.playerCamera.transform.position, playerController.playerCamera.transform.forward);
                     RaycastHit hit;
 
-                    if (Physics.Raycast(ray, out hit, jumpTargetRaycastDistance))
+                    if (Physics.Raycast(ray, out hit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
                     {
                         // Get hit point in player camera's local space
                         Vector3 playerCameraLocalHit = playerController.playerCamera.transform.InverseTransformPoint(hit.point);

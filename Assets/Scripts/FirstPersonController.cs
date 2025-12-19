@@ -15,9 +15,16 @@ public class FirstPersonController : MonoBehaviour
     public float moveForce;
     public float maxWalkSpeed;
     public float maxRunSpeed;
+    private bool isGrounded = false;
+    public float groundedDistance;
+    public float jumpForce;
+    public float jumpCooldown = 0.3f;
+    private float lastJumpTime = -1f;
 
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
+    public float surfaceAttractionForce = 50f;
+    public float magnetizedSurfaceDistance = 0.3f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -134,8 +141,8 @@ public class FirstPersonController : MonoBehaviour
             moveAction = playerInput.currentActionMap.FindAction("Move");
             lookAction = playerInput.currentActionMap.FindAction("Look");
             sprintAction = playerInput.currentActionMap.FindAction("Sprint");
+            jumpAction = playerInput.currentActionMap.FindAction("Jump");
 
-            jumpAction = null;
             stabilizeAction = null;
             forwardThrustAction = null;
             backwardThrustAction = null;
@@ -237,7 +244,7 @@ public class FirstPersonController : MonoBehaviour
                 float magneticCharge = Math.Clamp((jumpTier1Time - pressDuration) / jumpTier1Time, 0.0f, 1.0f);
                 if (magneticCharge <= 0.0f && modifiers.Get(ModifierType.MagneticCharge) > 0.0f)
                 {
-                    TriggerCameraShake(0.05f, 0.1f, 8);
+                    //TriggerCameraShake(0.05f, 0.1f, 8);
                 }
 
                 modifiers.Set(ModifierType.MagneticCharge, magneticCharge);
@@ -265,7 +272,7 @@ public class FirstPersonController : MonoBehaviour
                 SetMovementMode(ControllerMovementMode.Gravity);
             }
 
-            TriggerCameraShake(0.05f, 0.1f, 8);
+            //TriggerCameraShake(0.05f, 0.1f, 8);
         }
         else if (MovementMode != ControllerMovementMode.ZeroG && gravity.sqrMagnitude < 0.01f)
         {
@@ -283,6 +290,9 @@ public class FirstPersonController : MonoBehaviour
         if (MovementMode != ControllerMovementMode.ZeroG)
         {
             HandleMouseLook();
+            HandleGrounded();
+
+            Debug.Log(isGrounded);
 
             if (jumpPressStartTime == 0.0f)
             {
@@ -293,6 +303,7 @@ public class FirstPersonController : MonoBehaviour
                 else if (MovementMode == ControllerMovementMode.Gravity)
                 {
                     HandleMovement();
+                    HandleJump();
                 }
             }
 
@@ -327,6 +338,22 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
+        // Apply attraction force toward the surface to clamp player quickly
+        // Only apply if gravity is enabled (not disabled during jump) and player is above surface
+        if (gravitySource.isGravityEnabled)
+        {
+            Vector3 closestSurfacePoint = gravitySource.GetClosestSurfacePoint(transform.position);
+            Vector3 toSurface = closestSurfacePoint - transform.position;
+            float distanceToSurface = toSurface.magnitude;
+
+            // Only apply force if player is above the surface (distance > small threshold)
+            if (distanceToSurface > magnetizedSurfaceDistance)
+            {
+                Vector3 directionToSurface = toSurface / distanceToSurface;
+                _rigidbody.AddForce(directionToSurface * surfaceAttractionForce);
+            }
+        }
+
         Vector3 velocity = _rigidbody.linearVelocity;
         Vector3 position = _rigidbody.position;
 
@@ -356,8 +383,6 @@ public class FirstPersonController : MonoBehaviour
             // Adjust velocity based on current position
             velocity = AdjustVelocityPerSubstep(gravitySource, velocity, position, subDeltaTime);
         }
-
-        velocity = ClampVelocityInGravity(velocity);
 
         // apply final state to rigidbody, included the new adjusted velocity
         _rigidbody.position = position;
@@ -400,6 +425,65 @@ public class FirstPersonController : MonoBehaviour
 
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * lookX);
+    }
+
+    private void HandleGrounded()
+    {
+        isGrounded = false;
+
+        if (gravityController == null)
+        {
+            return;
+        }
+
+        Vector3 gravity = gravityController.GetGravityVector();
+        if (gravity.sqrMagnitude < 0.01)
+        {
+            return;
+        }
+
+        Ray ray = new Ray(transform.position, gravity.normalized);
+        if (Physics.Raycast(ray, groundedDistance, LayerMask.GetMask("Default")))
+        {
+            isGrounded = true;
+        }
+    }
+
+    private void HandleJump()
+    {
+        if (jumpAction == null || !jumpAction.WasPressedThisFrame())
+        {
+            return;
+        }
+
+        // Check cooldown to prevent jump spamming
+        if (Time.time - lastJumpTime < jumpCooldown)
+        {
+            return;
+        }
+
+        if (!isGrounded)
+        {
+            return;
+        }
+
+        if (gravityController == null)
+        {
+            return;
+        }
+
+        Vector3 gravity = gravityController.GetGravityVector();
+        if (gravity.sqrMagnitude < 0.01f)
+        {
+            return;
+        }
+
+        // Jump in the opposite direction of gravity
+        Vector3 jumpDirection = -gravity.normalized;
+        _rigidbody.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
+
+        // Record jump time for cooldown
+        lastJumpTime = Time.time;
     }
 
     private void OnJumpStarted(InputAction.CallbackContext context)
@@ -518,22 +602,6 @@ public class FirstPersonController : MonoBehaviour
         velocity = velocityTangent + velocityInGravityDir;
         _rigidbody.linearVelocity = velocity;
 
-    }
-
-    private Vector3 ClampVelocityInGravity(Vector3 velocity)
-    {
-        bool? sprintIsPressed = sprintAction?.IsPressed();
-        if (sprintIsPressed != null)
-        {
-            float maxSpeed = sprintIsPressed.Value ? maxRunSpeed : maxWalkSpeed;
-            if (velocity.sqrMagnitude > maxSpeed * maxSpeed)
-            {
-                velocity.Normalize();
-                velocity *= maxSpeed;
-            }
-        }
-
-        return velocity;
     }
 
     void HandleZeroGLook()

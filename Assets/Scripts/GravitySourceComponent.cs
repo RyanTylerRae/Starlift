@@ -18,6 +18,8 @@ public abstract class GravitySourceComponent : MonoBehaviour
 
     public abstract Vector3 GetGravityVector(Vector3 point);
 
+    public abstract Vector3 GetClosestSurfacePoint(Vector3 point);
+
     public abstract void Update();
 
     public void DisableForSeconds(float seconds)

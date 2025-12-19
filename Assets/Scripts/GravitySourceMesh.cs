@@ -45,6 +45,16 @@ public class GravitySourceMesh : GravitySourceComponent
         }
     }
 
+    public override Vector3 GetClosestSurfacePoint(Vector3 point)
+    {
+        if (meshCollider == null)
+        {
+            return point;
+        }
+
+        return meshCollider.ClosestPoint(point);
+    }
+
     public override Vector3 GetGravityVector(Vector3 point)
     {
         if (!isGravityEnabled)

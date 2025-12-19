@@ -756,7 +756,12 @@ MonoBehaviour:
   moveForce: 15
   maxWalkSpeed: 4
   maxRunSpeed: 8
+  groundedDistance: 0.7
+  jumpForce: 5
+  jumpCooldown: 0.5
   maxMagnetizedWalkSpeed: 2.5
+  surfaceAttractionForce: 100
+  magnetizedSurfaceDistance: 0.3
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
