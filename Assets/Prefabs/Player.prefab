@@ -756,6 +756,7 @@ MonoBehaviour:
   moveForce: 15
   maxWalkSpeed: 4
   maxRunSpeed: 8
+  maxMagnetizedWalkSpeed: 2.5
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
@@ -767,8 +768,8 @@ MonoBehaviour:
   jumpTier1Time: 0.4
   jumpTier2Time: 0.5
   jumpTier3Time: 0.6
-  jumpDirectionalAngleThreshold: 135
-  substepDistance: 0.01
+  jumpDirectionalAngleThreshold: 90
+  substepDistance: 0.05
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
 --- !u!136 &3544571870899075731

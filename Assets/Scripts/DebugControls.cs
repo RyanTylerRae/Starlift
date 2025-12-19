@@ -9,7 +9,7 @@ public class DebugControls : MonoBehaviour
 
         if (playerController.MovementMode == FirstPersonController.ControllerMovementMode.ZeroG)
         {
-            playerController.SetMovementMode(FirstPersonController.ControllerMovementMode.Gravity);
+            playerController.SetMovementMode(FirstPersonController.ControllerMovementMode.Magnetized);
             Debug.Log("MoveMode: Gravity");
         }
         else

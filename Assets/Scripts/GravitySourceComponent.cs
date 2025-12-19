@@ -12,6 +12,7 @@ public abstract class GravitySourceComponent : MonoBehaviour
     public float defaultGravity = -10.0f;
 
     public bool isGravityEnabled = true;
+    public bool isMagnetized = true;
 
     private Coroutine? disableCoroutine;
 

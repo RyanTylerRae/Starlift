@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using Dissonance;
+using Steamworks;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,10 +11,13 @@ using UnityEngine.UI;
 
 public class FirstPersonController : MonoBehaviour
 {
-    [Header("Movement")]
+    [Header("Gravity-Based Movement")]
     public float moveForce;
     public float maxWalkSpeed;
     public float maxRunSpeed;
+
+    [Header("Magnetized Movement")]
+    public float maxMagnetizedWalkSpeed;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -23,7 +27,7 @@ public class FirstPersonController : MonoBehaviour
 
     private float xRotation = 0f;
 
-    // flight
+    [Header("Zero Gravity")]
     public float stabilizeMultiplier;
 
     public float flightForce;
@@ -78,15 +82,16 @@ public class FirstPersonController : MonoBehaviour
 
     public bool IsUsingGamepad => playerInput != null && playerInput.currentControlScheme == "Gamepad";
 
-    public bool ShouldDisplayJumpTarget => CameraAngleFromGravity > jumpDirectionalAngleThreshold && MovementMode == ControllerMovementMode.Gravity;
+    public bool ShouldDisplayJumpTarget => CameraAngleFromGravity > jumpDirectionalAngleThreshold && MovementMode == ControllerMovementMode.Magnetized;
 
     public enum ControllerMovementMode
     {
-        Gravity,
-        ZeroG
+        Magnetized,
+        ZeroG,
+        Gravity
     }
 
-    private ControllerMovementMode movementMode = ControllerMovementMode.Gravity;
+    private ControllerMovementMode movementMode = ControllerMovementMode.Magnetized;
     public ControllerMovementMode MovementMode
     {
         get => movementMode;
@@ -122,22 +127,15 @@ public class FirstPersonController : MonoBehaviour
     {
         movementMode = newMovementMode;
 
-        if (movementMode == ControllerMovementMode.Gravity)
+        if (MovementMode == ControllerMovementMode.Gravity)
         {
             playerInput.SwitchCurrentActionMap("MovementGravity");
 
             moveAction = playerInput.currentActionMap.FindAction("Move");
             lookAction = playerInput.currentActionMap.FindAction("Look");
-            jumpAction = playerInput.currentActionMap.FindAction("Jump");
             sprintAction = playerInput.currentActionMap.FindAction("Sprint");
 
-            // Subscribe to jump action events
-            if (jumpAction != null)
-            {
-                jumpAction.started += OnJumpStarted;
-                jumpAction.canceled += OnJumpCanceled;
-            }
-
+            jumpAction = null;
             stabilizeAction = null;
             forwardThrustAction = null;
             backwardThrustAction = null;
@@ -151,14 +149,43 @@ public class FirstPersonController : MonoBehaviour
             _rigidbody.freezeRotation = true;
             _rigidbody.rotation = Quaternion.identity;
         }
-        else
+        else if (movementMode == ControllerMovementMode.Magnetized)
+        {
+            playerInput.SwitchCurrentActionMap("MovementMagnetized");
+
+            moveAction = playerInput.currentActionMap.FindAction("Move");
+            lookAction = playerInput.currentActionMap.FindAction("Look");
+            jumpAction = playerInput.currentActionMap.FindAction("Jump");
+
+            // Subscribe to jump action events
+            if (jumpAction != null)
+            {
+                jumpAction.started -= OnJumpStarted;
+                jumpAction.started += OnJumpStarted;
+
+                jumpAction.canceled -= OnJumpCanceled;
+                jumpAction.canceled += OnJumpCanceled;
+            }
+
+            sprintAction = null;
+            stabilizeAction = null;
+            forwardThrustAction = null;
+            backwardThrustAction = null;
+            leftThrustAction = null;
+            rightThrustAction = null;
+            upThrustAction = null;
+            downThrustAction = null;
+            rotateLeftAction = null;
+            rotateRightAction = null;
+
+            _rigidbody.freezeRotation = true;
+            _rigidbody.rotation = Quaternion.identity;
+        }
+        else if (movementMode == ControllerMovementMode.ZeroG)
         {
             playerInput.SwitchCurrentActionMap("MovementZeroG");
 
-            moveAction = null;
             lookAction = playerInput.currentActionMap.FindAction("Look");
-            jumpAction = null;
-            sprintAction = null;
             stabilizeAction = playerInput.currentActionMap.FindAction("Stabilize");
             forwardThrustAction = playerInput.currentActionMap.FindAction("ForwardThrust");
             backwardThrustAction = playerInput.currentActionMap.FindAction("BackwardThrust");
@@ -168,6 +195,10 @@ public class FirstPersonController : MonoBehaviour
             downThrustAction = playerInput.currentActionMap.FindAction("DownThrust");
             rotateLeftAction = playerInput.currentActionMap.FindAction("RotateLeft");
             rotateRightAction = playerInput.currentActionMap.FindAction("RotateRight");
+
+            moveAction = null;
+            jumpAction = null;
+            sprintAction = null;
 
             _rigidbody.freezeRotation = false;
         }
@@ -184,7 +215,7 @@ public class FirstPersonController : MonoBehaviour
         if (modifiers != null)
         {
             float pressDuration = 0.0f;
-            if (jumpPressStartTime > 0.0f && MovementMode == ControllerMovementMode.Gravity)
+            if (jumpPressStartTime > 0.0f && MovementMode == ControllerMovementMode.Magnetized)
             {
                 pressDuration = Time.time - jumpPressStartTime;
             }
@@ -197,11 +228,11 @@ public class FirstPersonController : MonoBehaviour
             modifiers.Set(ModifierType.JumpCharge_Tier2, tier2Norm);
             modifiers.Set(ModifierType.JumpCharge_Tier3, tier3Norm);
 
-            if (MovementMode == ControllerMovementMode.ZeroG)
+            if (MovementMode != ControllerMovementMode.Magnetized)
             {
                 modifiers.Set(ModifierType.MagneticCharge, 0.0f);
             }
-            else
+            else if (MovementMode == ControllerMovementMode.Magnetized)
             {
                 float magneticCharge = Math.Clamp((jumpTier1Time - pressDuration) / jumpTier1Time, 0.0f, 1.0f);
                 if (magneticCharge <= 0.0f && modifiers.Get(ModifierType.MagneticCharge) > 0.0f)
@@ -221,23 +252,48 @@ public class FirstPersonController : MonoBehaviour
             cameraAngleFromGravity = Vector3.Angle(playerCamera.transform.forward, gravity);
         }
 
+        bool isMagnetized = gravityController.GetActiveGravitySource()?.isMagnetized ?? false;
+
         if (MovementMode == ControllerMovementMode.ZeroG && gravity.sqrMagnitude > 0.0f)
         {
-            SetMovementMode(ControllerMovementMode.Gravity);
+            if (isMagnetized)
+            {
+                SetMovementMode(ControllerMovementMode.Magnetized);
+            }
+            else
+            {
+                SetMovementMode(ControllerMovementMode.Gravity);
+            }
+
             TriggerCameraShake(0.05f, 0.1f, 8);
         }
-        else if (MovementMode == ControllerMovementMode.Gravity && gravity.sqrMagnitude < 0.01f)
+        else if (MovementMode != ControllerMovementMode.ZeroG && gravity.sqrMagnitude < 0.01f)
         {
             SetMovementMode(ControllerMovementMode.ZeroG);
         }
+        else if (MovementMode == ControllerMovementMode.Magnetized && !isMagnetized)
+        {
+            SetMovementMode(ControllerMovementMode.Gravity);
+        }
+        else if (MovementMode == ControllerMovementMode.Gravity && isMagnetized)
+        {
+            SetMovementMode(ControllerMovementMode.Magnetized);
+        }
 
-        if (MovementMode == ControllerMovementMode.Gravity)
+        if (MovementMode != ControllerMovementMode.ZeroG)
         {
             HandleMouseLook();
 
             if (jumpPressStartTime == 0.0f)
             {
-                HandleMovement();
+                if (MovementMode == ControllerMovementMode.Magnetized)
+                {
+                    HandleMovementSubStepped();
+                }
+                else if (MovementMode == ControllerMovementMode.Gravity)
+                {
+                    HandleMovement();
+                }
             }
 
             // orient player to align with gravity
@@ -257,9 +313,9 @@ public class FirstPersonController : MonoBehaviour
 
     public void FixedUpdate()
     {
-        // if we are in Gravity mode, apply sub-stepping to move across surfaces smoothly
+        // if we are in magnetized mode, apply sub-stepping to move across surfaces smoothly
         // we will move in increments, and reproject to find the new surface normal at each step
-        if (MovementMode != ControllerMovementMode.Gravity)
+        if (MovementMode != ControllerMovementMode.Magnetized)
         {
             return;
         }
@@ -403,25 +459,65 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
-    void HandleMovement()
+    private void HandleMovementSubStepped()
+    {
+        Vector2? moveInput = moveAction?.ReadValue<Vector2>();
+        if (moveInput == null)
+        {
+            desiredMovementVelocity = Vector3.zero;
+            return;
+        }
+
+        // calculate movement direction in world space
+        Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;
+
+        // store desired movement velocity (will be applied in FixedUpdate)
+        desiredMovementVelocity = direction * maxMagnetizedWalkSpeed * moveInput.Value.magnitude;
+    }
+
+    private void HandleMovement()
     {
         Vector2? moveInput = moveAction?.ReadValue<Vector2>();
         bool? sprintIsPressed = sprintAction?.IsPressed();
 
         if (moveInput == null || sprintIsPressed == null)
         {
-            desiredMovementVelocity = Vector3.zero;
             return;
         }
 
-        // Calculate movement direction in world space
+        // @trae todo - add grounded flag and logic
+        // 1. IsGrounded flag actual check
+        // 3. if !IsGrounded -> only allow look input, no air control (or maybe reduce it? x0.2 or something?)
+        bool isGrounded = true;
+
+        // apply gravity and movement forces based on input
         Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;
+        _rigidbody.AddForce(direction * moveForce);
 
-        // Calculate movement speed based on sprint state
-        float moveSpeed = sprintIsPressed.Value ? maxRunSpeed : maxWalkSpeed;
+        Vector3 gravity = gravityController.GetGravityVector();
 
-        // Store desired movement velocity (will be applied in FixedUpdate)
-        desiredMovementVelocity = direction * moveSpeed * moveInput.Value.magnitude;
+        // clamp velocity tangent to gravity to a maximum speed
+        Vector3 velocity = _rigidbody.linearVelocity;
+
+        // project velocity onto gravity direction and save it
+        Vector3 gravityDir = gravity.normalized;
+        Vector3 velocityInGravityDir = Vector3.Dot(velocity, gravityDir) * gravityDir;
+
+        // remove gravity component from velocity
+        Vector3 velocityTangent = velocity - velocityInGravityDir;
+
+        float maxSpeed = sprintIsPressed.Value ? maxRunSpeed : maxWalkSpeed;
+
+        if (isGrounded && velocityTangent.sqrMagnitude > maxSpeed * maxSpeed)
+        {
+            velocityTangent.Normalize();
+            velocityTangent *= maxSpeed;
+        }
+
+        // restore gravity component
+        velocity = velocityTangent + velocityInGravityDir;
+        _rigidbody.linearVelocity = velocity;
+
     }
 
     private Vector3 ClampVelocityInGravity(Vector3 velocity)
