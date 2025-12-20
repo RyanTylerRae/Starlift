@@ -20,6 +20,8 @@ public class FirstPersonController : MonoBehaviour
     public float jumpForce;
     public float jumpCooldown = 0.3f;
     private float lastJumpTime = -1f;
+    public float airControlMultiplier = 0.1f;
+    public float maxJumpSpeed;
 
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
@@ -294,8 +296,6 @@ public class FirstPersonController : MonoBehaviour
             HandleMouseLook();
             HandleGrounded();
 
-            Debug.Log(isGrounded);
-
             if (jumpPressStartTime == 0.0f)
             {
                 if (MovementMode == ControllerMovementMode.Magnetized)
@@ -436,6 +436,8 @@ public class FirstPersonController : MonoBehaviour
         {
             isGrounded = true;
         }
+
+        Debug.Log(isGrounded);
     }
 
     private void HandleJump()
@@ -558,14 +560,15 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
-        // @trae todo - add grounded flag and logic
-        // 1. IsGrounded flag actual check
-        // 3. if !IsGrounded -> only allow look input, no air control (or maybe reduce it? x0.2 or something?)
-        bool isGrounded = true;
+        float adjustedMoveForce = moveForce;
+        if (!isGrounded)
+        {
+            adjustedMoveForce *= airControlMultiplier;
+        }
 
         // apply gravity and movement forces based on input
         Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;
-        _rigidbody.AddForce(direction * moveForce);
+        _rigidbody.AddForce(direction * adjustedMoveForce);
 
         Vector3 gravity = gravityController.GetGravityVector();
 
@@ -586,11 +589,15 @@ public class FirstPersonController : MonoBehaviour
             velocityTangent.Normalize();
             velocityTangent *= maxSpeed;
         }
+        else if (!isGrounded && velocityTangent.sqrMagnitude > maxJumpSpeed * maxJumpSpeed)
+        {
+            velocityTangent.Normalize();
+            velocityTangent *= maxJumpSpeed;
+        }
 
         // restore gravity component
         velocity = velocityTangent + velocityInGravityDir;
         _rigidbody.linearVelocity = velocity;
-
     }
 
     void HandleZeroGLook()

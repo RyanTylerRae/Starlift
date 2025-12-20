@@ -28,4 +28,22 @@ public static class StarliftStatics
 
         return null;
     }
+
+    public static FirstPersonController? FindFirstPersonController()
+    {
+        var player = FindPlayer();
+        if (player != null)
+        {
+            try
+            {
+                return player.GetComponentInChildren<FirstPersonController>(includeInactive: true);
+            }
+            catch (NullReferenceException)
+            {
+                return null;
+            }
+        }
+
+        return null;
+    }
 }

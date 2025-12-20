@@ -754,14 +754,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveForce: 15
-  maxWalkSpeed: 4
+  maxWalkSpeed: 5
   maxRunSpeed: 8
-  groundedDistance: 0.7
-  jumpForce: 5
+  groundedDistance: 0.6
+  jumpForce: 6
   jumpCooldown: 0.5
+  airControlMultiplier: 0.1
+  maxJumpSpeed: 10
   maxMagnetizedWalkSpeed: 2.5
-  surfaceAttractionForce: 100
-  magnetizedSurfaceDistance: 0.3
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800

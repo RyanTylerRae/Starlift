@@ -1617,6 +1617,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5405036634351126, guid: 25feb30eab771544dbcf98266978d619, type: 3}
+      propertyPath: dampingFactor
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 5405036634351126, guid: 25feb30eab771544dbcf98266978d619, type: 3}
+      propertyPath: maxLookPerFrame
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5405036634351126, guid: 25feb30eab771544dbcf98266978d619, type: 3}
       propertyPath: maxLookAngleDegX
       value: 3
       objectReference: {fileID: 0}
