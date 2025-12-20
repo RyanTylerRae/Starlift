@@ -1616,6 +1616,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5405036634351126, guid: 25feb30eab771544dbcf98266978d619, type: 3}
+      propertyPath: maxLookAngleDegX
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5405036634351126, guid: 25feb30eab771544dbcf98266978d619, type: 3}
+      propertyPath: maxLookAngleDegY
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5405036634351126, guid: 25feb30eab771544dbcf98266978d619, type: 3}
+      propertyPath: outsideLocalCorrectionForce
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 709271642251538129, guid: 25feb30eab771544dbcf98266978d619, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5
@@ -1686,7 +1698,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3740958237592137601, guid: 25feb30eab771544dbcf98266978d619, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 11.11
       objectReference: {fileID: 0}
     - target: {fileID: 3740958237592137601, guid: 25feb30eab771544dbcf98266978d619, type: 3}
       propertyPath: m_LocalPosition.z

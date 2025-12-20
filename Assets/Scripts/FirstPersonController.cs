@@ -23,8 +23,6 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
-    public float surfaceAttractionForce = 50f;
-    public float magnetizedSurfaceDistance = 0.3f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -33,6 +31,10 @@ public class FirstPersonController : MonoBehaviour
     public float zeroGRollSpeed = 45f;
 
     private float xRotation = 0f;
+
+    // Cached look values for external use (e.g., HUD)
+    public float LastLookX { get; private set; }
+    public float LastLookY { get; private set; }
 
     [Header("Zero Gravity")]
     public float stabilizeMultiplier;
@@ -338,25 +340,6 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
-        // Apply attraction force toward the surface to clamp player quickly
-        // Only apply if gravity is enabled (not disabled during jump) and player is above surface
-        if (gravitySource.isGravityEnabled)
-        {
-            Vector3 closestSurfacePoint = gravitySource.GetClosestSurfacePoint(transform.position);
-            Vector3 toSurface = closestSurfacePoint - transform.position;
-            float distanceToSurface = toSurface.magnitude;
-
-            // Only apply force if player is above the surface (distance > small threshold)
-            if (distanceToSurface > magnetizedSurfaceDistance)
-            {
-                Vector3 directionToSurface = toSurface / distanceToSurface;
-                _rigidbody.AddForce(directionToSurface * surfaceAttractionForce);
-            }
-        }
-
-        Vector3 velocity = _rigidbody.linearVelocity;
-        Vector3 position = _rigidbody.position;
-
         // calculate relative velocity to the gravity source and the distance it represents
         Vector3 gravitySourceVelocity = Vector3.zero;
         if (gravitySource.TryGetComponent(out Rigidbody rBody))
@@ -364,13 +347,15 @@ public class FirstPersonController : MonoBehaviour
             gravitySourceVelocity = rBody.linearVelocity;
         }
 
+        Vector3 position = _rigidbody.position;
+
         // Replace horizontal velocity with desired movement + gravity source velocity (to make it absolute)
         // Keep vertical component for gravity. Gravity source velocity will be added back at end.
-        float verticalVelocity = velocity.y - gravitySourceVelocity.y;
-        velocity = desiredMovementVelocity + new Vector3(0, verticalVelocity, 0);
+        Vector3 gravityVector = gravitySource.GetGravityVector(position);
+        Vector3 gravityDirection = gravityVector.normalized;
+        Vector3 velocity = desiredMovementVelocity;
 
-        Vector3 relativeVelocity = velocity;
-        float totalDistance = relativeVelocity.magnitude * Time.fixedDeltaTime;
+        float totalDistance = velocity.magnitude * Time.fixedDeltaTime;
 
         int substeps = Mathf.Max(1, Mathf.CeilToInt(totalDistance / substepDistance));
         float subDeltaTime = Time.fixedDeltaTime / substeps;
@@ -425,6 +410,10 @@ public class FirstPersonController : MonoBehaviour
 
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * lookX);
+
+        // Cache look values for external use
+        LastLookX = lookX;
+        LastLookY = lookY;
     }
 
     private void HandleGrounded()
@@ -627,6 +616,10 @@ public class FirstPersonController : MonoBehaviour
             // Apply pitch and yaw rotation to the rigidbody using camera's forward as reference
             _rigidbody.transform.Rotate(playerCamera.transform.up, lookX, Space.World);
             _rigidbody.transform.Rotate(playerCamera.transform.right, -lookY, Space.World);
+
+            // Cache look values for external use
+            LastLookX = lookX;
+            LastLookY = lookY;
         }
 
         float rotateLeftInput = rotateLeftAction?.ReadValue<float>() ?? 0f;

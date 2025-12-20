@@ -6,10 +6,16 @@ using UnityEngine.UI;
 public class PlayerHUD : MonoBehaviour
 {
     private GameObject? player = null;
+
+    [Header("Center Dot Widget")]
+    public GameObject? centerDotWidget = null;
+
+    [Header("Jump Target Widget")]
     public GameObject? jumpTargetWidget = null;
     public float jumpTargetRaycastDistance = 100f;
     public Vector3 jumpTargetRotationOffset = Vector3.zero;
 
+    [Header("Material Instances")]
     public MeshRenderer oxygenProgressRendererForeground;
     private Material? oxygenProgressForegroundMaterialInstance = null;
     public MeshRenderer oxygenProgressRendererBackground;
@@ -24,9 +30,21 @@ public class PlayerHUD : MonoBehaviour
     public MeshRenderer magneticChargeRenderer;
     private Material? magneticChargeMaterialInstance = null;
 
+    [Header("Mouse Look Impulse")]
+    public GameObject? lookRoot;
+    [Range(0f, 1f)]
+    public float dampingFactor = 0.95f;
+    private Quaternion lookRootDefaultRotation;
+    private Vector2 currentLookOffset = Vector2.zero;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
     {
+        if (lookRoot != null)
+        {
+            lookRootDefaultRotation = lookRoot.transform.localRotation;
+        }
+
         oxygenProgressForegroundMaterialInstance = oxygenProgressRendererForeground.material;
         oxygenProgressBackgroundMaterialInstance = oxygenProgressRendererBackground.material;
         jumpTier1MaterialInstance = jumpTier1Renderer.material;
@@ -47,9 +65,15 @@ public class PlayerHUD : MonoBehaviour
             }
         }
 
-        if (jumpTargetWidget != null)
+        if (player.TryGetComponent(out FirstPersonController playerController))
         {
-            if (player.TryGetComponent(out FirstPersonController playerController))
+            // Apply look impulse if in ZeroG mode
+            if (playerController.MovementMode == FirstPersonController.ControllerMovementMode.ZeroG)
+            {
+                ApplyLookImpulse(playerController.LastLookX, playerController.LastLookY);
+            }
+
+            if (jumpTargetWidget != null)
             {
                 jumpTargetWidget.SetActive(playerController.ShouldDisplayJumpTarget);
 
@@ -74,6 +98,11 @@ public class PlayerHUD : MonoBehaviour
                         jumpTargetWidget.transform.localRotation = normalRotation * offsetRotation;
                     }
                 }
+            }
+
+            if (centerDotWidget != null)
+            {
+                centerDotWidget.SetActive(!playerController.ShouldDisplayJumpTarget);
             }
         }
 
@@ -109,5 +138,37 @@ public class PlayerHUD : MonoBehaviour
                 magneticChargeMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.MagneticCharge));
             }
         }
+
+        CorrectLookRotation();
+    }
+
+    private void CorrectLookRotation()
+    {
+        if (lookRoot == null)
+        {
+            return;
+        }
+
+        currentLookOffset *= dampingFactor;
+        if (currentLookOffset.magnitude < 0.001f)
+        {
+            currentLookOffset = Vector2.zero;
+        }
+
+        Quaternion offsetRotation = Quaternion.Euler(currentLookOffset.y, currentLookOffset.x, 0);
+        lookRoot.transform.localRotation = lookRootDefaultRotation * offsetRotation;
+    }
+
+    public void ApplyLookImpulse(float lookX, float lookY)
+    {
+        if (lookRoot == null)
+        {
+            return;
+        }
+
+        currentLookOffset += new Vector2(-lookX, lookY);
+
+        Quaternion offsetRotation = Quaternion.Euler(currentLookOffset.y, currentLookOffset.x, 0);
+        lookRoot.transform.localRotation = lookRootDefaultRotation * offsetRotation;
     }
 }
