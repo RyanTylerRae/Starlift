@@ -8,21 +8,21 @@ public class GravitySourceMesh : GravitySourceComponent
     public float maxDistanceToSurface = 1.0f;
 
     private bool isPlayerInRange = false;
-    private Vector3 cachedClosestPoint;
-    private Vector3 cachedNormal;
 
     public override void Update()
     {
         bool wasPlayerInRange = isPlayerInRange;
 
         GameObject? player = StarliftStatics.FindPlayer();
-        if (player != null && meshCollider != null)
+        FirstPersonController? firstPersonController = StarliftStatics.FindFirstPersonController();
+
+        if (player != null && firstPersonController != null && meshCollider != null)
         {
             Vector3 playerPos = player.transform.position;
-            cachedClosestPoint = meshCollider.ClosestPoint(player.transform.position);
-            cachedNormal = playerPos - cachedClosestPoint;
+            Vector3 closestPoint = meshCollider.ClosestPoint(player.transform.position);
+            Vector3 normal = playerPos - closestPoint;
 
-            if (cachedNormal.sqrMagnitude < maxDistanceToSurface * maxDistanceToSurface)
+            if (normal.magnitude - firstPersonController.magnetizeRadius < maxDistanceToSurface)
             {
                 isPlayerInRange = true;
             }
@@ -31,7 +31,7 @@ public class GravitySourceMesh : GravitySourceComponent
                 isPlayerInRange = false;
             }
 
-            cachedNormal.Normalize();
+            normal.Normalize();
 
             if (wasPlayerInRange && !isPlayerInRange)
             {
@@ -45,14 +45,14 @@ public class GravitySourceMesh : GravitySourceComponent
         }
     }
 
-    public override Vector3 GetClosestSurfacePoint(Vector3 point)
+    public override void OnTriggerEnter(Collider other)
     {
-        if (meshCollider == null)
-        {
-            return point;
-        }
+        // overriding to do nothing
+    }
 
-        return meshCollider.ClosestPoint(point);
+    public override void OnTriggerExit(Collider other)
+    {
+        // overriding to do nothing
     }
 
     public override Vector3 GetGravityVector(Vector3 point)
@@ -70,11 +70,6 @@ public class GravitySourceMesh : GravitySourceComponent
         Vector3 closestPoint = meshCollider.ClosestPoint(point);
         Vector3 normal = point - closestPoint;
 
-        if (normal.sqrMagnitude < maxDistanceToSurface * maxDistanceToSurface)
-        {
-            return normal.normalized * defaultGravity * G_multiplier;
-        }
-
-        return Vector3.zero;
+        return normal.normalized * defaultGravity * G_multiplier;
     }
 }

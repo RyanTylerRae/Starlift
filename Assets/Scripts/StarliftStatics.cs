@@ -46,4 +46,14 @@ public static class StarliftStatics
 
         return null;
     }
+
+    public static GameObject FindRoot(GameObject gameObject)
+    {
+        while (gameObject.transform.parent != null)
+        {
+            gameObject = gameObject.transform.parent.gameObject;
+        }
+
+        return gameObject;
+    }
 }

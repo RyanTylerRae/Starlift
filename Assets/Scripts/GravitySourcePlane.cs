@@ -21,16 +21,6 @@ public class GravitySourcePlane : GravitySourceComponent
         }
     }
 
-    public override Vector3 GetClosestSurfacePoint(Vector3 point)
-    {
-        // Project point onto the plane
-        Vector3 planeNormal = direction.normalized;
-        Vector3 planePoint = transform.position;
-
-        float distance = Vector3.Dot(point - planePoint, planeNormal);
-        return point - planeNormal * distance;
-    }
-
     public override Vector3 GetGravityVector(Vector3 point)
     {
         if (!isGravityEnabled)

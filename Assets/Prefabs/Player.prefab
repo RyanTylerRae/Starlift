@@ -708,7 +708,6 @@ GameObject:
   - component: {fileID: 4662095033839872499}
   - component: {fileID: -1195255886293758487}
   - component: {fileID: -3330819332357165361}
-  - component: {fileID: -5865880731905492888}
   - component: {fileID: 5086660247363025625}
   - component: {fileID: -7839108190854562319}
   - component: {fileID: -4446449420532183477}
@@ -716,6 +715,7 @@ GameObject:
   - component: {fileID: 8298962411141869644}
   - component: {fileID: 3039922705185681957}
   - component: {fileID: 6691636323679490439}
+  - component: {fileID: 4234455799448820505}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -762,6 +762,7 @@ MonoBehaviour:
   airControlMultiplier: 0.1
   maxJumpSpeed: 10
   maxMagnetizedWalkSpeed: 2.5
+  magnetizeRadius: 0.5
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
@@ -870,23 +871,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &-5865880731905492888
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7509877599165506846}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca13061d0b4c5a84d9d7aa0590de6850, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minInitialForce: 15
-  maxInitialForce: 25
-  minInitialTorque: 0.2
-  maxInitialTorque: 0.5
-  forceConeDegrees: 15
 --- !u!114 &5086660247363025625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -999,6 +983,23 @@ MonoBehaviour:
   helmetAnimator: {fileID: 4340412172911646173}
   hudObject: {fileID: 5416576688920741889}
   helmetLowerStateName: Lower Helmet
+--- !u!114 &4234455799448820505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7509877599165506846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca13061d0b4c5a84d9d7aa0590de6850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minInitialForce: 15
+  maxInitialForce: 25
+  minInitialTorque: 0.2
+  maxInitialTorque: 0.5
+  forceConeDegrees: 15
 --- !u!1001 &798813607772686613
 PrefabInstance:
   m_ObjectHideFlags: 0

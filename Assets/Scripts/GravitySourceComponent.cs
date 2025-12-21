@@ -18,8 +18,6 @@ public abstract class GravitySourceComponent : MonoBehaviour
 
     public abstract Vector3 GetGravityVector(Vector3 point);
 
-    public abstract Vector3 GetClosestSurfacePoint(Vector3 point);
-
     public abstract void Update();
 
     public void DisableForSeconds(float seconds)
@@ -40,12 +38,12 @@ public abstract class GravitySourceComponent : MonoBehaviour
         disableCoroutine = null;
     }
 
-    public void OnTriggerEnter(Collider other)
+    public virtual void OnTriggerEnter(Collider other)
     {
         OnTriggerEnterInternal(other.gameObject);
     }
 
-    public void OnTriggerExit(Collider other)
+    public virtual void OnTriggerExit(Collider other)
     {
         OnTriggerExitInternal(other.gameObject);
     }

@@ -25,6 +25,7 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
+    public float magnetizeRadius = 0.5f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -436,8 +437,6 @@ public class FirstPersonController : MonoBehaviour
         {
             isGrounded = true;
         }
-
-        Debug.Log(isGrounded);
     }
 
     private void HandleJump()

@@ -19,12 +19,6 @@ public class GravitySourcePoint : GravitySourceComponent
 
     }
 
-    public override Vector3 GetClosestSurfacePoint(Vector3 point)
-    {
-        // For a point gravity source, the "surface" is the point itself
-        return transform.position;
-    }
-
     public override Vector3 GetGravityVector(Vector3 point)
     {
         if (!isGravityEnabled)
