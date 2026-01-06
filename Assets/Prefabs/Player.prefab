@@ -982,7 +982,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   helmetAnimator: {fileID: 4340412172911646173}
   hudObject: {fileID: 5416576688920741889}
+  helmetObject: {fileID: 564248955828253764}
   helmetLowerStateName: Lower Helmet
+  cachedPlayerHUD: {fileID: 0}
 --- !u!114 &4234455799448820505
 MonoBehaviour:
   m_ObjectHideFlags: 0

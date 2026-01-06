@@ -2,6 +2,8 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.Splines.Interpolators;
 using UnityEngine.UI;
 
 public class PlayerHUD : MonoBehaviour
@@ -33,25 +35,30 @@ public class PlayerHUD : MonoBehaviour
 
     [Header("Mouse Look Impulse")]
     public GameObject? lookRoot;
-    [Range(0f, 1f)]
-    public float dampingFactor = 0.95f;
-    private Quaternion lookRootDefaultRotation;
-    private Vector2 currentLookOffset = Vector2.zero;
+
+    public float lookCorrectionSpeedZeroG;
+    public float maxLookAngleZeroG;
+
+    public float lookCorrectionSpeed;
+    public float maxLookAngle;
+
+    private Quaternion prevCameraRotation;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
     {
-        if (lookRoot != null)
-        {
-            lookRootDefaultRotation = lookRoot.transform.localRotation;
-        }
-
         oxygenProgressForegroundMaterialInstance = oxygenProgressRendererForeground.material;
         oxygenProgressBackgroundMaterialInstance = oxygenProgressRendererBackground.material;
         jumpTier1MaterialInstance = jumpTier1Renderer.material;
         jumpTier2MaterialInstance = jumpTier2Renderer.material;
         jumpTier3MaterialInstance = jumpTier3Renderer.material;
         magneticChargeMaterialInstance = magneticChargeRenderer.material;
+    }
+
+    // Reset orientation for the HUD itself to allow individual tracking
+    public void LateUpdate()
+    {
+        //transform.rotation = Quaternion.identity;
     }
 
     // Update is called once per frame
@@ -68,10 +75,31 @@ public class PlayerHUD : MonoBehaviour
 
         if (player.TryGetComponent(out FirstPersonController playerController))
         {
-            // Apply look impulse if in ZeroG mode
-            if (playerController.MovementMode == FirstPersonController.ControllerMovementMode.ZeroG)
+            // Handle HUD orientation based on movement mode
+            if (lookRoot != null)
             {
-                ApplyLookImpulse(playerController.LastLookX, playerController.LastLookY);
+                float _maxLookAngle = maxLookAngle;
+                float _lookCorrectionSpeed = lookCorrectionSpeed;
+
+                if (playerController.MovementMode == FirstPersonController.ControllerMovementMode.ZeroG)
+                {
+                    _maxLookAngle = maxLookAngleZeroG;
+                    _lookCorrectionSpeed = lookCorrectionSpeedZeroG;
+                }
+
+                // find the new local rotation, clamped to a maximum angle
+                Quaternion deltaRotation = playerController.playerCamera.transform.rotation * Quaternion.Inverse(prevCameraRotation);
+
+                // remove roll, because it feels wrong
+                Vector3 eulerDeltaRotation = deltaRotation.eulerAngles;
+                eulerDeltaRotation.z = 0.0f;
+                deltaRotation = Quaternion.Euler(eulerDeltaRotation);
+
+                Quaternion localRotation = Quaternion.Inverse(deltaRotation) * lookRoot.transform.localRotation;
+                localRotation = Quaternion.RotateTowards(Quaternion.identity, localRotation, _maxLookAngle);
+
+                // slerp towards identity at a set speed
+                lookRoot.transform.localRotation = Quaternion.Slerp(localRotation, Quaternion.identity, _lookCorrectionSpeed * Time.deltaTime);
             }
 
             if (jumpTargetWidget != null)
@@ -105,6 +133,8 @@ public class PlayerHUD : MonoBehaviour
             {
                 centerDotWidget.SetActive(!playerController.ShouldDisplayJumpTarget);
             }
+
+            prevCameraRotation = playerController.playerCamera?.transform.rotation ?? prevCameraRotation;
         }
 
         if (player.TryGetComponent(out Modifiers modifiers))
@@ -139,37 +169,5 @@ public class PlayerHUD : MonoBehaviour
                 magneticChargeMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.MagneticCharge));
             }
         }
-
-        CorrectLookRotation();
-    }
-
-    private void CorrectLookRotation()
-    {
-        if (lookRoot == null)
-        {
-            return;
-        }
-
-        currentLookOffset *= dampingFactor;
-        if (currentLookOffset.magnitude < 0.001f)
-        {
-            currentLookOffset = Vector2.zero;
-        }
-
-        Quaternion offsetRotation = Quaternion.Euler(currentLookOffset.y, currentLookOffset.x, 0);
-        lookRoot.transform.localRotation = lookRootDefaultRotation * offsetRotation;
-    }
-
-    public void ApplyLookImpulse(float lookX, float lookY)
-    {
-        if (lookRoot == null)
-        {
-            return;
-        }
-
-        currentLookOffset += new Vector2(-lookX, lookY);
-
-        Quaternion offsetRotation = Quaternion.Euler(currentLookOffset.y, currentLookOffset.x, 0);
-        lookRoot.transform.localRotation = lookRootDefaultRotation * offsetRotation;
     }
 }

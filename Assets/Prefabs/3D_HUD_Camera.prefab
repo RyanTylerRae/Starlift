@@ -256,7 +256,10 @@ MonoBehaviour:
   jumpTier3Renderer: {fileID: 5998300945589399761}
   magneticChargeRenderer: {fileID: 7069830142303768114}
   lookRoot: {fileID: 3789652518770926418}
-  dampingFactor: 0.75
+  lookCorrectionSpeedZeroG: 15
+  maxLookAngleZeroG: 20
+  lookCorrectionSpeed: 30
+  maxLookAngle: 10
 --- !u!114 &5997379386099833193
 MonoBehaviour:
   m_ObjectHideFlags: 0

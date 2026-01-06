@@ -8,17 +8,26 @@ public class PlayerHelmetController : MonoBehaviour
 {
     public Animator? helmetAnimator;
     public GameObject? hudObject;
+    public GameObject? helmetObject;
     public string helmetLowerStateName = "Lower Helmet"; // Set this to match your animator state name
     private AnimatorStateInfo? cachedAnimatorStateInfo = null;
+    public PlayerHUD? cachedPlayerHUD;
 
     public void Start()
     {
         StartCoroutine(WaitForHelmetAnimation());
+        cachedPlayerHUD = FindFirstObjectByType<PlayerHUD>();
     }
 
     public void Update()
     {
         cachedAnimatorStateInfo = helmetAnimator?.GetCurrentAnimatorStateInfo(0) ?? null;
+
+        if (cachedPlayerHUD != null && helmetObject != null)
+        {
+            helmetObject.transform.localRotation = cachedPlayerHUD.lookRoot?.transform.localRotation ?? Quaternion.identity;
+            helmetObject.transform.localRotation *= Quaternion.Euler(0.0f, 90.0f, 0.0f);
+        }
     }
 
     public void OnEnable()
