@@ -410,7 +410,7 @@ public class FirstPersonController : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -maxLookAngle, maxLookAngle);
 
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        transform.Rotate(Vector3.up * lookX);
+        transform.Rotate(transform.up, lookX, Space.World);
 
         // Cache look values for external use
         LastLookX = lookX;

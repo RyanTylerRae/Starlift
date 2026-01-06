@@ -88,7 +88,7 @@ public class PlayerHUD : MonoBehaviour
                 }
 
                 // find the new local rotation, clamped to a maximum angle
-                Quaternion deltaRotation = playerController.playerCamera.transform.rotation * Quaternion.Inverse(prevCameraRotation);
+                Quaternion deltaRotation = Quaternion.Inverse(prevCameraRotation) * playerController.playerCamera.transform.rotation;
 
                 // remove roll, because it feels wrong
                 Vector3 eulerDeltaRotation = deltaRotation.eulerAngles;
