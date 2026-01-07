@@ -345,16 +345,19 @@ public class FirstPersonController : MonoBehaviour
         Vector3 gravitySourceVelocity = Vector3.zero;
         if (gravitySource.TryGetComponent(out Rigidbody rBody))
         {
-            gravitySourceVelocity = rBody.linearVelocity;
+            // might not be necessary, but this includes angular velocity as well
+            gravitySourceVelocity = rBody.GetPointVelocity(_rigidbody.position);
         }
 
-        Vector3 position = _rigidbody.position;
+        Vector3 relativeVelocity = _rigidbody.linearVelocity - gravitySourceVelocity;
 
-        // Replace horizontal velocity with desired movement + gravity source velocity (to make it absolute)
-        // Keep vertical component for gravity. Gravity source velocity will be added back at end.
+        // separate into vertical and horizontal components along gravity
+        Vector3 position = _rigidbody.position;
         Vector3 gravityVector = gravitySource.GetGravityVector(position);
         Vector3 gravityDirection = gravityVector.normalized;
-        Vector3 velocity = desiredMovementVelocity;
+
+        Vector3 verticalVelocity = Vector3.Dot(relativeVelocity, gravityDirection) * gravityDirection;
+        Vector3 velocity = desiredMovementVelocity + verticalVelocity;
 
         float totalDistance = velocity.magnitude * Time.fixedDeltaTime;
 
@@ -363,24 +366,17 @@ public class FirstPersonController : MonoBehaviour
 
         for (int i = 0; i < substeps; i++)
         {
-            // manually integrate position: p = p + v * dt
-            position += velocity * subDeltaTime;
+            // calculate the new velocity at this step
+            Vector3 gravityAtPosition = gravitySource.GetGravityVector(position);
+            velocity += gravityAtPosition * subDeltaTime;
 
-            // Adjust velocity based on current position
-            velocity = AdjustVelocityPerSubstep(gravitySource, velocity, position, subDeltaTime);
+            // integrate the substep
+            position += velocity * subDeltaTime;
         }
 
         // apply final state to rigidbody, included the new adjusted velocity
         _rigidbody.position = position;
         _rigidbody.linearVelocity = gravitySourceVelocity + velocity;
-    }
-
-    private Vector3 AdjustVelocityPerSubstep(GravitySourceComponent gravitySource, Vector3 velocity, Vector3 position, float deltaTime)
-    {
-        Vector3 gravityVector = gravitySource.GetGravityVector(position);
-        Vector3 normal = -gravityVector.normalized;
-
-        return velocity - Vector3.Dot(velocity, normal) * normal;
     }
 
     void HandleMouseLook()
@@ -524,11 +520,12 @@ public class FirstPersonController : MonoBehaviour
 
             _rigidbody.AddForce(jumpDirection * jumpForce);
 
-            // Disable active gravity source for 0.5 seconds on tier 1+ jump
+            // disable active gravity source for 1.0 seconds on tier 1+ jump
             GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
             if (activeSource != null)
             {
-                activeSource.DisableForSeconds(0.5f);
+                // @todo trae - is this really going to be ok?
+                activeSource.DisableForSeconds(1.0f);
             }
         }
     }
