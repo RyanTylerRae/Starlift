@@ -104,7 +104,7 @@ public class PlayerHUD : MonoBehaviour
 
             if (jumpTargetWidget != null)
             {
-                jumpTargetWidget.SetActive(playerController.ShouldDisplayJumpTarget);
+                bool shouldDisplayJumpTarget = false;
 
                 if (playerController.ShouldDisplayJumpTarget && playerController.playerCamera != null)
                 {
@@ -114,6 +114,8 @@ public class PlayerHUD : MonoBehaviour
 
                     if (Physics.Raycast(ray, out hit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
                     {
+                        shouldDisplayJumpTarget = true;
+
                         // Get hit point in player camera's local space
                         Vector3 playerCameraLocalHit = playerController.playerCamera.transform.InverseTransformPoint(hit.point);
                         // Use that same local offset for the widget relative to HUD camera
@@ -127,6 +129,8 @@ public class PlayerHUD : MonoBehaviour
                         jumpTargetWidget.transform.localRotation = normalRotation * offsetRotation;
                     }
                 }
+
+                jumpTargetWidget.SetActive(shouldDisplayJumpTarget);
             }
 
             if (centerDotWidget != null)
