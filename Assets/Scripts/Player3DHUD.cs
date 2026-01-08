@@ -21,6 +21,8 @@ public class PlayerHUD : MonoBehaviour
     [Header("Material Instances")]
     public MeshRenderer oxygenProgressRendererForeground;
     private Material? oxygenProgressForegroundMaterialInstance = null;
+    public MeshRenderer oxygenProgressLaggyRenderer;
+    private Material? oxygenProgressLaggyRendererMaterialInstance = null;
     public MeshRenderer oxygenProgressRendererBackground;
     private Material? oxygenProgressBackgroundMaterialInstance = null;
 
@@ -44,10 +46,16 @@ public class PlayerHUD : MonoBehaviour
 
     private Quaternion prevCameraRotation;
 
+    [Header("Laggy Oxygen Bar")]
+    private bool wasBurningOxygen = false;
+    private float laggyOxygenProgress;
+    public float laggyOxygenSpeed;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
     {
         oxygenProgressForegroundMaterialInstance = oxygenProgressRendererForeground.material;
+        oxygenProgressLaggyRendererMaterialInstance = oxygenProgressLaggyRenderer.material;
         oxygenProgressBackgroundMaterialInstance = oxygenProgressRendererBackground.material;
         jumpTier1MaterialInstance = jumpTier1Renderer.material;
         jumpTier2MaterialInstance = jumpTier2Renderer.material;
@@ -73,65 +81,72 @@ public class PlayerHUD : MonoBehaviour
             }
         }
 
-        if (player.TryGetComponent(out FirstPersonController playerController))
+        if (!player.TryGetComponent(out FirstPersonController playerController))
         {
-            // Handle HUD orientation based on movement mode
-            if (lookRoot != null)
+            return;
+        }
+
+        if (!player.TryGetComponent(out Modifiers modifiers))
+        {
+            return;
+        }
+
+        // Handle HUD orientation based on movement mode
+        if (lookRoot != null)
+        {
+            float _maxLookAngle = maxLookAngle;
+            float _lookCorrectionSpeed = lookCorrectionSpeed;
+
+            if (playerController.MovementMode == FirstPersonController.ControllerMovementMode.ZeroG)
             {
-                float _maxLookAngle = maxLookAngle;
-                float _lookCorrectionSpeed = lookCorrectionSpeed;
-
-                if (playerController.MovementMode == FirstPersonController.ControllerMovementMode.ZeroG)
-                {
-                    _maxLookAngle = maxLookAngleZeroG;
-                    _lookCorrectionSpeed = lookCorrectionSpeedZeroG;
-                }
-
-                // find the new local rotation, clamped to a maximum angle
-                Quaternion deltaRotation = Quaternion.Inverse(prevCameraRotation) * playerController.playerCamera.transform.rotation;
-
-                // remove roll, because it feels wrong
-                Vector3 eulerDeltaRotation = deltaRotation.eulerAngles;
-                eulerDeltaRotation.z = 0.0f;
-                deltaRotation = Quaternion.Euler(eulerDeltaRotation);
-
-                Quaternion localRotation = Quaternion.Inverse(deltaRotation) * lookRoot.transform.localRotation;
-                localRotation = Quaternion.RotateTowards(Quaternion.identity, localRotation, _maxLookAngle);
-
-                // slerp towards identity at a set speed
-                lookRoot.transform.localRotation = Quaternion.Slerp(localRotation, Quaternion.identity, _lookCorrectionSpeed * Time.deltaTime);
+                _maxLookAngle = maxLookAngleZeroG;
+                _lookCorrectionSpeed = lookCorrectionSpeedZeroG;
             }
 
-            if (jumpTargetWidget != null)
+            // find the new local rotation, clamped to a maximum angle
+            Quaternion deltaRotation = Quaternion.Inverse(prevCameraRotation) * playerController.playerCamera.transform.rotation;
+
+            // remove roll, because it feels wrong
+            Vector3 eulerDeltaRotation = deltaRotation.eulerAngles;
+            eulerDeltaRotation.z = 0.0f;
+            deltaRotation = Quaternion.Euler(eulerDeltaRotation);
+
+            Quaternion localRotation = Quaternion.Inverse(deltaRotation) * lookRoot.transform.localRotation;
+            localRotation = Quaternion.RotateTowards(Quaternion.identity, localRotation, _maxLookAngle);
+
+            // slerp towards identity at a set speed
+            lookRoot.transform.localRotation = Quaternion.Slerp(localRotation, Quaternion.identity, _lookCorrectionSpeed * Time.deltaTime);
+        }
+
+        if (jumpTargetWidget != null)
+        {
+            bool shouldDisplayJumpTarget = false;
+
+            if (playerController.ShouldDisplayJumpTarget && playerController.playerCamera != null)
             {
-                bool shouldDisplayJumpTarget = false;
+                // Raycast from player camera
+                Ray ray = new Ray(playerController.playerCamera.transform.position, playerController.playerCamera.transform.forward);
+                RaycastHit hit;
 
-                if (playerController.ShouldDisplayJumpTarget && playerController.playerCamera != null)
+                if (Physics.Raycast(ray, out hit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
                 {
-                    // Raycast from player camera
-                    Ray ray = new Ray(playerController.playerCamera.transform.position, playerController.playerCamera.transform.forward);
-                    RaycastHit hit;
+                    shouldDisplayJumpTarget = true;
 
-                    if (Physics.Raycast(ray, out hit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
-                    {
-                        shouldDisplayJumpTarget = true;
+                    // Get hit point in player camera's local space
+                    Vector3 playerCameraLocalHit = playerController.playerCamera.transform.InverseTransformPoint(hit.point);
+                    // Use that same local offset for the widget relative to HUD camera
+                    jumpTargetWidget.transform.localPosition = playerCameraLocalHit;
 
-                        // Get hit point in player camera's local space
-                        Vector3 playerCameraLocalHit = playerController.playerCamera.transform.InverseTransformPoint(hit.point);
-                        // Use that same local offset for the widget relative to HUD camera
-                        jumpTargetWidget.transform.localPosition = playerCameraLocalHit;
-
-                        // Get normal in player camera's local space
-                        Vector3 playerCameraLocalNormal = playerController.playerCamera.transform.InverseTransformDirection(hit.normal);
-                        // Use that same local direction for the widget, with rotation offset applied
-                        Quaternion normalRotation = Quaternion.LookRotation(playerCameraLocalNormal);
-                        Quaternion offsetRotation = Quaternion.Euler(jumpTargetRotationOffset);
-                        jumpTargetWidget.transform.localRotation = normalRotation * offsetRotation;
-                    }
+                    // Get normal in player camera's local space
+                    Vector3 playerCameraLocalNormal = playerController.playerCamera.transform.InverseTransformDirection(hit.normal);
+                    // Use that same local direction for the widget, with rotation offset applied
+                    Quaternion normalRotation = Quaternion.LookRotation(playerCameraLocalNormal);
+                    Quaternion offsetRotation = Quaternion.Euler(jumpTargetRotationOffset);
+                    jumpTargetWidget.transform.localRotation = normalRotation * offsetRotation;
                 }
-
-                jumpTargetWidget.SetActive(shouldDisplayJumpTarget);
             }
+
+            jumpTargetWidget.SetActive(shouldDisplayJumpTarget);
 
             if (centerDotWidget != null)
             {
@@ -141,37 +156,53 @@ public class PlayerHUD : MonoBehaviour
             prevCameraRotation = playerController.playerCamera?.transform.rotation ?? prevCameraRotation;
         }
 
-        if (player.TryGetComponent(out Modifiers modifiers))
+        // handle oxygen burn logic for the laggy progress bar
+        if (!wasBurningOxygen && playerController.IsBurningOxygen)
         {
-            if (oxygenProgressForegroundMaterialInstance != null)
-            {
-                oxygenProgressForegroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
-            }
+            laggyOxygenProgress = modifiers.Get(ModifierType.Oxygen);
+        }
 
-            if (oxygenProgressBackgroundMaterialInstance != null)
-            {
-                oxygenProgressBackgroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
-            }
+        if (!playerController.IsBurningOxygen)
+        {
+            laggyOxygenProgress = Mathf.Lerp(laggyOxygenProgress, modifiers.Get(ModifierType.Oxygen), Time.deltaTime * laggyOxygenSpeed);
+        }
 
-            if (jumpTier1MaterialInstance != null)
-            {
-                jumpTier1MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier1));
-            }
+        wasBurningOxygen = playerController.IsBurningOxygen;
 
-            if (jumpTier2MaterialInstance != null)
-            {
-                jumpTier2MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier2));
-            }
+        // update modifiers
+        if (oxygenProgressForegroundMaterialInstance != null)
+        {
+            oxygenProgressForegroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
+        }
 
-            if (jumpTier3MaterialInstance != null)
-            {
-                jumpTier3MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier3));
-            }
+        if (oxygenProgressLaggyRendererMaterialInstance != null)
+        {
+            oxygenProgressLaggyRendererMaterialInstance.SetFloat("_Progress", laggyOxygenProgress / modifiers.GetMax(ModifierType.Oxygen));
+        }
 
-            if (magneticChargeMaterialInstance != null)
-            {
-                magneticChargeMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.MagneticCharge));
-            }
+        if (oxygenProgressBackgroundMaterialInstance != null)
+        {
+            oxygenProgressBackgroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
+        }
+
+        if (jumpTier1MaterialInstance != null)
+        {
+            jumpTier1MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier1));
+        }
+
+        if (jumpTier2MaterialInstance != null)
+        {
+            jumpTier2MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier2));
+        }
+
+        if (jumpTier3MaterialInstance != null)
+        {
+            jumpTier3MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier3));
+        }
+
+        if (magneticChargeMaterialInstance != null)
+        {
+            magneticChargeMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.MagneticCharge));
         }
     }
 }

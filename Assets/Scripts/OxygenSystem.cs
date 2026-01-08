@@ -6,13 +6,16 @@ using UnityEngine;
 public class OxygenSystem : MonoBehaviour
 {
     public float usagePerSecond;
+    public float thrustMultiplier;
     private Modifiers? modifiers = null;
+    private FirstPersonController? playerController = null;
     private bool isAudioPlaying = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         modifiers = GetComponent<Modifiers>();
+        playerController = GetComponent<FirstPersonController>();
         isAudioPlaying = true;
     }
 
@@ -34,13 +37,21 @@ public class OxygenSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (modifiers == null)
+        if (modifiers == null || playerController == null)
         {
             return;
         }
 
         float oxygenAmount = modifiers.Get(ModifierType.Oxygen);
-        oxygenAmount -= Time.deltaTime * usagePerSecond;
+
+        if (!playerController.IsBurningOxygen)
+        {
+            oxygenAmount -= Time.deltaTime * usagePerSecond;
+        }
+        else
+        {
+            oxygenAmount -= Time.deltaTime * usagePerSecond * thrustMultiplier;
+        }
 
         if (oxygenAmount > 0.0f)
         {

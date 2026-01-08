@@ -96,6 +96,9 @@ public class FirstPersonController : MonoBehaviour
 
     public bool ShouldDisplayJumpTarget => CameraAngleFromGravity > jumpDirectionalAngleThreshold && MovementMode == ControllerMovementMode.Magnetized;
 
+    private bool isBurningOxygen = false;
+    public bool IsBurningOxygen => isBurningOxygen;
+
     public enum ControllerMovementMode
     {
         Magnetized,
@@ -672,6 +675,8 @@ public class FirstPersonController : MonoBehaviour
         thrustVector += playerCamera.transform.right * rightThrustInput;
         thrustVector += playerCamera.transform.up * upThrustInput;
         thrustVector += -playerCamera.transform.up * downThrustInput;
+
+        isBurningOxygen = thrustVector.sqrMagnitude > 0.0f || (isStabilizePressed.Value && velocity.sqrMagnitude > 1.0f);
 
         _rigidbody.AddForce(thrustVector.normalized * flightForce);
 

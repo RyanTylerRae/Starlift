@@ -955,6 +955,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usagePerSecond: 0.867
+  thrustMultiplier: 5
 --- !u!114 &3039922705185681957
 MonoBehaviour:
   m_ObjectHideFlags: 0
