@@ -297,6 +297,9 @@ public class FirstPersonController : MonoBehaviour
 
         if (MovementMode != ControllerMovementMode.ZeroG)
         {
+            // we don't burn extra oxygen when walking on a surface
+            isBurningOxygen = false;
+
             HandleMouseLook();
             HandleGrounded();
 
