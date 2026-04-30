@@ -1,0 +1,48 @@
+###### V1 ######
+
+Game Loop:
+- The player has a limited oxygen supply, and needs to spend it wisely while moving from air pocket to air pocket within the structure, advancing through the level while learning and mastering the movement mechanic.
+- Along the way, they will encounter environmental hazards and other obstructions requiring them to do minimal puzzling and skill checks in order to proceed. I'm thinking buttons, maybe keys/gates to start.
+- If they fail/die, they will wake up or respawn at the previous air pocket immediately.
+- As they travel, I want to provide them with viewpoints where they can rest and take in the scenery. Think the couch in Ico.
+- start level -> air pocket -> skill check, button, collection, etc.. -> air pocket, vista -> ... repeat ... -> End level
+- a more macro loop will probably be gradually unlocking parts of the full movement set
+
+Genre:
+For Steam, I think this would fit the Action/Adventure category.
+
+Game Name:
+"Starlift", I'll probably change it, but this was the game name for another idea I had before cutting scope. I still like it. It sounds cool, but doesn't really have as much meaning as it did.
+
+Game Pitch:
+Starlift is a zero-g exploration game where the player drifts through a massive megastructure while managing a dwindling oxygen supply. Navigate hazards and obstacles, unlock new movement abilities, and pause at scenic viewpoints as you unravel its purpose.
+
+###### V2 ######
+
+Game Loop:
+
+Macro:
+1. The player receives a main story nugget and a clear objective.
+3. The player is introduced to an open, themed level.
+4. The player explores the level.
+	a. They surpass obstacles and platforming challenges.
+	b. They find smaller story nuggets.
+	c. They come across areas of rest, where they can see the environment from a catered viewpoint.
+   (d. The player may earn/receive a new movement ability, or a twist to make the platforming for this area unique)
+5. The player completes the level.
+6. Repeat.
+
+Micro:
+The player enters a new area, surpasses platforming challenges, and is rewarded with new movement abilities.
+
+Stickiness:
+The game is familiar as a first-person platformer, but is mechanically unique in that the player uses zero-g controls for movement, and is memorable because of the massive architecture you traverse.
+
+Genre:
+Action, Adventure, (Sci-fi)
+
+Game Name:
+Starlight Graveyard
+
+Game Pitch:
+Starlight Graveyard is an atmospheric first-person 3D platformer where you drift through a massive megastructure while managing a dwindling oxygen supply. Master zero-g movement controls as you make your way inside, searching for answers.

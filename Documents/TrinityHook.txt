@@ -1,0 +1,49 @@
+###### V1 ######
+
+Trinity Hook v1
+
+Visual Hook:
+- Environmental vistas and large open levels that the player gets to explore.
+
+Mechanical Hook:
+- A zero-G movement mechanic. The idea is for this to be crisp with enough feedback to get the player into a zen-like state. Simple to use, but with nuance enough to master.
+
+Story Hook:
+- Outside of undecided character goals, the idea is that as the player you are there with curiosity driving you to try and understand what the purpose of this structure is and why it is there in the first place.
+
+###### FEEDBACK ######
+1. Just focus on the trinity hook for now.
+2. Visual hook explanation sucks, be much more specific about the kinds of things you want players to see and why it's interesting.
+3. Be more specific about the zero-g movement mechanic and how it functions. Also probably mention the magnetic shoes.
+4. Simplify the story hook a bit, or at least reform it.
+5. Be PRECISE, don't ramble or use vague language, and make sure to focus on the big idea!
+
+###### V2 ######
+
+Trinity Hook v2
+
+Visual Hook:
+- Explore a planet-sized megastructure in space full of foreign architecture and massive machinery, coming across hints of alien life.
+
+Mechanical Hook:
+- Use your oxygen as a resource to power your spacesuit's thrusters, and magnetic boots to attach yourself to moving surfaces as you travel from air pocket to air pocket.
+
+Story Hook:
+- You have been drafted to join a team to catalogue the megastructure, but they are nowhere to be found. Enter it, find them, discover its purpose, and make it out alive.
+
+###### FEEDBACK ######
+1. Simplify the visual hook sentence.
+2. Try to focus on one thing only for the mechanical hook.
+
+###### V3 ######
+
+Trinity Hook v3
+
+Visual Hook:
+- Explore a planet-sized megastructure in space, coming across hints of alien life.
+
+Mechanical Hook:
+- Use your oxygen as a resource to power your spacesuit's thrusters as you travel from air pocket to air pocket.
+
+Story Hook:
+- You have been drafted to join a team to catalogue the megastructure, but they are nowhere to be found. Enter it, find them, discover its purpose, and make it out alive.
