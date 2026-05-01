@@ -22,6 +22,12 @@ public class PlayerSpawner : MonoBehaviour
             {
                 entity.OnKilled += OnPlayerKilled;
             }
+
+            if (player.TryGetComponent(out ScreenFader screenFader))
+            {
+                screenFader.SetOpacity(1.0f);
+                _ = screenFader.FadeToOpacity(0.0f, 8.0f);
+            }
         }
     }
 

@@ -8,6 +8,19 @@ public class ScreenFader : MonoBehaviour
     [SerializeField]
     private Image fadeImage;
 
+    public void SetOpacity(float opacity)
+    {
+        if (fadeImage == null)
+        {
+            Debug.LogError("ScreenFader: Fade Image is not assigned!");
+            return;
+        }
+
+        Color newColor = fadeImage.color;
+        newColor.a = opacity;
+        fadeImage.color = newColor;
+    }
+
     public async Task FadeToOpacity(float targetOpacity, float duration)
     {
         if (fadeImage == null)
@@ -28,6 +41,7 @@ public class ScreenFader : MonoBehaviour
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / duration);
+                t = t * t;  // easing to feel better
 
                 Color newColor = startColor;
                 newColor.a = Mathf.Lerp(startOpacity, targetOpacity, t);
