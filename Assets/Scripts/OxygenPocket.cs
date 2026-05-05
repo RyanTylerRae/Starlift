@@ -1,18 +1,18 @@
 using UnityEngine;
 
-[RequireComponent(typeof(SphereCollider))]
+[RequireComponent(typeof(Collider))]
 public class OxygenPocket : MonoBehaviour
 {
     public float replenishRate = 10f;
 
-    private SphereCollider sphereCollider;
+    private Collider volumeCollider;
     private GameObject playerInPocket;
     private OxygenSystem playerOxygenSystem;
 
     void Start()
     {
-        sphereCollider = GetComponent<SphereCollider>();
-        sphereCollider.isTrigger = true;
+        volumeCollider = GetComponent<Collider>();
+        volumeCollider.isTrigger = true;
     }
 
     void Update()
