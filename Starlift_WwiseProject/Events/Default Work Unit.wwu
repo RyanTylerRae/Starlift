@@ -177,6 +177,21 @@
 								</Event>
 							</ChildrenList>
 						</Folder>
+						<Folder Name="prototype" ID="{B2B74F77-F131-4DD9-B5AD-F382EA0467B6}" ShortID="779430592">
+							<ChildrenList>
+								<Event Name="play_proto_line_1A_placeholder" ID="{40C9D41C-035C-4615-A839-0BD2A8F188FF}">
+									<ChildrenList>
+										<Action Name="" ID="{4448C238-C839-4ADE-A47C-04A462A6FE35}" ShortID="1007637948">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="line_prototype_1A_cutscene_placeholder" ID="{6EF42495-1F98-438A-B1A0-5F709D98E3C8}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
 					</ChildrenList>
 				</Folder>
 			</ChildrenList>

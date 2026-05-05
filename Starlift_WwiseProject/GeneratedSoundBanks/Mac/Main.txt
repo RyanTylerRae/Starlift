@@ -4,6 +4,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	980341684	play_line_1C_lookup			\Default Work Unit\dialogue\scene_1\play_line_1C_lookup	
 	1395652314	play_line_1C_letsgo			\Default Work Unit\dialogue\scene_1\play_line_1C_letsgo	
 	1403434038	play_line_1C_uthebest			\Default Work Unit\dialogue\scene_1\play_line_1C_uthebest	
+	1793226300	play_proto_line_1A_placeholder			\Default Work Unit\dialogue\prototype\play_proto_line_1A_placeholder	
 	1813665153	play_line_1C_sorry			\Default Work Unit\dialogue\scene_1\play_line_1C_sorry	
 	2303161985	play_oxygen_replenish			\Default Work Unit\play_oxygen_replenish	
 	2356089724	play_line_1B_noinfo			\Default Work Unit\dialogue\scene_1\play_line_1B_noinfo	
@@ -28,6 +29,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	829844053	oxygen_replenish	.cache\D8\{D83D8296-C217-AD4E-196D-C81E5DF77266}.wem		\Containers\Default Work Unit\Audio\oxygen_replenish		356448
 	840728010	Line_1B_noinfo	.cache\28\{28FEDD4D-975A-4C50-F802-41F4D1AFDEE9}.wem		\Containers\Default Work Unit\Audio\dialogue\scene_1\Line_1B_noinfo		348000
 	873292320	line_1B_isee	.cache\42\{426E75D3-6E14-AE0D-D7BA-F2A2CD049822}.wem		\Containers\Default Work Unit\Audio\dialogue\scene_1\line_1B_isee		345696
+	918648767	line_prototype_1A_cutscene_placeholder	.cache\58\{586AFCA7-F1A0-7513-2735-66B7334701D1}.wem		\Containers\Default Work Unit\Audio\dialogue\prototype\line_prototype_1A_cutscene_placeholder		115296
 	928797396	line_1C_sorry	.cache\8E\{8E54835D-54B0-551B-7061-4E7A063CA755}.wem		\Containers\Default Work Unit\Audio\dialogue\scene_1\line_1C_sorry		301920
 	987918517	breathing_hard	.cache\0D\{0D8C8F93-E823-870D-A783-661486806BE4}.wem		\Containers\Default Work Unit\BlendContainers\Blend_Breathing\breathing_hard		1642592
 	996563230	line_1A_arrived	.cache\00\{00DEFF87-EBB5-F78F-CB98-B18EEAA8C85A}.wem		\Containers\Default Work Unit\Audio\dialogue\scene_1\line_1A_arrived		91104

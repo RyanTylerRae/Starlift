@@ -456,6 +456,32 @@
 										</Sound>
 									</ChildrenList>
 								</Folder>
+								<Folder Name="prototype" ID="{E2739EAC-F749-4766-B5E8-33CE3C0D89F9}" ShortID="717181736">
+									<ChildrenList>
+										<Sound Name="line_prototype_1A_cutscene_placeholder" ID="{6EF42495-1F98-438A-B1A0-5F709D98E3C8}" ShortID="587125117">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="line_prototype_1A_cutscene_placeholder" ID="{A885C03F-6BE7-4416-98C0-C76BEE185E79}">
+													<Language>SFX</Language>
+													<AudioFile>line_prototype_1A_cutscene_placeholder.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="918648767"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="line_prototype_1A_cutscene_placeholder" ID="{A885C03F-6BE7-4416-98C0-C76BEE185E79}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</Folder>
 							</ChildrenList>
 						</Folder>
 					</ChildrenList>

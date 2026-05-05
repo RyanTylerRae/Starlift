@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2227c858b00ce6640bcf63427410ccfe, type: 3}
-  m_Name: WordBanks
+  m_Script: {fileID: 11500000, guid: a8b713e0776681540b5d0e9d9cde762a, type: 3}
+  m_Name: 40C9D41C-035C-4615-A839-0BD2A8F188FF
   m_EditorClassIdentifier: 
-  localizationBanks:
-  - {fileID: -6750239444755058063, guid: 033f839304c8b794d9edb9c6a11247b0, type: 3}
-  - {fileID: -6750239444755058063, guid: dd99a7300a52c0e4293d97a179c0af76, type: 3}
+  objectName: play_proto_line_1A_placeholder
+  id: 1793226300
+  guid: 40C9D41C-035C-4615-A839-0BD2A8F188FF
+  IsInUserDefinedSoundBank: 1

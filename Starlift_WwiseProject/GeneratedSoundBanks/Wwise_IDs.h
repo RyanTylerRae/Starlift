@@ -27,6 +27,7 @@ namespace AK
         static const AkUniqueID PLAY_LINE_1C_SORRY = 1813665153U;
         static const AkUniqueID PLAY_LINE_1C_UTHEBEST = 1403434038U;
         static const AkUniqueID PLAY_OXYGEN_REPLENISH = 2303161985U;
+        static const AkUniqueID PLAY_PROTO_LINE_1A_PLACEHOLDER = 1793226300U;
         static const AkUniqueID STOP_BLEND_BREATHING = 2817166606U;
     } // namespace EVENTS
 

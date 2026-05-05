@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{2520C039-3CD3-5D29-ED20-4E00C2034B8C}",
+    "Hash": "{37C727E2-04DE-DF74-5ABF-17C9EE92C253}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -86,6 +86,14 @@
       "Location": "Memory",
       "ShortName": "line_1B_isee.wav",
       "CachePath": "42/{426E75D3-6E14-AE0D-D7BA-F2A2CD049822}.wem"
+     },
+     {
+      "Id": "918648767",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "line_prototype_1A_cutscene_placeholder.wav",
+      "CachePath": "58/{586AFCA7-F1A0-7513-2735-66B7334701D1}.wem"
      },
      {
       "Id": "928797396",
@@ -335,6 +343,20 @@
       ]
      },
      {
+      "Id": "1793226300",
+      "Name": "play_proto_line_1A_placeholder",
+      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\prototype\\play_proto_line_1A_placeholder",
+      "GUID": "{40C9D41C-035C-4615-A839-0BD2A8F188FF}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.4",
+      "DurationMax": "2.4",
+      "MediaRefs": [
+       {
+        "Id": "918648767"
+       }
+      ]
+     },
+     {
       "Id": "2817166606",
       "Name": "stop_blend_breathing",
       "ObjectPath": "\\Events\\Default Work Unit\\stop_blend_breathing",
@@ -355,6 +377,6 @@
     ]
    }
   ],
-  "FileHash": "{9A58B914-CFFE-3F8C-788C-9A1E3DBAD387}"
+  "FileHash": "{A0FEB4D2-AEF0-2F20-39DB-8CF41E10C369}"
  }
 }
