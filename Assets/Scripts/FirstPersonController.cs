@@ -76,7 +76,7 @@ public class FirstPersonController : MonoBehaviour
     private PlayerInput playerInput;
     private Rigidbody _rigidbody;
     private GravityController gravityController;
-    private BoxCollider bodyCollider;
+    private CapsuleCollider bodyCollider;
 
     [Header("Camera")]
     public GameObject cameraArm;
@@ -129,7 +129,7 @@ public class FirstPersonController : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         characterController = GetComponent<CharacterController>();
         gravityController = GetComponent<GravityController>();
-        bodyCollider = GetComponentInChildren<BoxCollider>();
+        bodyCollider = GetComponentInChildren<CapsuleCollider>();
 
         SetMovementMode(ControllerMovementMode.Gravity);
 
@@ -476,14 +476,13 @@ public class FirstPersonController : MonoBehaviour
         Vector3 gravityDir = gravity.normalized;
         int groundMask = LayerMask.GetMask("Default");
 
-        float halfX = bodyCollider != null ? bodyCollider.size.x * 0.5f * bodyCollider.transform.lossyScale.x : 0f;
-        float halfZ = bodyCollider != null ? bodyCollider.size.z * 0.5f * bodyCollider.transform.lossyScale.z : 0f;
+        float halfRadius = bodyCollider != null ? bodyCollider.radius * bodyCollider.transform.lossyScale.x : 0f;
 
         for (int i = -1; i <= 1; i++)
         {
             for (int j = -1; j <= 1; j++)
             {
-                Vector3 origin = transform.position + transform.right * (i * halfX) + transform.forward * (j * halfZ);
+                Vector3 origin = transform.position + transform.right * (i * halfRadius) + transform.forward * (j * halfRadius);
                 if (Physics.Raycast(new Ray(origin, gravityDir), groundedDistance, groundMask))
                 {
                     isGrounded = true;
