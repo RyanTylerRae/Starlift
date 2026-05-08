@@ -22,6 +22,8 @@ public class FirstPersonController : MonoBehaviour
     private float lastJumpTime = -1f;
     public float airControlMultiplier = 0.1f;
     public float maxJumpSpeed;
+    public float groundFriction = 10f;
+    public float groundStoppingFriction = 25f;
 
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
@@ -65,11 +67,16 @@ public class FirstPersonController : MonoBehaviour
     // Desired movement velocity from input (used in FixedUpdate)
     private Vector3 desiredMovementVelocity = Vector3.zero;
 
+    // Gravity mode: force direction and speed cap stored in Update, applied in FixedUpdate
+    private Vector3 desiredGravityForce = Vector3.zero;
+    private float gravityModeMaxSpeed = 0f;
+
     [Header("Player")]
     private CharacterController characterController;
     private PlayerInput playerInput;
     private Rigidbody _rigidbody;
     private GravityController gravityController;
+    private BoxCollider bodyCollider;
 
     [Header("Camera")]
     public GameObject cameraArm;
@@ -122,6 +129,7 @@ public class FirstPersonController : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         characterController = GetComponent<CharacterController>();
         gravityController = GetComponent<GravityController>();
+        bodyCollider = GetComponentInChildren<BoxCollider>();
 
         SetMovementMode(ControllerMovementMode.Gravity);
 
@@ -162,7 +170,6 @@ public class FirstPersonController : MonoBehaviour
             rotateRightAction = null;
 
             _rigidbody.freezeRotation = true;
-            _rigidbody.rotation = Quaternion.identity;
         }
         else if (movementMode == ControllerMovementMode.Magnetized)
         {
@@ -194,7 +201,6 @@ public class FirstPersonController : MonoBehaviour
             rotateRightAction = null;
 
             _rigidbody.freezeRotation = true;
-            _rigidbody.rotation = Quaternion.identity;
         }
         else if (movementMode == ControllerMovementMode.ZeroG)
         {
@@ -333,6 +339,39 @@ public class FirstPersonController : MonoBehaviour
 
     public void FixedUpdate()
     {
+        if (MovementMode == ControllerMovementMode.Gravity)
+        {
+            if (desiredGravityForce != Vector3.zero)
+            {
+                _rigidbody.AddForce(desiredGravityForce);
+            }
+
+            Vector3 gravity = gravityController?.GetGravityVector() ?? Vector3.zero;
+            if (gravity.sqrMagnitude > 0.01f)
+            {
+                Vector3 linearVelocity = _rigidbody.linearVelocity;
+                Vector3 gravityDir = gravity.normalized;
+                Vector3 velocityInGravityDir = Vector3.Dot(linearVelocity, gravityDir) * gravityDir;
+                Vector3 velocityTangent = linearVelocity - velocityInGravityDir;
+
+                if (velocityTangent.sqrMagnitude > gravityModeMaxSpeed * gravityModeMaxSpeed)
+                {
+                    velocityTangent = velocityTangent.normalized * gravityModeMaxSpeed;
+                }
+
+                if (isGrounded)
+                {
+                    float friction = desiredGravityForce == Vector3.zero ? groundStoppingFriction : groundFriction;
+                    float speed = velocityTangent.magnitude;
+                    float decel = friction * Time.fixedDeltaTime;
+                    velocityTangent = speed > decel ? velocityTangent.normalized * (speed - decel) : Vector3.zero;
+                }
+
+                _rigidbody.linearVelocity = velocityTangent + velocityInGravityDir;
+            }
+            return;
+        }
+
         // if we are in magnetized mode, apply sub-stepping to move across surfaces smoothly
         // we will move in increments, and reproject to find the new surface normal at each step
         if (MovementMode != ControllerMovementMode.Magnetized)
@@ -434,10 +473,23 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
-        Ray ray = new Ray(transform.position, gravity.normalized);
-        if (Physics.Raycast(ray, groundedDistance, LayerMask.GetMask("Default")))
+        Vector3 gravityDir = gravity.normalized;
+        int groundMask = LayerMask.GetMask("Default");
+
+        float halfX = bodyCollider != null ? bodyCollider.size.x * 0.5f * bodyCollider.transform.lossyScale.x : 0f;
+        float halfZ = bodyCollider != null ? bodyCollider.size.z * 0.5f * bodyCollider.transform.lossyScale.z : 0f;
+
+        for (int i = -1; i <= 1; i++)
         {
-            isGrounded = true;
+            for (int j = -1; j <= 1; j++)
+            {
+                Vector3 origin = transform.position + transform.right * (i * halfX) + transform.forward * (j * halfZ);
+                if (Physics.Raycast(new Ray(origin, gravityDir), groundedDistance, groundMask))
+                {
+                    isGrounded = true;
+                    return;
+                }
+            }
         }
     }
 
@@ -559,6 +611,7 @@ public class FirstPersonController : MonoBehaviour
 
         if (moveInput == null || sprintIsPressed == null)
         {
+            desiredGravityForce = Vector3.zero;
             return;
         }
 
@@ -568,38 +621,11 @@ public class FirstPersonController : MonoBehaviour
             adjustedMoveForce *= airControlMultiplier;
         }
 
-        // apply gravity and movement forces based on input
         Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;
-        _rigidbody.AddForce(direction * adjustedMoveForce);
-
-        Vector3 gravity = gravityController.GetGravityVector();
-
-        // clamp velocity tangent to gravity to a maximum speed
-        Vector3 velocity = _rigidbody.linearVelocity;
-
-        // project velocity onto gravity direction and save it
-        Vector3 gravityDir = gravity.normalized;
-        Vector3 velocityInGravityDir = Vector3.Dot(velocity, gravityDir) * gravityDir;
-
-        // remove gravity component from velocity
-        Vector3 velocityTangent = velocity - velocityInGravityDir;
+        desiredGravityForce = direction * adjustedMoveForce;
 
         float maxSpeed = sprintIsPressed.Value ? maxRunSpeed : maxWalkSpeed;
-
-        if (isGrounded && velocityTangent.sqrMagnitude > maxSpeed * maxSpeed)
-        {
-            velocityTangent.Normalize();
-            velocityTangent *= maxSpeed;
-        }
-        else if (!isGrounded && velocityTangent.sqrMagnitude > maxJumpSpeed * maxJumpSpeed)
-        {
-            velocityTangent.Normalize();
-            velocityTangent *= maxJumpSpeed;
-        }
-
-        // restore gravity component
-        velocity = velocityTangent + velocityInGravityDir;
-        _rigidbody.linearVelocity = velocity;
+        gravityModeMaxSpeed = isGrounded ? maxSpeed : maxJumpSpeed;
     }
 
     void HandleZeroGLook()

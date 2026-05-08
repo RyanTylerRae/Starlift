@@ -514,10 +514,9 @@ GameObject:
   - component: {fileID: 1723591369367538452}
   - component: {fileID: 1511117491975221579}
   - component: {fileID: 522892308707186783}
-  - component: {fileID: 2045956722808688034}
   m_Layer: 0
-  m_Name: Capsule
-  m_TagString: Untagged
+  m_Name: Body
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -531,8 +530,8 @@ Transform:
   m_GameObject: {fileID: 6378260622634580692}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.91, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 0.5, y: 1.6, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7542315045478018143}
@@ -544,7 +543,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6378260622634580692}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &522892308707186783
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -590,29 +589,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &2045956722808688034
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6378260622634580692}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7487322208089777659
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,7 +680,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7542315045478018143}
   - component: {fileID: 8951000721014338487}
-  - component: {fileID: 3544571870899075731}
+  - component: {fileID: 8622761537664165133}
   - component: {fileID: 4662095033839872499}
   - component: {fileID: -1195255886293758487}
   - component: {fileID: -3330819332357165361}
@@ -753,14 +729,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ef3528d233fd94eadd571fa4e4f27a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForce: 15
+  moveForce: 12
   maxWalkSpeed: 5
-  maxRunSpeed: 8
+  maxRunSpeed: 10
   groundedDistance: 0.6
-  jumpForce: 6
+  jumpForce: 5
   jumpCooldown: 0.5
-  airControlMultiplier: 0.1
-  maxJumpSpeed: 10
+  airControlMultiplier: 0.12
+  maxJumpSpeed: 8
+  groundFriction: 2
+  groundStoppingFriction: 10
   maxMagnetizedWalkSpeed: 2.5
   magnetizeRadius: 0.5
   lookSensitivity: 0.1
@@ -778,14 +756,14 @@ MonoBehaviour:
   substepDistance: 0.05
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
---- !u!136 &3544571870899075731
-CapsuleCollider:
+--- !u!65 &8622761537664165133
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7509877599165506846}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: fdd935dff4797f5499e2d744298ff970, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -796,11 +774,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  serializedVersion: 3
+  m_Size: {x: 0.5, y: 1.7, z: 0.5}
+  m_Center: {x: 0, y: 0.45, z: 0}
 --- !u!114 &4662095033839872499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -870,7 +846,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &5086660247363025625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -954,7 +930,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 1.2
+  usagePerSecond: 0
   thrustMultiplier: 6
 --- !u!114 &3039922705185681957
 MonoBehaviour:
