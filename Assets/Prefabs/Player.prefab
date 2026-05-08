@@ -729,16 +729,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ef3528d233fd94eadd571fa4e4f27a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForce: 12
+  moveForce: 20
   maxWalkSpeed: 5
-  maxRunSpeed: 10
+  maxRunSpeed: 8
   groundedDistance: 0.6
-  jumpForce: 5
+  jumpForce: 6
   jumpCooldown: 0.5
-  airControlMultiplier: 0.12
-  maxJumpSpeed: 8
-  groundFriction: 2
-  groundStoppingFriction: 10
+  airControlMultiplier: 0.15
+  maxJumpSpeed: 6
+  groundFriction: 1
+  groundStoppingFriction: 8
   maxMagnetizedWalkSpeed: 2.5
   magnetizeRadius: 0.5
   lookSensitivity: 0.1
