@@ -20,15 +20,15 @@ MonoBehaviour:
     rid: 4335384901180719180
   m_OverrideGlobalSceneList: 1
   m_Scenes:
-  - m_enabled: 1
+  - m_enabled: 0
     m_path: Assets/Scenes/MainMenu.unity
   - m_enabled: 1
     m_path: Assets/Scenes/GameEntry.unity
-  - m_enabled: 1
+  - m_enabled: 0
     m_path: Assets/Scenes/Cutscenes/Scene_1A.unity
-  - m_enabled: 1
+  - m_enabled: 0
     m_path: Assets/Scenes/Cutscenes/Scene_1B.unity
-  - m_enabled: 1
+  - m_enabled: 0
     m_path: Assets/Scenes/Cutscenes/Scene_1C.unity
   - m_enabled: 1
     m_path: Assets/Scenes/Cutscenes/Testing/Scene_Prototype_1A.unity
@@ -46,8 +46,8 @@ MonoBehaviour:
     - line: '|   targetDevice: 2'
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
-    - line: '|   companyName: DefaultCompany'
-    - line: '|   productName: Starlift'
+    - line: '|   companyName: Team Clover LLC'
+    - line: '|   productName: Starlight Graveyard'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
@@ -141,7 +141,7 @@ MonoBehaviour:
     - line: '|   xboxEnableFitness: 0'
     - line: '|   visibleInBackground: 1'
     - line: '|   allowFullscreenSwitch: 1'
-    - line: '|   fullscreenMode: 3'
+    - line: '|   fullscreenMode: 2'
     - line: '|   xboxSpeechDB: 0'
     - line: '|   xboxEnableHeadOrientation: 0'
     - line: '|   xboxEnableGuest: 0'
@@ -177,10 +177,12 @@ MonoBehaviour:
     - line: '|   tvOSBundleVersion: 1.0'
     - line: '|   bundleVersion: 0.1.0'
     - line: '|   preloadedAssets:'
-    - line: '|   - {fileID: 11400000, guid: 0a49b670bb2cbdb44b36484965979d22, type:
+    - line: '|   - {instanceID: 0}'
+    - line: '|   - {instanceID: 0}'
+    - line: '|   - {fileID: 11400000, guid: 2a30ae5ee0a65a944a539195773996b4, type:
         2}'
-    - line: '|   - {fileID: 11400000, guid: 76bc42aaafb9b9f4f9f330e7198207e9, type:
-        2}'
+    - line: '|   - {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b,
+        type: 3}'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
     - line: '|   m_HolographicPauseOnTrackingLoss: 1'
