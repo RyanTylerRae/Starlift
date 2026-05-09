@@ -777,6 +777,8 @@ MonoBehaviour:
   jumpTier3Time: 0.6
   jumpDirectionalAngleThreshold: 90
   substepDistance: 0.05
+  airCollisionDampening: 0.2
+  maxDepenetrationVelocity: 0.5
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
 --- !u!114 &4662095033839872499
@@ -932,8 +934,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 0
-  thrustMultiplier: 6
+  usagePerSecond: 2.25
+  thrustMultiplier: 3
 --- !u!114 &3039922705185681957
 MonoBehaviour:
   m_ObjectHideFlags: 0

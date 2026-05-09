@@ -97,8 +97,15 @@ public class GravityController : MonoBehaviour
         return (direction + offset).normalized;
     }
 
+    public IReadOnlyList<GravitySourceComponent> GetGravitySources() => gravitySources;
+
     public void AddGravitySource(GravitySourceComponent gravityComponent)
     {
+        if (gravitySources.Contains(gravityComponent))
+        {
+            return;
+        }
+
         gravitySources.Add(gravityComponent);
 
         // Create intermediate parent with inverse scale to cancel out gravity source's scale

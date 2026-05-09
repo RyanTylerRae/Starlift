@@ -64,8 +64,14 @@ public class FirstPersonController : MonoBehaviour
     [Header("Physics Sub-stepping")]
     public float substepDistance = 0.05f;
 
+    [Header("Collision")]
+    [Range(0f, 1f)]
+    public float airCollisionDampening = 0.85f;
+    public float maxDepenetrationVelocity = 2f;
+
     // Desired movement velocity from input (used in FixedUpdate)
     private Vector3 desiredMovementVelocity = Vector3.zero;
+    private Vector3 _preCollisionVelocity = Vector3.zero;
 
     // Gravity mode: force direction and speed cap stored in Update, applied in FixedUpdate
     private Vector3 desiredGravityForce = Vector3.zero;
@@ -127,6 +133,7 @@ public class FirstPersonController : MonoBehaviour
         //{
         playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
+        _rigidbody.maxDepenetrationVelocity = maxDepenetrationVelocity;
         characterController = GetComponent<CharacterController>();
         gravityController = GetComponent<GravityController>();
         bodyCollider = GetComponentInChildren<CapsuleCollider>();
@@ -369,6 +376,7 @@ public class FirstPersonController : MonoBehaviour
 
                 _rigidbody.linearVelocity = velocityTangent + velocityInGravityDir;
             }
+            _preCollisionVelocity = _rigidbody.linearVelocity;
             return;
         }
 
@@ -422,6 +430,7 @@ public class FirstPersonController : MonoBehaviour
         // apply final state to rigidbody, included the new adjusted velocity
         _rigidbody.position = position;
         _rigidbody.linearVelocity = gravitySourceVelocity + velocity;
+        _preCollisionVelocity = _rigidbody.linearVelocity;
     }
 
     void HandleMouseLook()
@@ -738,6 +747,15 @@ public class FirstPersonController : MonoBehaviour
         }
 
         playerCamera.transform.localPosition = originalPos;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isGrounded) return;
+        if (MovementMode != ControllerMovementMode.Gravity) return;
+        if (collision.rigidbody == null || collision.rigidbody.isKinematic) return;
+
+        _rigidbody.linearVelocity = Vector3.Lerp(_rigidbody.linearVelocity, _preCollisionVelocity, airCollisionDampening);
     }
 
     private void OnDestroy()

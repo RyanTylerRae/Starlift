@@ -16,6 +16,7 @@ public class CutsceneManager : MonoBehaviour
     private List<string> cutsceneQueue = new();
     private bool isPlayingCutscenes = false;
     private string currentCutscene = "";
+    private List<GravitySourceComponent> savedGravitySources = new();
 
     public void Awake()
     {
@@ -50,9 +51,37 @@ public class CutsceneManager : MonoBehaviour
     private void TakePlayerControl(bool removeControl)
     {
         var playerObject = StarliftStatics.FindPlayer();
-        playerObject?.SetActive(!removeControl);
 
+        if (removeControl)
+        {
+            // Save gravity sources before deactivation. SetActive(false) deactivates the
+            // player's collider, which fires OnTriggerExit on gravity sources and breaks
+            // parenting. We restore them manually after reactivation because OnTriggerEnter
+            // is not guaranteed to fire when a collider re-enables inside a trigger.
+            var gc = playerObject?.GetComponent<GravityController>();
+            savedGravitySources = gc != null
+                ? new List<GravitySourceComponent>(gc.GetGravitySources())
+                : new List<GravitySourceComponent>();
+        }
+
+        playerObject?.SetActive(!removeControl);
         HUDObject?.SetActive(!removeControl);
+
+        if (!removeControl && playerObject != null)
+        {
+            var gc = playerObject.GetComponent<GravityController>();
+            if (gc != null)
+            {
+                foreach (var source in savedGravitySources)
+                {
+                    if (source != null)
+                    {
+                        gc.AddGravitySource(source);
+                    }
+                }
+            }
+            savedGravitySources.Clear();
+        }
     }
 
     public void QueueCutscene(string sceneName)
