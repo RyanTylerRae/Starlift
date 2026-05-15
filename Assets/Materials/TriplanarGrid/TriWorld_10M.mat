@@ -52,6 +52,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Brightness: 1
+    - _DDXY_Strength: 1.5
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Scale_meters: 10
