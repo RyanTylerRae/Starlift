@@ -35,8 +35,7 @@ public class OxygenSystem : MonoBehaviour
         AkUnitySoundEngine.PostEvent("stop_blend_breathing", gameObject);
     }
 
-    // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if (modifiers == null || playerController == null)
         {

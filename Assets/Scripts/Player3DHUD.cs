@@ -167,6 +167,9 @@ public class PlayerHUD : MonoBehaviour
             laggyOxygenProgress = Mathf.Lerp(laggyOxygenProgress, modifiers.Get(ModifierType.Oxygen), Time.deltaTime * laggyOxygenSpeed);
         }
 
+        // ensure that laggy oxygen progress never dips below the normal oxygen bar
+        laggyOxygenProgress = Mathf.Max(laggyOxygenProgress, modifiers.Get(ModifierType.Oxygen));
+
         wasBurningOxygen = playerController.OxygenBurnRate > 0.0f;
 
         // update modifiers
