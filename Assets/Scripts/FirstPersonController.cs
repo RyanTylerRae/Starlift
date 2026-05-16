@@ -24,6 +24,7 @@ public class FirstPersonController : MonoBehaviour
     public float maxJumpSpeed;
     public float groundFriction = 10f;
     public float groundStoppingFriction = 25f;
+    public bool IsSprinting { get; private set; }
 
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
@@ -109,8 +110,12 @@ public class FirstPersonController : MonoBehaviour
 
     public bool ShouldDisplayJumpTarget => CameraAngleFromGravity > jumpDirectionalAngleThreshold && MovementMode == ControllerMovementMode.Magnetized;
 
-    private bool isBurningOxygen = false;
-    public bool IsBurningOxygen => isBurningOxygen;
+    [Header("Oxygen")]
+    public float minOxygenBurnRate = 0.33f;
+    public float jumpOxygenCost;
+    private float oxygenBurnRate = 0.0f;
+    public float OxygenBurnRate => oxygenBurnRate;
+    private OxygenSystem? oxygenSystem = null;
 
     public enum ControllerMovementMode
     {
@@ -128,6 +133,7 @@ public class FirstPersonController : MonoBehaviour
     void Start()
     {
         modifiers = GetComponent<Modifiers>();
+        oxygenSystem = GetComponent<OxygenSystem>();
 
         //if (TryGetComponent<CoherenceSync>(out var _sync) && _sync.HasStateAuthority)
         //{
@@ -311,7 +317,8 @@ public class FirstPersonController : MonoBehaviour
         if (MovementMode != ControllerMovementMode.ZeroG)
         {
             // we don't burn extra oxygen when walking on a surface
-            isBurningOxygen = false;
+            oxygenBurnRate = 0.0f;
+            IsSprinting = false;
 
             HandleMouseLook();
             HandleGrounded();
@@ -533,6 +540,7 @@ public class FirstPersonController : MonoBehaviour
         // Jump in the opposite direction of gravity
         Vector3 jumpDirection = -gravity.normalized;
         _rigidbody.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
+        oxygenSystem?.DepleteOxygen(jumpOxygenCost);
 
         // Record jump time for cooldown
         lastJumpTime = Time.time;
@@ -622,6 +630,8 @@ public class FirstPersonController : MonoBehaviour
             desiredGravityForce = Vector3.zero;
             return;
         }
+
+        IsSprinting = sprintIsPressed.Value && moveInput.Value.sqrMagnitude > 0.0f;
 
         float adjustedMoveForce = moveForce;
         if (!isGrounded)
@@ -713,7 +723,19 @@ public class FirstPersonController : MonoBehaviour
         thrustVector += playerCamera.transform.up * upThrustInput;
         thrustVector += -playerCamera.transform.up * downThrustInput;
 
-        isBurningOxygen = thrustVector.sqrMagnitude > 0.0f || (isStabilizePressed.Value && velocity.sqrMagnitude > 1.0f);
+        // burn less oxygen the closer the player gets to maximum velocity
+        if (isStabilizePressed.Value && velocity.sqrMagnitude > 1.0f)
+        {
+            oxygenBurnRate = 1.0f;
+        }
+        else if (thrustVector.sqrMagnitude > 0.0f)
+        {
+            oxygenBurnRate = Math.Max(1.0f - (_rigidbody.linearVelocity.magnitude / maxFlightSpeed), minOxygenBurnRate);
+        }
+        else
+        {
+            oxygenBurnRate = 0.0f;
+        }
 
         _rigidbody.AddForce(thrustVector.normalized * flightForce);
 

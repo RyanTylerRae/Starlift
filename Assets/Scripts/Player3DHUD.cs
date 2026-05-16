@@ -157,17 +157,17 @@ public class PlayerHUD : MonoBehaviour
         }
 
         // handle oxygen burn logic for the laggy progress bar
-        if (!wasBurningOxygen && playerController.IsBurningOxygen)
+        if (!wasBurningOxygen && playerController.OxygenBurnRate > 0.0f)
         {
             laggyOxygenProgress = modifiers.Get(ModifierType.Oxygen);
         }
 
-        if (!playerController.IsBurningOxygen)
+        if (playerController.OxygenBurnRate <= 0.0f)
         {
             laggyOxygenProgress = Mathf.Lerp(laggyOxygenProgress, modifiers.Get(ModifierType.Oxygen), Time.deltaTime * laggyOxygenSpeed);
         }
 
-        wasBurningOxygen = playerController.IsBurningOxygen;
+        wasBurningOxygen = playerController.OxygenBurnRate > 0.0f;
 
         // update modifiers
         if (oxygenProgressForegroundMaterialInstance != null)

@@ -7,6 +7,7 @@ public class OxygenSystem : MonoBehaviour
 {
     public float usagePerSecond;
     public float thrustMultiplier;
+    public float sprintMultiplier;
     private Modifiers? modifiers = null;
     private FirstPersonController? playerController = null;
     private bool isAudioPlaying = false;
@@ -44,13 +45,17 @@ public class OxygenSystem : MonoBehaviour
 
         float oxygenAmount = modifiers.Get(ModifierType.Oxygen);
 
-        if (!playerController.IsBurningOxygen)
+        if (playerController.OxygenBurnRate > 0.0f)
         {
-            oxygenAmount -= Time.deltaTime * usagePerSecond;
+            oxygenAmount -= Time.deltaTime * usagePerSecond * thrustMultiplier * playerController.OxygenBurnRate;
+        }
+        else if (playerController.IsSprinting)
+        {
+            oxygenAmount -= Time.deltaTime * usagePerSecond * sprintMultiplier;
         }
         else
         {
-            oxygenAmount -= Time.deltaTime * usagePerSecond * thrustMultiplier;
+            oxygenAmount -= Time.deltaTime * usagePerSecond;
         }
 
         if (oxygenAmount > 0.0f)
@@ -80,6 +85,18 @@ public class OxygenSystem : MonoBehaviour
                 isAudioPlaying = false;
             }
         }
+    }
+
+    public void DepleteOxygen(float amount)
+    {
+        if (modifiers == null || amount <= 0.0f)
+        {
+            return;
+        }
+
+        float oxygenAmount = modifiers.Get(ModifierType.Oxygen);
+        oxygenAmount -= amount;
+        modifiers.Set(ModifierType.Oxygen, oxygenAmount);
     }
 
     public void ReplenishOxygen(float replenishRate)

@@ -781,6 +781,8 @@ MonoBehaviour:
   maxDepenetrationVelocity: 0.5
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
+  minOxygenBurnRate: 0.33
+  jumpOxygenCost: 2
 --- !u!114 &4662095033839872499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -936,6 +938,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   usagePerSecond: 2.25
   thrustMultiplier: 3
+  sprintMultiplier: 1.5
 --- !u!114 &3039922705185681957
 MonoBehaviour:
   m_ObjectHideFlags: 0
