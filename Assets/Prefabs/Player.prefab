@@ -762,8 +762,9 @@ MonoBehaviour:
   maxJumpSpeed: 6
   groundFriction: 0.5
   groundStoppingFriction: 20
-  maxMagnetizedWalkSpeed: 2.5
-  magnetizeRadius: 0.5
+  maxMagnetizedWalkSpeed: 3.25
+  magnetizeRadius: 0.4
+  gravityAlignmentSpeed: 3
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
@@ -771,12 +772,11 @@ MonoBehaviour:
   stabilizeMultiplier: 0.5
   flightForce: 1
   maxFlightSpeed: 6
-  gravityAlignmentSpeed: 5
   jumpTier1Time: 0.4
   jumpTier2Time: 0.5
   jumpTier3Time: 0.6
   jumpDirectionalAngleThreshold: 90
-  substepDistance: 0.05
+  substepDistance: 0.01
   airCollisionDampening: 0.2
   maxDepenetrationVelocity: 0.5
   cameraArm: {fileID: 1406748691932753418}

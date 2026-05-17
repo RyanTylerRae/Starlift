@@ -16,6 +16,7 @@ public class FirstPersonController : MonoBehaviour
     public float maxWalkSpeed;
     public float maxRunSpeed;
     private bool isGrounded = false;
+    private Vector3 surfaceNormal = Vector3.up;
     public float groundedDistance;
     public float jumpForce;
     public float jumpCooldown = 0.3f;
@@ -29,6 +30,7 @@ public class FirstPersonController : MonoBehaviour
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
     public float magnetizeRadius = 0.5f;
+    public float gravityAlignmentSpeed = 5f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -48,9 +50,6 @@ public class FirstPersonController : MonoBehaviour
     public float flightForce;
     public float maxFlightSpeed;
 
-    // gravity alignment
-    public float gravityAlignmentSpeed = 5f;
-
     // camera angle tracking
     private float cameraAngleFromGravity = 0f;
     public float CameraAngleFromGravity => cameraAngleFromGravity;
@@ -63,7 +62,7 @@ public class FirstPersonController : MonoBehaviour
     public float jumpDirectionalAngleThreshold = 135f;
 
     [Header("Physics Sub-stepping")]
-    public float substepDistance = 0.05f;
+    public float substepDistance = 0.01f;
 
     [Header("Collision")]
     [Range(0f, 1f)]
@@ -415,8 +414,10 @@ public class FirstPersonController : MonoBehaviour
         Vector3 position = _rigidbody.position;
         Vector3 gravityVector = gravitySource.GetGravityVector(position);
         Vector3 gravityDirection = gravityVector.normalized;
-
-        Vector3 verticalVelocity = Vector3.Dot(relativeVelocity, gravityDirection) * gravityDirection;
+        Vector3 verticalAxis = (isGrounded && surfaceNormal.sqrMagnitude > 0.01f) ? surfaceNormal : -gravityDirection;
+        float verticalSpeed = Vector3.Dot(relativeVelocity, verticalAxis);
+        float clampedVerticalSpeed = Mathf.Min(verticalSpeed, 0f);
+        Vector3 verticalVelocity = clampedVerticalSpeed * verticalAxis;
         Vector3 velocity = desiredMovementVelocity + verticalVelocity;
 
         float totalDistance = velocity.magnitude * Time.fixedDeltaTime;
@@ -494,16 +495,53 @@ public class FirstPersonController : MonoBehaviour
 
         float halfRadius = bodyCollider != null ? bodyCollider.radius * bodyCollider.transform.lossyScale.x : 0f;
 
-        for (int i = -1; i <= 1; i++)
+        // perform the middle raycast, this can give us a hint to determine if we are over an edge or not,
+        // and also allows us to early-out walking on magnetized surfaces with a steep angle
+        if (Physics.Raycast(new Ray(transform.position, gravityDir), out RaycastHit centerHit, groundedDistance, groundMask))
         {
-            for (int j = -1; j <= 1; j++)
+            isGrounded = true;
+            surfaceNormal = centerHit.normal;
+            return;
+        }
+
+        Vector3 ray = new();
+        uint numHits = 0;
+
+        // perform the other eight raycasts to help with ground detection on edges and corners
+        // we also know our center is not grounded, so sum the grounded ray positions to create a ray we can use to search for the wall we are walking off of
+        for (int i = 0; i <= 2; i++)
+        {
+            for (int j = 0; j <= 2; j++)
             {
-                Vector3 origin = transform.position + transform.right * (i * halfRadius) + transform.forward * (j * halfRadius);
+                if (i == 1 && j == 1)
+                {
+                    continue;
+                }
+
+                Vector3 origin = transform.position + transform.right * ((i - 1) * halfRadius) + transform.forward * ((j - 1) * halfRadius);
                 if (Physics.Raycast(new Ray(origin, gravityDir), groundedDistance, groundMask))
                 {
+                    ++numHits;
+                    ray += origin - transform.position;
                     isGrounded = true;
-                    return;
                 }
+            }
+        }
+
+        if (isGrounded)
+        {
+            // this ray is diagonal and should point back towards the wall we are walking off of from the center
+            ray /= numHits;
+            ray += gravityDir;
+            ray.Normalize();
+
+            if (Physics.Raycast(new Ray(transform.position, ray), out RaycastHit edgeHit, groundedDistance * 2f, groundMask))
+            {
+                surfaceNormal = edgeHit.normal;
+            }
+            else
+            {
+                surfaceNormal = -gravityDir;
             }
         }
     }
