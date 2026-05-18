@@ -690,7 +690,6 @@ GameObject:
   - component: {fileID: 5740091391718420784}
   - component: {fileID: 8298962411141869644}
   - component: {fileID: 3039922705185681957}
-  - component: {fileID: 6691636323679490439}
   - component: {fileID: 4234455799448820505}
   m_Layer: 0
   m_Name: Player
@@ -952,23 +951,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeImage: {fileID: 2552572775522389552}
---- !u!114 &6691636323679490439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7509877599165506846}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3befcee158a930b47b4a1a1cf23fec47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  helmetAnimator: {fileID: 4340412172911646173}
-  hudObject: {fileID: 5416576688920741889}
-  helmetObject: {fileID: 564248955828253764}
-  helmetLowerStateName: Lower Helmet
-  cachedPlayerHUD: {fileID: 0}
 --- !u!114 &4234455799448820505
 MonoBehaviour:
   m_ObjectHideFlags: 0

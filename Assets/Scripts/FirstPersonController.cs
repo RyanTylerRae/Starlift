@@ -322,17 +322,14 @@ public class FirstPersonController : MonoBehaviour
             HandleMouseLook();
             HandleGrounded();
 
-            if (jumpPressStartTime == 0.0f)
+            if (MovementMode == ControllerMovementMode.Magnetized)
             {
-                if (MovementMode == ControllerMovementMode.Magnetized)
-                {
-                    HandleMovementSubStepped();
-                }
-                else if (MovementMode == ControllerMovementMode.Gravity)
-                {
-                    HandleMovement();
-                    HandleJump();
-                }
+                HandleMovementSubStepped();
+            }
+            else if (MovementMode == ControllerMovementMode.Gravity && jumpPressStartTime == 0.0f)
+            {
+                HandleMovement();
+                HandleJump();
             }
 
             // orient player to align with gravity
@@ -413,8 +410,7 @@ public class FirstPersonController : MonoBehaviour
         // separate into vertical and horizontal components along gravity
         Vector3 position = _rigidbody.position;
         Vector3 gravityVector = gravitySource.GetGravityVector(position);
-        Vector3 gravityDirection = gravityVector.normalized;
-        Vector3 verticalAxis = (isGrounded && surfaceNormal.sqrMagnitude > 0.01f) ? surfaceNormal : -gravityDirection;
+        Vector3 verticalAxis = (isGrounded && surfaceNormal.sqrMagnitude > 0.01f) ? surfaceNormal : -gravityVector.normalized;
         float verticalSpeed = Vector3.Dot(relativeVelocity, verticalAxis);
         float clampedVerticalSpeed = Mathf.Min(verticalSpeed, 0f);
         Vector3 verticalVelocity = clampedVerticalSpeed * verticalAxis;
@@ -594,24 +590,18 @@ public class FirstPersonController : MonoBehaviour
         float pressDuration = Time.time - jumpPressStartTime;
         jumpPressStartTime = 0.0f;
 
-        Debug.Log($"Jump was held for: {pressDuration} seconds");
-        // Use pressDuration for your jump mechanics
-
         float jumpForce = 0.0f;
         if (pressDuration > jumpTier3Time + jumpTier2Time + jumpTier1Time)
         {
             jumpForce = 500.0f;
-            Debug.Log($"Jump tier 3!");
         }
         else if (pressDuration > jumpTier2Time + jumpTier1Time)
         {
             jumpForce = 300.0f;
-            Debug.Log($"Jump tier 2!");
         }
         else if (pressDuration > jumpTier1Time)
         {
             jumpForce = 150.0f;
-            Debug.Log($"Jump tier 1!");
         }
 
         if (jumpForce > 0.0f)
@@ -645,7 +635,7 @@ public class FirstPersonController : MonoBehaviour
     private void HandleMovementSubStepped()
     {
         Vector2? moveInput = moveAction?.ReadValue<Vector2>();
-        if (moveInput == null)
+        if (moveInput == null || jumpPressStartTime > 0f)
         {
             desiredMovementVelocity = Vector3.zero;
             return;

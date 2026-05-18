@@ -50,7 +50,7 @@ public abstract class GravitySourceComponent : MonoBehaviour
 
     protected void OnTriggerEnterInternal(GameObject gameObject)
     {
-        Debug.Log($"GravityComponent on {gameObject.name}: {gameObject.name} entered trigger");
+        //Debug.Log($"GravityComponent on {gameObject.name}: {gameObject.name} entered trigger");
 
         GravityController gravityController = gameObject.GetComponent<GravityController>();
         if (gravityController != null)
@@ -61,7 +61,7 @@ public abstract class GravitySourceComponent : MonoBehaviour
 
     protected void OnTriggerExitInternal(GameObject gameObject)
     {
-        Debug.Log($"GravityComponent on {gameObject.name}: {gameObject.name} exited trigger");
+        //Debug.Log($"GravityComponent on {gameObject.name}: {gameObject.name} exited trigger");
 
         GravityController gravityController = gameObject.GetComponent<GravityController>();
         if (gravityController != null)
