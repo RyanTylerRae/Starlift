@@ -1,3 +1,5 @@
+#nullable enable
+
 // The SteamManager is designed to work with Steamworks.NET
 // This file is released into the public domain.
 // Where that dedication is not recognized you are granted a perpetual,

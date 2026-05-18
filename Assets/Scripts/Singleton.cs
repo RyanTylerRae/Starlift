@@ -1,3 +1,5 @@
+#nullable enable
+
 /// <summary>
 /// Generic singleton base class.
 /// Ensures only one instance exists.

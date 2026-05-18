@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 
 public static class DebugBox

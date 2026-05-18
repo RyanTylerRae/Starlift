@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 
 public class ShowCursor : MonoBehaviour
