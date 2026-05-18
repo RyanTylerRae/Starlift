@@ -9,10 +9,12 @@ public class BreadcrumbController : MonoBehaviour
 
     public float delayDistance;
     private Vector3 lastSpawnPos;
+    private GravityController? gravityController;
 
     public void Start()
     {
         lastSpawnPos = gameObject.transform.position;
+        gravityController = GetComponent<GravityController>();
     }
 
     public void Update()
@@ -23,7 +25,14 @@ public class BreadcrumbController : MonoBehaviour
             return;
         }
 
-        GameObject.Instantiate(breadcrumbGameObject, gameObject.transform.position, gameObject.transform.rotation);
+        GameObject breadcrumb = GameObject.Instantiate(breadcrumbGameObject, gameObject.transform.position, gameObject.transform.rotation);
+
+        GravitySourceComponent? activeSource = gravityController?.GetActiveGravitySource();
+        if (activeSource != null && activeSource.isMagnetized)
+        {
+            breadcrumb.transform.SetParent(activeSource.transform, true);
+        }
+
         lastSpawnPos = gameObject.transform.position;
     }
 }
