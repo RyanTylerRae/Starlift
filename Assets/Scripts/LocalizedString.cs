@@ -6,15 +6,15 @@ using UnityEngine;
 [Serializable]
 public class LocalizedString
 {
-    public string en;
-    public string es;
-    public string fr;
-    public string de;
-    public string ja;
-    private string zh_CN;
-    public string ko;
+    public string? en;
+    public string? es;
+    public string? fr;
+    public string? de;
+    public string? ja;
+    private string? zh_CN;
+    public string? ko;
 
-    public string GetTranslation(string languageCode)
+    public string? GetTranslation(string languageCode)
     {
         return languageCode switch
         {

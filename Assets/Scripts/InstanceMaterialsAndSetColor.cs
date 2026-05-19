@@ -8,8 +8,8 @@ public class HexColorToMaterial : MonoBehaviour
     [SerializeField] private string colorProperty = "_BaseColor";
     [SerializeField] private string hexColor = "#FFFFFF";
 
-    private Renderer[] renderers;
-    private MaterialPropertyBlock block;
+    private Renderer[]? renderers;
+    private MaterialPropertyBlock? block;
 
     void OnEnable()
     {

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GravityButtonController : MonoBehaviour
 {
-    public GameObject poweredCube;
-    public GameObject unpoweredCube;
+    public GameObject? poweredCube;
+    public GameObject? unpoweredCube;
     private PowerConsumer? powerConsumer;
 
     public GameObject? gravitySourceToControl;
@@ -29,8 +29,8 @@ public class GravityButtonController : MonoBehaviour
 
         if (powerConsumer != null && powerConsumer.hasPower)
         {
-            poweredCube.SetActive(true);
-            unpoweredCube.SetActive(false);
+            poweredCube?.SetActive(true);
+            unpoweredCube?.SetActive(false);
 
             if (gravitySource != null)
             {
@@ -39,8 +39,8 @@ public class GravityButtonController : MonoBehaviour
         }
         else
         {
-            poweredCube.SetActive(false);
-            unpoweredCube.SetActive(true);
+            poweredCube?.SetActive(false);
+            unpoweredCube?.SetActive(true);
 
             if (gravitySource != null)
             {

@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public GameObject cameraArm;
+    public GameObject? cameraArm = null;
 
     public void Start()
     {
-        cameraArm.SetActive(true);
+        cameraArm?.SetActive(true);
     }
 }

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections;
-using Dissonance;
 using Steamworks;
 using Unity.Mathematics;
 using UnityEngine;
@@ -78,15 +77,15 @@ public class FirstPersonController : MonoBehaviour
     private float gravityModeMaxSpeed = 0f;
 
     [Header("Player")]
-    private CharacterController characterController;
-    private PlayerInput playerInput;
-    private Rigidbody _rigidbody;
-    private GravityController gravityController;
-    private CapsuleCollider bodyCollider;
+    private CharacterController? characterController;
+    private PlayerInput? playerInput;
+    private Rigidbody? _rigidbody;
+    private GravityController? gravityController;
+    private CapsuleCollider? bodyCollider;
 
     [Header("Camera")]
-    public GameObject cameraArm;
-    public Camera playerCamera;
+    public GameObject? cameraArm;
+    public Camera? playerCamera;
 
     // input actions
     private InputAction? moveAction;
@@ -138,20 +137,24 @@ public class FirstPersonController : MonoBehaviour
         //{
         playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
-        _rigidbody.maxDepenetrationVelocity = maxDepenetrationVelocity;
+        if (_rigidbody != null)
+        {
+            _rigidbody.maxDepenetrationVelocity = maxDepenetrationVelocity;
+        }
         characterController = GetComponent<CharacterController>();
         gravityController = GetComponent<GravityController>();
         bodyCollider = GetComponentInChildren<CapsuleCollider>();
 
         SetMovementMode(ControllerMovementMode.Gravity);
 
-        Camera mainCamera = cameraArm.AddComponent<Camera>();
-        mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
-        mainCamera.depth = -1.0f;
-
-
-        cameraArm.AddComponent<AkAudioListener>();
-        playerCamera = mainCamera;
+        if (cameraArm != null)
+        {
+            Camera mainCamera = cameraArm.AddComponent<Camera>();
+            mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
+            mainCamera.depth = -1.0f;
+            cameraArm.AddComponent<AkAudioListener>();
+            playerCamera = mainCamera;
+        }
         //}
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -160,6 +163,11 @@ public class FirstPersonController : MonoBehaviour
 
     public void SetMovementMode(ControllerMovementMode newMovementMode)
     {
+        if (playerInput == null)
+        {
+            return;
+        }
+
         movementMode = newMovementMode;
 
         if (MovementMode == ControllerMovementMode.Gravity)
@@ -181,7 +189,10 @@ public class FirstPersonController : MonoBehaviour
             rotateLeftAction = null;
             rotateRightAction = null;
 
-            _rigidbody.freezeRotation = true;
+            if (_rigidbody != null)
+            {
+                _rigidbody.freezeRotation = true;
+            }
         }
         else if (movementMode == ControllerMovementMode.Magnetized)
         {
@@ -212,7 +223,10 @@ public class FirstPersonController : MonoBehaviour
             rotateLeftAction = null;
             rotateRightAction = null;
 
-            _rigidbody.freezeRotation = true;
+            if (_rigidbody != null)
+            {
+                _rigidbody.freezeRotation = true;
+            }
         }
         else if (movementMode == ControllerMovementMode.ZeroG)
         {
@@ -233,7 +247,10 @@ public class FirstPersonController : MonoBehaviour
             jumpAction = null;
             sprintAction = null;
 
-            _rigidbody.freezeRotation = false;
+            if (_rigidbody != null)
+            {
+                _rigidbody.freezeRotation = false;
+            }
         }
     }
 
@@ -280,7 +297,7 @@ public class FirstPersonController : MonoBehaviour
         Vector3 gravity = gravityController.GetGravityVector();
 
         // Calculate camera angle from gravity direction
-        if (gravity.sqrMagnitude > 0.01f)
+        if (gravity.sqrMagnitude > 0.01f && playerCamera != null)
         {
             cameraAngleFromGravity = Vector3.Angle(playerCamera.transform.forward, gravity);
         }
@@ -349,6 +366,11 @@ public class FirstPersonController : MonoBehaviour
 
     public void FixedUpdate()
     {
+        if (_rigidbody == null)
+        {
+            return;
+        }
+
         if (MovementMode == ControllerMovementMode.Gravity)
         {
             if (desiredGravityForce != Vector3.zero)
@@ -439,6 +461,11 @@ public class FirstPersonController : MonoBehaviour
 
     void HandleMouseLook()
     {
+        if (playerCamera == null)
+        {
+            return;
+        }
+
         Vector2? lookInput = lookAction?.ReadValue<Vector2>();
         if (lookInput == null)
         {
@@ -571,6 +598,11 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
+        if (_rigidbody == null)
+        {
+            return;
+        }
+
         // Jump in the opposite direction of gravity
         Vector3 jumpDirection = -gravity.normalized;
         _rigidbody.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
@@ -604,7 +636,7 @@ public class FirstPersonController : MonoBehaviour
             jumpForce = 150.0f;
         }
 
-        if (jumpForce > 0.0f)
+        if (jumpForce > 0.0f && _rigidbody != null && gravityController != null && playerCamera != null)
         {
             Vector3 jumpDirection;
 
@@ -676,6 +708,11 @@ public class FirstPersonController : MonoBehaviour
 
     void HandleZeroGLook()
     {
+        if (_rigidbody == null || playerCamera == null)
+        {
+            return;
+        }
+
         Vector2? lookInput = lookAction?.ReadValue<Vector2>();
         if (lookInput != null)
         {
@@ -717,6 +754,11 @@ public class FirstPersonController : MonoBehaviour
 
     void HandleZeroGMovement()
     {
+        if (_rigidbody == null || playerCamera == null)
+        {
+            return;
+        }
+
         bool? isStabilizePressed = stabilizeAction?.IsPressed();
 
         if (isStabilizePressed == null)
@@ -781,6 +823,11 @@ public class FirstPersonController : MonoBehaviour
 
     private IEnumerator DoCameraShake(float duration, float magnitude, int delayMs)
     {
+        if (playerCamera == null)
+        {
+            yield break;
+        }
+
         Vector3 originalPos = playerCamera.transform.localPosition;
         float elapsed = 0.0f;
         float delaySeconds = delayMs / 1000.0f;
@@ -801,9 +848,10 @@ public class FirstPersonController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (isGrounded) return;
-        if (MovementMode != ControllerMovementMode.Gravity) return;
-        if (collision.rigidbody == null || collision.rigidbody.isKinematic) return;
+        if (isGrounded) { return; }
+        if (MovementMode != ControllerMovementMode.Gravity) { return; }
+        if (collision.rigidbody == null || collision.rigidbody.isKinematic) { return; }
+        if (_rigidbody == null) { return; }
 
         _rigidbody.linearVelocity = Vector3.Lerp(_rigidbody.linearVelocity, _preCollisionVelocity, airCollisionDampening);
     }

@@ -10,10 +10,10 @@ public static class PartPlacementTool
 {
     private const float MOUSE_THRESHOLD = 100f; // Pixels from mouse to show green sphere
     private static bool isEnabled;
-    private static GameObject selectedPartPrefab;
-    private static Part selectedPart;
-    private static PartData selectedPartData;
-    private static Mesh selectedPartMesh;
+    private static GameObject? selectedPartPrefab;
+    private static Part? selectedPart;
+    private static PartData? selectedPartData;
+    private static Mesh? selectedPartMesh;
     private static Vector3 selectedPartLocalScale;
     private static Quaternion selectedPartLocalRotation;
 
@@ -110,12 +110,12 @@ public static class PartPlacementTool
         Undo.RegisterCreatedObjectUndo(newInstance, "Place Part");
 
         // Don't select the new object - keep the prefab selected so user can continue placing
-        Debug.Log($"Placed {selectedPartPrefab.name} at {position}");
+        Debug.Log($"Placed {selectedPartPrefab?.name} at {position}");
     }
 
     private static void UpdateSelectedPartPrefab()
     {
-        GameObject currentSelection = Selection.activeObject as GameObject;
+        GameObject? currentSelection = Selection.activeObject as GameObject;
         if (currentSelection == selectedPartPrefab)
         {
             return;
@@ -140,8 +140,8 @@ public static class PartPlacementTool
 
         selectedPartPrefab = currentSelection;
         selectedPart = part;
-        selectedPart.LoadPartData();
-        selectedPartData = selectedPart.GetPartData();
+        part.LoadPartData();
+        selectedPartData = part.GetPartData();
         selectedConnectionPointIndex = 0;
 
         selectedPartLocalScale = currentSelection.transform.localScale;
@@ -174,7 +174,7 @@ public static class PartPlacementTool
         foreach (Part part in allParts)
         {
             // Force load part data if not already loaded
-            PartData partData = part.GetPartData();
+            PartData? partData = part.GetPartData();
             if (partData == null)
             {
                 part.LoadPartData();

@@ -14,7 +14,7 @@ public class TravelGraphController : MonoBehaviour
     public float sectorWidth;
     public float offsetPercent;
 
-    public GameObject nodePrefab;
+    public GameObject? nodePrefab;
 
     private List<GameObject> createdNodes = new();
     private List<GameObject> debugBoxNodes = new();
@@ -59,6 +59,11 @@ public class TravelGraphController : MonoBehaviour
                 nodePos.x += Random.Range(-halfWidth, halfWidth) * offsetPercent;
                 nodePos.y += Random.Range(-halfWidth, halfWidth) * offsetPercent;
                 nodePos.z += Random.Range(-halfWidth, halfWidth) * offsetPercent;
+
+                if (nodePrefab == null)
+                {
+                    continue;
+                }
 
                 // Instantiate the node prefab at the calculated position
                 createdNodes.Add(Instantiate(nodePrefab, nodePos, Quaternion.identity));

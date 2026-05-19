@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BreadcrumbController : MonoBehaviour
 {
-    public GameObject breadcrumbGameObject;
+    public GameObject? breadcrumbGameObject;
 
     public float delayDistance;
     private Vector3 lastSpawnPos;
@@ -21,6 +21,11 @@ public class BreadcrumbController : MonoBehaviour
     {
         Vector3 vec = gameObject.transform.position - lastSpawnPos;
         if (vec.sqrMagnitude < delayDistance * delayDistance)
+        {
+            return;
+        }
+
+        if (breadcrumbGameObject == null)
         {
             return;
         }

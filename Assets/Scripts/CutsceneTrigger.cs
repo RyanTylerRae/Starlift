@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class CutsceneTrigger : MonoBehaviour
 {
-    public List<string> sceneNames;
+    public List<string> sceneNames = new();
 
     private void OnTriggerEnter(Collider other)
     {
@@ -14,7 +14,7 @@ public class CutsceneTrigger : MonoBehaviour
         {
             foreach (string sceneName in sceneNames)
             {
-                CutsceneManager.Instance.QueueCutscene(sceneName);
+                CutsceneManager.Instance?.QueueCutscene(sceneName);
             }
 
             // only trigger cutscenes once

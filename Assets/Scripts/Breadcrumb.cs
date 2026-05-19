@@ -11,12 +11,12 @@ public class Breadcrumb : MonoBehaviour
     public float fadePowExponent;
     private float counterSeconds;
 
-    public MeshRenderer materialRenderer;
+    public MeshRenderer? materialRenderer;
     private Material? materialInstance = null;
 
     public void Start()
     {
-        materialInstance = materialRenderer.material;
+        materialInstance = materialRenderer?.material;
     }
 
     public void Update()

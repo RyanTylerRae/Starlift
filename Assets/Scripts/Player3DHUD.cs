@@ -19,20 +19,20 @@ public class PlayerHUD : MonoBehaviour
     public Vector3 jumpTargetRotationOffset = Vector3.zero;
 
     [Header("Material Instances")]
-    public MeshRenderer oxygenProgressRendererForeground;
+    public MeshRenderer? oxygenProgressRendererForeground;
     private Material? oxygenProgressForegroundMaterialInstance = null;
-    public MeshRenderer oxygenProgressLaggyRenderer;
+    public MeshRenderer? oxygenProgressLaggyRenderer;
     private Material? oxygenProgressLaggyRendererMaterialInstance = null;
-    public MeshRenderer oxygenProgressRendererBackground;
+    public MeshRenderer? oxygenProgressRendererBackground;
     private Material? oxygenProgressBackgroundMaterialInstance = null;
 
-    public MeshRenderer jumpTier1Renderer;
+    public MeshRenderer? jumpTier1Renderer;
     private Material? jumpTier1MaterialInstance = null;
-    public MeshRenderer jumpTier2Renderer;
+    public MeshRenderer? jumpTier2Renderer;
     private Material? jumpTier2MaterialInstance = null;
-    public MeshRenderer jumpTier3Renderer;
+    public MeshRenderer? jumpTier3Renderer;
     private Material? jumpTier3MaterialInstance = null;
-    public MeshRenderer magneticChargeRenderer;
+    public MeshRenderer? magneticChargeRenderer;
     private Material? magneticChargeMaterialInstance = null;
 
     [Header("Mouse Look Impulse")]
@@ -54,13 +54,13 @@ public class PlayerHUD : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
     {
-        oxygenProgressForegroundMaterialInstance = oxygenProgressRendererForeground.material;
-        oxygenProgressLaggyRendererMaterialInstance = oxygenProgressLaggyRenderer.material;
-        oxygenProgressBackgroundMaterialInstance = oxygenProgressRendererBackground.material;
-        jumpTier1MaterialInstance = jumpTier1Renderer.material;
-        jumpTier2MaterialInstance = jumpTier2Renderer.material;
-        jumpTier3MaterialInstance = jumpTier3Renderer.material;
-        magneticChargeMaterialInstance = magneticChargeRenderer.material;
+        oxygenProgressForegroundMaterialInstance = oxygenProgressRendererForeground?.material;
+        oxygenProgressLaggyRendererMaterialInstance = oxygenProgressLaggyRenderer?.material;
+        oxygenProgressBackgroundMaterialInstance = oxygenProgressRendererBackground?.material;
+        jumpTier1MaterialInstance = jumpTier1Renderer?.material;
+        jumpTier2MaterialInstance = jumpTier2Renderer?.material;
+        jumpTier3MaterialInstance = jumpTier3Renderer?.material;
+        magneticChargeMaterialInstance = magneticChargeRenderer?.material;
     }
 
     // Reset orientation for the HUD itself to allow individual tracking
@@ -104,7 +104,7 @@ public class PlayerHUD : MonoBehaviour
             }
 
             // find the new local rotation, clamped to a maximum angle
-            Quaternion deltaRotation = Quaternion.Inverse(prevCameraRotation) * playerController.playerCamera.transform.rotation;
+            Quaternion deltaRotation = Quaternion.Inverse(prevCameraRotation) * (playerController.playerCamera?.transform.rotation ?? Quaternion.identity);
 
             // remove roll, because it feels wrong
             Vector3 eulerDeltaRotation = deltaRotation.eulerAngles;

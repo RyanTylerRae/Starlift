@@ -14,7 +14,7 @@ public class GravityController : MonoBehaviour
     public float forceConeDegrees = 15.0f;
 
     private List<GravitySourceComponent> gravitySources = new List<GravitySourceComponent>();
-    private Rigidbody _rigidBody;
+    private Rigidbody? _rigidBody;
     private bool hadGravityLastFrame;
     private Vector3 lastGravityDirection = Vector3.down;
     private GameObject? intermediateParent;
@@ -47,6 +47,11 @@ public class GravityController : MonoBehaviour
 
     private void ApplyZeroGTransitionForces()
     {
+        if (_rigidBody == null)
+        {
+            return;
+        }
+
         // Ensure rigidbody is awake and can receive forces
         _rigidBody.WakeUp();
 

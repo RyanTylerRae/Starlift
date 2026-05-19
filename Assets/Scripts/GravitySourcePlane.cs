@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GravitySourcePlane : GravitySourceComponent
 {
-    public Collider triggerCollider;
+    public Collider? triggerCollider;
 
     public Vector3 direction = new();
 

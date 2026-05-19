@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GravitySourceMesh : GravitySourceComponent
 {
-    public Collider meshCollider;
+    public Collider? meshCollider;
     public float maxDistanceToSurface = 1.0f;
 
     private bool isPlayerInRange = false;

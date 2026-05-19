@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PowerSourceTestToggle : MonoBehaviour
 {
-    private PowerProducer powerProducer;
+    private PowerProducer? powerProducer;
 
     public float updateIntervalSeconds = 10.0f;
     private float lastUpdateTime = 0f;
@@ -24,6 +24,11 @@ public class PowerSourceTestToggle : MonoBehaviour
         }
 
         lastUpdateTime = Time.time;
+
+        if (powerProducer == null)
+        {
+            return;
+        }
 
         if (powerProducer.energyOutputRate > 0.0f)
         {

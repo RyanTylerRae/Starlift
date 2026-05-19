@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class CutsceneManager : MonoBehaviour
 {
-    public static CutsceneManager Instance;
+    public static CutsceneManager? Instance;
 
     public GameObject? HUDObject = null;
 

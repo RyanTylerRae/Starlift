@@ -7,8 +7,8 @@ using UnityEngine;
 [Serializable]
 public class LocalizationEntry
 {
-    public string key;
-    public LocalizedString value;
+    public string? key;
+    public LocalizedString? value;
 }
 
 public class LocalizationData : ScriptableObject
@@ -16,7 +16,7 @@ public class LocalizationData : ScriptableObject
     [SerializeField]
     private List<LocalizationEntry> entries = new List<LocalizationEntry>();
 
-    private Dictionary<string, LocalizedString> _dictionary;
+    private Dictionary<string, LocalizedString>? _dictionary;
 
     public Dictionary<string, LocalizedString> GetDictionary()
     {
@@ -25,13 +25,16 @@ public class LocalizationData : ScriptableObject
             _dictionary = new Dictionary<string, LocalizedString>();
             foreach (var entry in entries)
             {
-                _dictionary[entry.key] = entry.value;
+                if (entry.key != null && entry.value != null)
+                {
+                    _dictionary[entry.key] = entry.value;
+                }
             }
         }
         return _dictionary;
     }
 
-    public LocalizedString GetLocalizedString(string key)
+    public LocalizedString? GetLocalizedString(string key)
     {
         return GetDictionary().TryGetValue(key, out var value) ? value : null;
     }

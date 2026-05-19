@@ -7,14 +7,17 @@ public class OxygenPocket : MonoBehaviour
 {
     public float replenishRate = 10f;
 
-    private Collider volumeCollider;
-    private GameObject playerInPocket;
-    private OxygenSystem playerOxygenSystem;
+    private Collider? volumeCollider;
+    private GameObject? playerInPocket;
+    private OxygenSystem? playerOxygenSystem;
 
     void Start()
     {
         volumeCollider = GetComponent<Collider>();
-        volumeCollider.isTrigger = true;
+        if (volumeCollider != null)
+        {
+            volumeCollider.isTrigger = true;
+        }
     }
 
     void Update()

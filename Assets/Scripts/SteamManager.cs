@@ -27,7 +27,7 @@ public class SteamManager : MonoBehaviour
 #if !DISABLESTEAMWORKS
     protected static bool s_EverInitialized = false;
 
-    protected static SteamManager s_instance;
+    protected static SteamManager? s_instance;
     protected static SteamManager Instance
     {
         get
@@ -52,7 +52,7 @@ public class SteamManager : MonoBehaviour
         }
     }
 
-    protected SteamAPIWarningMessageHook_t m_SteamAPIWarningMessageHook;
+    protected SteamAPIWarningMessageHook_t? m_SteamAPIWarningMessageHook;
 
     [AOT.MonoPInvokeCallback(typeof(SteamAPIWarningMessageHook_t))]
     protected static void SteamAPIDebugTextHook(int nSeverity, System.Text.StringBuilder pchDebugText)

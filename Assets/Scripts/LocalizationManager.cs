@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class LocalizationManager : MonoBehaviour
 {
-    public static LocalizationManager Instance { get; private set; }
+    public static LocalizationManager? Instance { get; private set; }
 
-    public WordBanks wordBanks;
+    public WordBanks? wordBanks;
     public string currentLanguage = "en";
 
     void Awake()
@@ -37,7 +37,7 @@ public class LocalizationManager : MonoBehaviour
             var localizedString = bank.GetLocalizedString(key);
             if (localizedString != null)
             {
-                return localizedString.GetTranslation(currentLanguage);
+                return localizedString.GetTranslation(currentLanguage) ?? key;
             }
         }
 
@@ -45,7 +45,7 @@ public class LocalizationManager : MonoBehaviour
         return key;
     }
 
-    public LocalizedString GetLocalizedString(string key)
+    public LocalizedString? GetLocalizedString(string key)
     {
         if (wordBanks == null)
         {
@@ -55,7 +55,7 @@ public class LocalizationManager : MonoBehaviour
 
         foreach (var bank in wordBanks.localizationBanks)
         {
-            if (bank == null) continue;
+            if (bank == null) { continue; }
 
             var localizedString = bank.GetLocalizedString(key);
             if (localizedString != null)

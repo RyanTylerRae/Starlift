@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class ScreenFader : MonoBehaviour
 {
     [SerializeField]
-    private Image fadeImage;
+    private Image? fadeImage;
 
     public void SetOpacity(float opacity)
     {

@@ -7,7 +7,7 @@
 /// <typeparam name="T">The type of the singleton class</typeparam>
 public class Singleton<T> where T : class, new()
 {
-    private static T _instance;
+    private static T? _instance;
     private static readonly object _lock = new object();
 
     public static T Instance
@@ -25,7 +25,7 @@ public class Singleton<T> where T : class, new()
                 }
             }
 
-            return _instance;
+            return _instance ?? throw new System.InvalidOperationException("Singleton instance was not initialized.");
         }
     }
 

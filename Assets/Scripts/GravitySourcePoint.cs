@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GravitySourcePoint : GravitySourceComponent
 {
-    public Collider triggerCollider;
+    public Collider? triggerCollider;
 
     public void Start()
     {

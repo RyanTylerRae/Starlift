@@ -6,8 +6,8 @@ using UnityEngine.InputSystem;
 public class MapMovementController : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    private Camera cam;
-    private PlayerInput playerInput;
+    private Camera? cam;
+    private PlayerInput? playerInput;
     private InputAction? mapMoveAction;
     private InputAction? mapClickAction;
 
@@ -41,6 +41,11 @@ public class MapMovementController : MonoBehaviour
 
     void HandleMapMovement()
     {
+        if (cam == null)
+        {
+            return;
+        }
+
         Vector2? moveInput = mapMoveAction?.ReadValue<Vector2>();
 
         if (moveInput == null)
@@ -65,6 +70,11 @@ public class MapMovementController : MonoBehaviour
 
     void HandleMapClick()
     {
+        if (cam == null)
+        {
+            return;
+        }
+
         bool? clickPressed = mapClickAction?.WasPressedThisFrame();
 
         if (clickPressed == null || !clickPressed.Value)

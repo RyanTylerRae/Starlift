@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class SubtitleManager : MonoBehaviour
 {
-    public static SubtitleManager Instance;
+    public static SubtitleManager? Instance;
     public Text? TextObject;
     public List<string> subtitleKeys = new List<string>();
 
@@ -41,7 +41,7 @@ public class SubtitleManager : MonoBehaviour
         if (TextObject != null)
         {
             TextObject.gameObject.SetActive(true);
-            TextObject.text = LocalizationManager.Instance.GetTranslation(key);
+            TextObject.text = LocalizationManager.Instance?.GetTranslation(key) ?? string.Empty;
         }
     }
 
