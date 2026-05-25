@@ -145,6 +145,9 @@ public class FirstPersonController : MonoBehaviour
         gravityController = GetComponent<GravityController>();
         bodyCollider = GetComponentInChildren<CapsuleCollider>();
 
+        if (gravityController != null)
+            gravityController.ActiveSourceChanged += OnActiveGravitySourceChanged;
+
         SetMovementMode(ControllerMovementMode.Gravity);
 
         if (cameraArm != null)
@@ -612,6 +615,15 @@ public class FirstPersonController : MonoBehaviour
         lastJumpTime = Time.time;
     }
 
+    private void OnActiveGravitySourceChanged(GravitySourceComponent? newSource)
+    {
+        if (movementMode == ControllerMovementMode.Magnetized)
+        {
+            jumpPressStartTime = 0f;
+            SetMovementMode(ControllerMovementMode.Gravity);
+        }
+    }
+
     private void OnJumpStarted(InputAction.CallbackContext context)
     {
         jumpPressStartTime = Time.time;
@@ -863,5 +875,7 @@ public class FirstPersonController : MonoBehaviour
             jumpAction.started -= OnJumpStarted;
             jumpAction.canceled -= OnJumpCanceled;
         }
+        if (gravityController != null)
+            gravityController.ActiveSourceChanged -= OnActiveGravitySourceChanged;
     }
 }

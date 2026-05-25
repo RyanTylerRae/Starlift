@@ -7,6 +7,7 @@ public abstract class GravitySourceComponent : MonoBehaviour
 {
     [Header("Gravity Settings")]
     public float G_multiplier = 1.0f;
+    public int priority = 0;
 
     // @todo trae - move global gravity somewhere else
     public float defaultGravity = -10.0f;

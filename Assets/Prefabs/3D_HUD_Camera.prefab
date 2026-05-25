@@ -1285,6 +1285,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: VelocityWidget
       objectReference: {fileID: 0}
+    - target: {fileID: 6257876625914645634, guid: d33be38877b5b674cab543f6a09734db, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6634418627327626458, guid: d33be38877b5b674cab543f6a09734db, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -1394,6 +1398,10 @@ PrefabInstance:
     - target: {fileID: 6257876625914645634, guid: 29a75c8f84ebf1a4ea711f031f58dbed, type: 3}
       propertyPath: m_Name
       value: OrientationWidget
+      objectReference: {fileID: 0}
+    - target: {fileID: 6257876625914645634, guid: 29a75c8f84ebf1a4ea711f031f58dbed, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

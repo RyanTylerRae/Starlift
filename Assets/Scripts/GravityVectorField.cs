@@ -35,6 +35,7 @@ public class GravityVectorField : MonoBehaviour
         }
 
         _allSources = FindObjectsByType<GravitySourceComponent>(FindObjectsSortMode.None);
+        System.Array.Sort(_allSources, (a, b) => b.priority.CompareTo(a.priority));
 
         int total = gridResolution * gridResolution * gridResolution;
         _pixels = new Color[total];
@@ -72,7 +73,7 @@ public class GravityVectorField : MonoBehaviour
 
     private Vector3 ComputeGravityAt(Vector3 worldPoint)
     {
-        for (int i = _allSources.Length - 1; i >= 0; i--)
+        for (int i = 0; i < _allSources.Length; i++)
         {
             GravitySourceComponent source = _allSources[i];
             if (!source.isGravityEnabled)

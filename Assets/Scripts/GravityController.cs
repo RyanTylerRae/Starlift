@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,11 +14,14 @@ public class GravityController : MonoBehaviour
     public float maxInitialTorque = 0.7f;
     public float forceConeDegrees = 15.0f;
 
+    public event Action<GravitySourceComponent?>? ActiveSourceChanged;
+
     private List<GravitySourceComponent> gravitySources = new List<GravitySourceComponent>();
+    private Dictionary<GravitySourceComponent, GameObject> _intermediateParents = new();
     private Rigidbody? _rigidBody;
+    private GravitySourceComponent? _activeSource;
     private bool hadGravityLastFrame;
     private Vector3 lastGravityDirection = Vector3.down;
-    private GameObject? intermediateParent;
 
     public void Start()
     {
@@ -113,58 +117,55 @@ public class GravityController : MonoBehaviour
 
         gravitySources.Add(gravityComponent);
 
-        // Create intermediate parent with inverse scale to cancel out gravity source's scale
-        intermediateParent = new GameObject("GravityParent_" + gameObject.name);
-        intermediateParent.transform.SetParent(gravityComponent.transform, false);
-
+        var ip = new GameObject("GravityParent_" + gameObject.name);
+        ip.transform.SetParent(gravityComponent.transform, false);
         Vector3 sourceScale = gravityComponent.transform.lossyScale;
-        intermediateParent.transform.localScale = new Vector3(
-            1f / sourceScale.x,
-            1f / sourceScale.y,
-            1f / sourceScale.z
-        );
+        ip.transform.localScale = new Vector3(1f / sourceScale.x, 1f / sourceScale.y, 1f / sourceScale.z);
+        _intermediateParents[gravityComponent] = ip;
 
-        // Parent to intermediate parent to follow rotation/position without scale
-        transform.SetParent(intermediateParent.transform, true);
+        RefreshActiveParenting();
     }
 
     public void RemoveGravitySource(GravitySourceComponent gravityComponent)
     {
         gravitySources.Remove(gravityComponent);
 
-        // Unparent and clean up intermediate parent when no gravity sources remain
-        if (gravitySources.Count == 0)
+        if (_intermediateParents.TryGetValue(gravityComponent, out var ip))
         {
+            if (transform.parent == ip.transform)
+                transform.SetParent(null, true);
+            Destroy(ip);
+            _intermediateParents.Remove(gravityComponent);
+        }
+
+        RefreshActiveParenting();
+    }
+
+    private void RefreshActiveParenting()
+    {
+        var active = GetHighestPrioritySource();
+        if (active != null && _intermediateParents.TryGetValue(active, out var ip))
+            transform.SetParent(ip.transform, true);
+        else
             transform.SetParent(null, true);
 
-            if (intermediateParent != null)
-            {
-                Destroy(intermediateParent);
-                intermediateParent = null;
-            }
+        if (active != _activeSource)
+        {
+            _activeSource = active;
+            ActiveSourceChanged?.Invoke(active);
         }
     }
+
+    private GravitySourceComponent? GetHighestPrioritySource() =>
+        gravitySources.Count > 0
+            ? gravitySources.OrderByDescending(s => s.priority).First()
+            : null;
 
     public Vector3 GetGravityVector()
     {
-        Vector3 gravity = Vector3.zero;
-
-        // only use the last gravity source added for now
-        if (gravitySources.Count > 0)
-        {
-            gravity = gravitySources.Last().GetGravityVector(gameObject.transform.position);
-        }
-
-        return gravity;
+        var source = GetHighestPrioritySource();
+        return source != null ? source.GetGravityVector(gameObject.transform.position) : Vector3.zero;
     }
 
-    public GravitySourceComponent? GetActiveGravitySource()
-    {
-        if (gravitySources.Count > 0)
-        {
-            return gravitySources.Last();
-        }
-
-        return null;
-    }
+    public GravitySourceComponent? GetActiveGravitySource() => GetHighestPrioritySource();
 }
