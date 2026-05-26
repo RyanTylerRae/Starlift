@@ -846,7 +846,7 @@ MonoBehaviour:
   maxJumpSpeed: 6
   groundFriction: 0.5
   groundStoppingFriction: 20
-  maxMagnetizedWalkSpeed: 2.5
+  maxMagnetizedWalkSpeed: 3
   magnetizeRadius: 0.4
   gravityAlignmentSpeed: 3
   jumpForceTier1: 200
@@ -860,7 +860,7 @@ MonoBehaviour:
   zeroGRollSpeed: 45
   stabilizeMultiplier: 0.5
   flightForce: 0.2
-  maxFlightSpeed: 3
+  maxFlightSpeed: 4
   jumpTier1Time: 0.4
   jumpTier2Time: 0
   jumpTier3Time: 0
