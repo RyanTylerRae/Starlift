@@ -838,7 +838,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveForce: 20
   maxWalkSpeed: 4
-  maxRunSpeed: 7
+  maxRunSpeed: 8
   groundedDistance: 0.6
   jumpForce: 6
   jumpCooldown: 0.5
@@ -846,20 +846,24 @@ MonoBehaviour:
   maxJumpSpeed: 6
   groundFriction: 0.5
   groundStoppingFriction: 20
-  maxMagnetizedWalkSpeed: 3.25
+  maxMagnetizedWalkSpeed: 2.5
   magnetizeRadius: 0.4
   gravityAlignmentSpeed: 3
+  jumpForceTier1: 200
+  jumpForceTier2: 0
+  jumpForceTier3: 0
+  jumpTargetRaycastDistance: 400
+  jumpDirectionalAngleThreshold: 45
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
   zeroGRollSpeed: 45
   stabilizeMultiplier: 0.5
-  flightForce: 1
-  maxFlightSpeed: 6
+  flightForce: 0.2
+  maxFlightSpeed: 3
   jumpTier1Time: 0.4
-  jumpTier2Time: 0.5
-  jumpTier3Time: 0.6
-  jumpDirectionalAngleThreshold: 90
+  jumpTier2Time: 0
+  jumpTier3Time: 0
   substepDistance: 0.01
   airCollisionDampening: 0.2
   maxDepenetrationVelocity: 0.5
@@ -1021,8 +1025,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usagePerSecond: 2.25
-  thrustMultiplier: 4
-  sprintMultiplier: 1.5
+  thrustMultiplier: 6
+  sprintMultiplier: 1.7
 --- !u!114 &3039922705185681957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1074,7 +1078,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7509877599165506846}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e60c216204fee5144910a980ff7071c7, type: 3}
   m_Name: 

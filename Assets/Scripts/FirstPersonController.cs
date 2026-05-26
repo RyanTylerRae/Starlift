@@ -30,6 +30,11 @@ public class FirstPersonController : MonoBehaviour
     public float maxMagnetizedWalkSpeed;
     public float magnetizeRadius = 0.5f;
     public float gravityAlignmentSpeed = 5f;
+    public float jumpForceTier1;
+    public float jumpForceTier2;
+    public float jumpForceTier3;
+    public float jumpTargetRaycastDistance = 200f;
+    public float jumpDirectionalAngleThreshold = 135f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -58,7 +63,6 @@ public class FirstPersonController : MonoBehaviour
     public float jumpTier1Time = 0f;
     public float jumpTier2Time = 0f;
     public float jumpTier3Time = 0f;
-    public float jumpDirectionalAngleThreshold = 135f;
 
     [Header("Physics Sub-stepping")]
     public float substepDistance = 0.01f;
@@ -635,32 +639,38 @@ public class FirstPersonController : MonoBehaviour
         jumpPressStartTime = 0.0f;
 
         float jumpForce = 0.0f;
-        if (pressDuration > jumpTier3Time + jumpTier2Time + jumpTier1Time)
+        // if (pressDuration > jumpTier3Time + jumpTier2Time + jumpTier1Time)
+        // {
+        //     jumpForce = jumpForceTier3;
+        // }
+        // else if (pressDuration > jumpTier2Time + jumpTier1Time)
+        // {
+        //     jumpForce = jumpForceTier2;
+        // }
+        // else if (pressDuration > jumpTier1Time)
+        // {
+        //     jumpForce = jumpForceTier1;
+        // }
+        if (pressDuration > jumpTier1Time)
         {
-            jumpForce = 500.0f;
-        }
-        else if (pressDuration > jumpTier2Time + jumpTier1Time)
-        {
-            jumpForce = 300.0f;
-        }
-        else if (pressDuration > jumpTier1Time)
-        {
-            jumpForce = 150.0f;
+            jumpForce = jumpForceTier1;
         }
 
         if (jumpForce > 0.0f && _rigidbody != null && gravityController != null && playerCamera != null)
         {
             Vector3 jumpDirection;
 
-            // If camera angle exceeds threshold, jump in camera direction
-            if (cameraAngleFromGravity > jumpDirectionalAngleThreshold)
+            Vector3 gravity = gravityController.GetGravityVector();
+
+            // If camera angle exceeds threshold and a surface is in range, jump toward it
+            Ray jumpRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+            if (cameraAngleFromGravity > jumpDirectionalAngleThreshold
+                && Physics.Raycast(jumpRay, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
             {
                 jumpDirection = playerCamera.transform.forward;
             }
             else
             {
-                // Otherwise jump against gravity
-                Vector3 gravity = gravityController.GetGravityVector();
                 jumpDirection = -1.0f * gravity.normalized;
             }
 

@@ -15,8 +15,7 @@ public class PlayerHUD : MonoBehaviour
 
     [Header("Jump Target Widget")]
     public GameObject? jumpTargetWidget = null;
-    public float jumpTargetRaycastDistance = 100f;
-    public Vector3 jumpTargetRotationOffset = Vector3.zero;
+public Vector3 jumpTargetRotationOffset = Vector3.zero;
 
     [Header("Material Instances")]
     public MeshRenderer? oxygenProgressRendererForeground;
@@ -128,7 +127,11 @@ public class PlayerHUD : MonoBehaviour
                 Ray ray = new Ray(playerController.playerCamera.transform.position, playerController.playerCamera.transform.forward);
                 RaycastHit hit;
 
-                if (Physics.Raycast(ray, out hit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
+                player.TryGetComponent(out GravityController gravityController);
+                GravitySourceComponent? activeGravitySource = gravityController?.GetActiveGravitySource();
+
+                if (Physics.Raycast(ray, out hit, playerController.jumpTargetRaycastDistance, LayerMask.GetMask("Default"))
+                    && hit.collider.GetComponentInParent<GravitySourceComponent>() != activeGravitySource)
                 {
                     shouldDisplayJumpTarget = true;
 
