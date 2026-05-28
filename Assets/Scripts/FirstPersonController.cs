@@ -25,6 +25,7 @@ public class FirstPersonController : MonoBehaviour
     public float groundFriction = 10f;
     public float groundStoppingFriction = 25f;
     public bool IsSprinting { get; private set; }
+    public bool IsMagnetizedWalking { get; private set; }
 
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
@@ -343,6 +344,7 @@ public class FirstPersonController : MonoBehaviour
             // we don't burn extra oxygen when walking on a surface
             oxygenBurnRate = 0.0f;
             IsSprinting = false;
+            IsMagnetizedWalking = false;
 
             HandleMouseLook();
             HandleGrounded();
@@ -662,11 +664,14 @@ public class FirstPersonController : MonoBehaviour
             Vector3 jumpDirection;
 
             Vector3 gravity = gravityController.GetGravityVector();
+            GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
 
-            // If camera angle exceeds threshold and a surface is in range, jump toward it
+            // If camera angle exceeds threshold and a surface is in range, jump toward it —
+            // unless the hit surface is the one we're already standing on
             Ray jumpRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
             if (cameraAngleFromGravity > jumpDirectionalAngleThreshold
-                && Physics.Raycast(jumpRay, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
+                && Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default"))
+                && jumpHit.collider.GetComponentInParent<GravitySourceComponent>() != activeSource)
             {
                 jumpDirection = playerCamera.transform.forward;
                 gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
@@ -678,8 +683,6 @@ public class FirstPersonController : MonoBehaviour
 
             _rigidbody.AddForce(jumpDirection * jumpForce);
 
-            // disable active gravity source for 1.0 seconds on tier 1+ jump
-            GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
             if (activeSource != null)
             {
                 // @todo trae - is this really going to be ok?
@@ -696,6 +699,8 @@ public class FirstPersonController : MonoBehaviour
             desiredMovementVelocity = Vector3.zero;
             return;
         }
+
+        IsMagnetizedWalking = moveInput.Value.sqrMagnitude > 0f;
 
         // calculate movement direction in world space
         Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;

@@ -28,6 +28,6 @@ public class GravitySourcePlane : GravitySourceComponent
             return Vector3.zero;
         }
 
-        return direction.normalized * defaultGravity * G_multiplier;
+        return transform.TransformDirection(direction.normalized) * defaultGravity * G_multiplier;
     }
 }

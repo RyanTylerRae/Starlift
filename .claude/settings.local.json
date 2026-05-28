@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(Get-ChildItem -Path \"D:\\\\Projects\\\\Starlift\" -Directory)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(Remove-Item \"D:\\\\Projects\\\\Starlift\\\\Assets\\\\Scripts\\\\EmbarkController.cs\" -Force)",
+      "Bash(Remove-Item \"D:\\\\Projects\\\\Starlift\\\\Assets\\\\Scripts\\\\EmbarkController.cs.meta\" -Force)"
     ]
   }
 }

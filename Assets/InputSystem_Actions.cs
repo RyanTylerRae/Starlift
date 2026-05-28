@@ -1132,27 +1132,27 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             ""id"": ""ef8de49b-b49a-4f6b-9077-75c91128b54e"",
             ""actions"": [
                 {
-                    ""name"": ""DebugSwapControlMode"",
-                    ""type"": ""Button"",
-                    ""id"": ""df3b6240-9967-428f-ae30-8232b8e4dc09"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Embark"",
-                    ""type"": ""Button"",
-                    ""id"": ""e1295c87-7081-44af-8be0-88019a3a5ce3"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""KillPlayer"",
                     ""type"": ""Button"",
                     ""id"": ""56884238-a331-43c9-9f07-4d2ea35650ff"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TeleportPlayer"",
+                    ""type"": ""Button"",
+                    ""id"": ""5cd35a1a-8c3d-4f09-a496-8898016449a8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SupplyMaxOxygen"",
+                    ""type"": ""Button"",
+                    ""id"": ""a1b2c3d4-e5f6-7890-abcd-ef1234567890"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1162,34 +1162,34 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             ""bindings"": [
                 {
                     ""name"": """",
-                    ""id"": ""c1767ceb-99b0-45fc-9478-8802c91a0127"",
-                    ""path"": ""<Keyboard>/g"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse;Gamepad"",
-                    ""action"": ""DebugSwapControlMode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c18a8eb3-fcfc-4643-b5c6-f61a1aa4ebcf"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse;Gamepad"",
-                    ""action"": ""Embark"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""a7224e70-96b8-4789-af33-126d7244876e"",
                     ""path"": ""<Keyboard>/1"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse;Gamepad"",
                     ""action"": ""KillPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2661b863-cac9-40c3-853e-63bce38e6cad"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse;Gamepad"",
+                    ""action"": ""TeleportPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b2c3d4e5-f6a7-8901-bcde-f12345678901"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse;Gamepad"",
+                    ""action"": ""SupplyMaxOxygen"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1441,9 +1441,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_MovementZeroG_RotateRight = m_MovementZeroG.FindAction("RotateRight", throwIfNotFound: true);
         // DEBUG
         m_DEBUG = asset.FindActionMap("DEBUG", throwIfNotFound: true);
-        m_DEBUG_DebugSwapControlMode = m_DEBUG.FindAction("DebugSwapControlMode", throwIfNotFound: true);
-        m_DEBUG_Embark = m_DEBUG.FindAction("Embark", throwIfNotFound: true);
         m_DEBUG_KillPlayer = m_DEBUG.FindAction("KillPlayer", throwIfNotFound: true);
+        m_DEBUG_TeleportPlayer = m_DEBUG.FindAction("TeleportPlayer", throwIfNotFound: true);
+        m_DEBUG_SupplyMaxOxygen = m_DEBUG.FindAction("SupplyMaxOxygen", throwIfNotFound: true);
         // MovementMap
         m_MovementMap = asset.FindActionMap("MovementMap", throwIfNotFound: true);
         m_MovementMap_MapMove = m_MovementMap.FindAction("MapMove", throwIfNotFound: true);
@@ -1871,16 +1871,16 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     // DEBUG
     private readonly InputActionMap m_DEBUG;
     private List<IDEBUGActions> m_DEBUGActionsCallbackInterfaces = new List<IDEBUGActions>();
-    private readonly InputAction m_DEBUG_DebugSwapControlMode;
-    private readonly InputAction m_DEBUG_Embark;
     private readonly InputAction m_DEBUG_KillPlayer;
+    private readonly InputAction m_DEBUG_TeleportPlayer;
+    private readonly InputAction m_DEBUG_SupplyMaxOxygen;
     public struct DEBUGActions
     {
         private @InputSystem_Actions m_Wrapper;
         public DEBUGActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @DebugSwapControlMode => m_Wrapper.m_DEBUG_DebugSwapControlMode;
-        public InputAction @Embark => m_Wrapper.m_DEBUG_Embark;
         public InputAction @KillPlayer => m_Wrapper.m_DEBUG_KillPlayer;
+        public InputAction @TeleportPlayer => m_Wrapper.m_DEBUG_TeleportPlayer;
+        public InputAction @SupplyMaxOxygen => m_Wrapper.m_DEBUG_SupplyMaxOxygen;
         public InputActionMap Get() { return m_Wrapper.m_DEBUG; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1890,28 +1890,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_DEBUGActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_DEBUGActionsCallbackInterfaces.Add(instance);
-            @DebugSwapControlMode.started += instance.OnDebugSwapControlMode;
-            @DebugSwapControlMode.performed += instance.OnDebugSwapControlMode;
-            @DebugSwapControlMode.canceled += instance.OnDebugSwapControlMode;
-            @Embark.started += instance.OnEmbark;
-            @Embark.performed += instance.OnEmbark;
-            @Embark.canceled += instance.OnEmbark;
             @KillPlayer.started += instance.OnKillPlayer;
             @KillPlayer.performed += instance.OnKillPlayer;
             @KillPlayer.canceled += instance.OnKillPlayer;
+            @TeleportPlayer.started += instance.OnTeleportPlayer;
+            @TeleportPlayer.performed += instance.OnTeleportPlayer;
+            @TeleportPlayer.canceled += instance.OnTeleportPlayer;
+            @SupplyMaxOxygen.started += instance.OnSupplyMaxOxygen;
+            @SupplyMaxOxygen.performed += instance.OnSupplyMaxOxygen;
+            @SupplyMaxOxygen.canceled += instance.OnSupplyMaxOxygen;
         }
 
         private void UnregisterCallbacks(IDEBUGActions instance)
         {
-            @DebugSwapControlMode.started -= instance.OnDebugSwapControlMode;
-            @DebugSwapControlMode.performed -= instance.OnDebugSwapControlMode;
-            @DebugSwapControlMode.canceled -= instance.OnDebugSwapControlMode;
-            @Embark.started -= instance.OnEmbark;
-            @Embark.performed -= instance.OnEmbark;
-            @Embark.canceled -= instance.OnEmbark;
             @KillPlayer.started -= instance.OnKillPlayer;
             @KillPlayer.performed -= instance.OnKillPlayer;
             @KillPlayer.canceled -= instance.OnKillPlayer;
+            @TeleportPlayer.started -= instance.OnTeleportPlayer;
+            @TeleportPlayer.performed -= instance.OnTeleportPlayer;
+            @TeleportPlayer.canceled -= instance.OnTeleportPlayer;
+            @SupplyMaxOxygen.started -= instance.OnSupplyMaxOxygen;
+            @SupplyMaxOxygen.performed -= instance.OnSupplyMaxOxygen;
+            @SupplyMaxOxygen.canceled -= instance.OnSupplyMaxOxygen;
         }
 
         public void RemoveCallbacks(IDEBUGActions instance)
@@ -2067,9 +2067,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     }
     public interface IDEBUGActions
     {
-        void OnDebugSwapControlMode(InputAction.CallbackContext context);
-        void OnEmbark(InputAction.CallbackContext context);
         void OnKillPlayer(InputAction.CallbackContext context);
+        void OnTeleportPlayer(InputAction.CallbackContext context);
+        void OnSupplyMaxOxygen(InputAction.CallbackContext context);
     }
     public interface IMovementMapActions
     {

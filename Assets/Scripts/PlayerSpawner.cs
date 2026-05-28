@@ -7,6 +7,15 @@ public class PlayerSpawner : MonoBehaviour
     public GameObject? playerPrefab;
     public Vector3 spawnOffset = new Vector3(0, 2, 0);
 
+    private Transform? checkpointRoot;
+    private Vector3 checkpointLocalPosition;
+
+    public void SetCheckpoint(Transform pocketTransform)
+    {
+        checkpointRoot = pocketTransform.root;
+        checkpointLocalPosition = checkpointRoot.InverseTransformPoint(pocketTransform.position);
+    }
+
     private void Start()
     {
         SpawnPlayer();
@@ -16,7 +25,11 @@ public class PlayerSpawner : MonoBehaviour
     {
         if (playerPrefab != null)
         {
-            var player = Instantiate(playerPrefab, transform.position + spawnOffset, transform.rotation);
+            Vector3 basePosition = checkpointRoot != null
+                ? checkpointRoot.TransformPoint(checkpointLocalPosition)
+                : transform.position;
+            Vector3 spawnPosition = basePosition + spawnOffset;
+            var player = Instantiate(playerPrefab, spawnPosition, transform.rotation);
             var entity = player.GetComponentInChildren<Entity>();
             if (entity != null)
             {

@@ -59,6 +59,7 @@ public class OxygenPocket : MonoBehaviour
             Debug.Log("Player entered oxygen pocket - replenishing oxygen");
         }
 
+
         // if (player.TryGetComponent(out PlayerHelmetController helmetController))
         // {
         //     helmetController.RaiseHelmet();
@@ -69,6 +70,7 @@ public class OxygenPocket : MonoBehaviour
     {
         playerOxygenSystem = null;
         Debug.Log("Player exited oxygen pocket - stopping oxygen replenishment");
+        Object.FindFirstObjectByType<PlayerSpawner>()?.SetCheckpoint(transform);
 
         // if (player.TryGetComponent(out PlayerHelmetController helmetController))
         // {

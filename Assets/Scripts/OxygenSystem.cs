@@ -8,6 +8,7 @@ public class OxygenSystem : MonoBehaviour
     public float usagePerSecond;
     public float thrustMultiplier;
     public float sprintMultiplier;
+    public float magnetizedWalkMultiplier;
     private Modifiers? modifiers = null;
     private FirstPersonController? playerController = null;
     private bool isAudioPlaying = false;
@@ -51,6 +52,10 @@ public class OxygenSystem : MonoBehaviour
         else if (playerController.IsSprinting)
         {
             oxygenAmount -= Time.deltaTime * usagePerSecond * sprintMultiplier;
+        }
+        else if (playerController.IsMagnetizedWalking)
+        {
+            oxygenAmount -= Time.deltaTime * usagePerSecond * magnetizedWalkMultiplier;
         }
         else
         {
