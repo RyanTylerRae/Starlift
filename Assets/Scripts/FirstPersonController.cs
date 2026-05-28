@@ -35,6 +35,7 @@ public class FirstPersonController : MonoBehaviour
     public float jumpForceTier3;
     public float jumpTargetRaycastDistance = 200f;
     public float jumpDirectionalAngleThreshold = 135f;
+    public float jumpGravityDisableDuration = 2.0f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -668,6 +669,7 @@ public class FirstPersonController : MonoBehaviour
                 && Physics.Raycast(jumpRay, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
             {
                 jumpDirection = playerCamera.transform.forward;
+                gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
             }
             else
             {
@@ -681,7 +683,7 @@ public class FirstPersonController : MonoBehaviour
             if (activeSource != null)
             {
                 // @todo trae - is this really going to be ok?
-                activeSource.DisableForSeconds(1.0f);
+                activeSource.DisableForSeconds(jumpGravityDisableDuration);
             }
         }
     }

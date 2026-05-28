@@ -22,6 +22,12 @@ public class GravityController : MonoBehaviour
     private GravitySourceComponent? _activeSource;
     private bool hadGravityLastFrame;
     private Vector3 lastGravityDirection = Vector3.down;
+    private Vector3? _nextTransitionTorqueAxis = null;
+
+    public void SetNextTransitionTorqueAxis(Vector3 axis)
+    {
+        _nextTransitionTorqueAxis = axis.normalized;
+    }
 
     public void Start()
     {
@@ -69,15 +75,25 @@ public class GravityController : MonoBehaviour
         float randomForce = UnityEngine.Random.Range(minInitialForce, maxInitialForce);
         _rigidBody.AddForce(randomDirection * randomForce);
 
-        // Apply random initial torque
-        Vector3 randomTorque = new Vector3(
-            UnityEngine.Random.Range(-1f, 1f),
-            UnityEngine.Random.Range(-1f, 1f),
-            UnityEngine.Random.Range(-1f, 1f)
-        );
+        // Apply random initial torque — constrained to a preferred axis if one was set
+        Vector3 torqueAxis;
+        if (_nextTransitionTorqueAxis.HasValue)
+        {
+            torqueAxis = _nextTransitionTorqueAxis.Value;
+            _nextTransitionTorqueAxis = null;
+        }
+        else
+        {
+            torqueAxis = new Vector3(
+                UnityEngine.Random.Range(-1f, 1f),
+                UnityEngine.Random.Range(-1f, 1f),
+                UnityEngine.Random.Range(-1f, 1f)
+            ).normalized;
+        }
 
+        float torqueSign = UnityEngine.Random.value > 0.5f ? 1f : -1f;
         float randomTorqueMagnitude = UnityEngine.Random.Range(minInitialTorque, maxInitialTorque);
-        _rigidBody.AddTorque(randomTorque * randomTorqueMagnitude);
+        _rigidBody.AddTorque(torqueAxis * torqueSign * randomTorqueMagnitude);
     }
 
     private Vector3 GetRandomDirectionInCone(Vector3 direction, float angleDegrees)

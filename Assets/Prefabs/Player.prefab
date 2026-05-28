@@ -849,7 +849,7 @@ MonoBehaviour:
   maxMagnetizedWalkSpeed: 3
   magnetizeRadius: 0.4
   gravityAlignmentSpeed: 3
-  jumpForceTier1: 200
+  jumpForceTier1: 260
   jumpForceTier2: 0
   jumpForceTier3: 0
   jumpTargetRaycastDistance: 400
@@ -859,7 +859,7 @@ MonoBehaviour:
   controllerLookMultiplier: 1800
   zeroGRollSpeed: 45
   stabilizeMultiplier: 0.5
-  flightForce: 0.2
+  flightForce: 0.3
   maxFlightSpeed: 4
   jumpTier1Time: 0.4
   jumpTier2Time: 0
@@ -1070,7 +1070,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breadcrumbGameObject: {fileID: 75671398272991171, guid: cf531904c5a856540bc14875b8b6b64b, type: 3}
-  delayDistance: 4
+  delayDistance: 3
 --- !u!114 &-5602674365231032446
 MonoBehaviour:
   m_ObjectHideFlags: 0
