@@ -422,7 +422,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""7707c0d4-2f64-4ec5-bd82-170658211736"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -1028,11 +1028,33 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""01473c5a-040e-4cc2-a7fa-aa5f98c616c6"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""BackwardThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""5bbdc813-223f-4b02-8af2-f856a6e01c28"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": ""Hold"",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""LeftThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""046d675a-923b-46c7-9eff-588b64389975"",
+                    ""path"": ""<Gamepad>/leftStick/left"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
                     ""action"": ""LeftThrust"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1050,6 +1072,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""ca3a7d7c-a1d6-4df8-a0f3-6a79fbbeffff"",
+                    ""path"": ""<Gamepad>/leftStick/right"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""RightThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""5d632d9d-e771-4212-86ed-6287aede5cfd"",
                     ""path"": ""<Keyboard>/shift"",
                     ""interactions"": ""Hold"",
@@ -1061,11 +1094,33 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""819d9605-5e08-4c57-a449-601e213e7b76"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""UpThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""1e1551ee-a4d0-486c-bbf1-bdede175cb5b"",
                     ""path"": ""<Keyboard>/ctrl"",
                     ""interactions"": ""Hold"",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""DownThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1871a86d-bddf-463a-a03d-1a32d4940cb7"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
                     ""action"": ""DownThrust"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1105,6 +1160,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""8957dc7f-57bb-41b0-aca9-fd0578ffabfb"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""RotateLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""a5f89d87-29a4-4450-a163-2ac98b1321a6"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": ""Hold"",
@@ -1116,11 +1182,33 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""c30fd29c-ba8e-498e-8c86-6fae97749b77"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""RotateRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""77b4bdfc-19f6-4eee-910b-853b045a9e9b"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": ""Hold"",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ForwardThrust"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""544361e1-7650-4364-8b5e-ee5b6c2e4353"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
                     ""action"": ""ForwardThrust"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1190,153 +1278,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse;Gamepad"",
                     ""action"": ""SupplyMaxOxygen"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""MovementMap"",
-            ""id"": ""67cb855e-6a12-497d-b1fd-c2516b96ad99"",
-            ""actions"": [
-                {
-                    ""name"": ""MapMove"",
-                    ""type"": ""Value"",
-                    ""id"": ""45beb6ad-f292-46f6-a675-9fe804841fe4"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""MapClick"",
-                    ""type"": ""Button"",
-                    ""id"": ""c238db19-976b-4d62-9a14-d79191a30847"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""96ac0904-e907-47a2-a445-1b93c488aeb8"",
-                    ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": ""Hold"",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""WASD"",
-                    ""id"": ""8b53885f-115c-4c56-a23b-3efb341fb462"",
-                    ""path"": ""Dpad"",
-                    ""interactions"": ""Hold"",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""518075dd-9722-4e22-960b-20aedeb89186"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""4c74d3f5-8487-45d1-8b42-2290ac59d3a8"",
-                    ""path"": ""<Keyboard>/upArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""81886500-1938-4fb8-bb60-72317f4f2882"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""9e08db8f-b553-4827-a7ba-ea62c110221d"",
-                    ""path"": ""<Keyboard>/downArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""22afeec0-c9a1-4a40-8244-cec26a7ca26d"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""a7a329c5-9dfb-4ce0-935d-92b17dfb9c1a"",
-                    ""path"": ""<Keyboard>/leftArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""7e649c4a-7a39-462b-b8ca-690d6db286eb"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""3d4ae879-29ec-4775-8f6d-1aebe2e45c63"",
-                    ""path"": ""<Keyboard>/rightArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MapMove"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""42156f70-612b-45f6-8c39-b0f0633c874d"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MapClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1444,10 +1385,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_DEBUG_KillPlayer = m_DEBUG.FindAction("KillPlayer", throwIfNotFound: true);
         m_DEBUG_TeleportPlayer = m_DEBUG.FindAction("TeleportPlayer", throwIfNotFound: true);
         m_DEBUG_SupplyMaxOxygen = m_DEBUG.FindAction("SupplyMaxOxygen", throwIfNotFound: true);
-        // MovementMap
-        m_MovementMap = asset.FindActionMap("MovementMap", throwIfNotFound: true);
-        m_MovementMap_MapMove = m_MovementMap.FindAction("MapMove", throwIfNotFound: true);
-        m_MovementMap_MapClick = m_MovementMap.FindAction("MapClick", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -1457,7 +1394,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputSystem_Actions.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_MovementZeroG.enabled, "This will cause a leak and performance issues, InputSystem_Actions.MovementZeroG.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_DEBUG.enabled, "This will cause a leak and performance issues, InputSystem_Actions.DEBUG.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_MovementMap.enabled, "This will cause a leak and performance issues, InputSystem_Actions.MovementMap.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -1929,60 +1865,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         }
     }
     public DEBUGActions @DEBUG => new DEBUGActions(this);
-
-    // MovementMap
-    private readonly InputActionMap m_MovementMap;
-    private List<IMovementMapActions> m_MovementMapActionsCallbackInterfaces = new List<IMovementMapActions>();
-    private readonly InputAction m_MovementMap_MapMove;
-    private readonly InputAction m_MovementMap_MapClick;
-    public struct MovementMapActions
-    {
-        private @InputSystem_Actions m_Wrapper;
-        public MovementMapActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @MapMove => m_Wrapper.m_MovementMap_MapMove;
-        public InputAction @MapClick => m_Wrapper.m_MovementMap_MapClick;
-        public InputActionMap Get() { return m_Wrapper.m_MovementMap; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(MovementMapActions set) { return set.Get(); }
-        public void AddCallbacks(IMovementMapActions instance)
-        {
-            if (instance == null || m_Wrapper.m_MovementMapActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_MovementMapActionsCallbackInterfaces.Add(instance);
-            @MapMove.started += instance.OnMapMove;
-            @MapMove.performed += instance.OnMapMove;
-            @MapMove.canceled += instance.OnMapMove;
-            @MapClick.started += instance.OnMapClick;
-            @MapClick.performed += instance.OnMapClick;
-            @MapClick.canceled += instance.OnMapClick;
-        }
-
-        private void UnregisterCallbacks(IMovementMapActions instance)
-        {
-            @MapMove.started -= instance.OnMapMove;
-            @MapMove.performed -= instance.OnMapMove;
-            @MapMove.canceled -= instance.OnMapMove;
-            @MapClick.started -= instance.OnMapClick;
-            @MapClick.performed -= instance.OnMapClick;
-            @MapClick.canceled -= instance.OnMapClick;
-        }
-
-        public void RemoveCallbacks(IMovementMapActions instance)
-        {
-            if (m_Wrapper.m_MovementMapActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        public void SetCallbacks(IMovementMapActions instance)
-        {
-            foreach (var item in m_Wrapper.m_MovementMapActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_MovementMapActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    public MovementMapActions @MovementMap => new MovementMapActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -2070,10 +1952,5 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnKillPlayer(InputAction.CallbackContext context);
         void OnTeleportPlayer(InputAction.CallbackContext context);
         void OnSupplyMaxOxygen(InputAction.CallbackContext context);
-    }
-    public interface IMovementMapActions
-    {
-        void OnMapMove(InputAction.CallbackContext context);
-        void OnMapClick(InputAction.CallbackContext context);
     }
 }

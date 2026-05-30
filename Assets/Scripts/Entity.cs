@@ -30,6 +30,15 @@ public class Entity : MonoBehaviour
         }
     }
 
+    public void Respawn()
+    {
+        isKilled = false;
+        if (TryGetComponent(out FirstPersonController controller))
+        {
+            controller.enabled = true;
+        }
+    }
+
     public async void Kill(DamageEvent damageEvent)
     {
         if (!isKilled)
@@ -56,7 +65,6 @@ public class Entity : MonoBehaviour
                     }
 
                     OnKilled.Invoke(damageEvent);
-                    Destroy(gameObject);
                     tcs.SetResult(true);
                 }, null);
 

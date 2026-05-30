@@ -27,6 +27,11 @@ public class Health : MonoBehaviour
         }
     }
 
+    public void ResetHealth()
+    {
+        health = maxHealth;
+    }
+
     public void OnDamageEvent(DamageEvent damageEvent)
     {
         health -= damageEvent.damageAmount;
