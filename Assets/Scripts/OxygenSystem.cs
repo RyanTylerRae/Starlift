@@ -11,6 +11,7 @@ public class OxygenSystem : MonoBehaviour
     public float magnetizedWalkMultiplier;
     private Modifiers? modifiers = null;
     private FirstPersonController? playerController = null;
+    private Entity? entity = null;
     private bool isAudioPlaying = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -18,6 +19,7 @@ public class OxygenSystem : MonoBehaviour
     {
         modifiers = GetComponent<Modifiers>();
         playerController = GetComponent<FirstPersonController>();
+        entity = GetComponent<Entity>();
         isAudioPlaying = true;
     }
 
@@ -38,7 +40,7 @@ public class OxygenSystem : MonoBehaviour
 
     void LateUpdate()
     {
-        if (modifiers == null || playerController == null)
+        if (modifiers == null || playerController == null || entity == null || !entity.IsAlive)
         {
             return;
         }
@@ -76,14 +78,11 @@ public class OxygenSystem : MonoBehaviour
         else
         {
             oxygenAmount = 0.0f;
-
-            if (TryGetComponent(out Entity entity))
-            {
-                entity.SendDamageEvent(gameObject, 100, DamageType.Suffocating);
-            }
+            entity.SendDamageEvent(gameObject, 100, DamageType.Suffocating);
 
             if (isAudioPlaying)
             {
+                Debug.Log("TRAE death event!");
                 AkUnitySoundEngine.PostEvent("stop_blend_breathing", gameObject);
                 AkUnitySoundEngine.PostEvent("play_breathing_death", gameObject);
                 isAudioPlaying = false;

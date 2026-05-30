@@ -9,6 +9,7 @@ public class Entity : MonoBehaviour
     private DamageEventHandler? damageEventHandler = null;
     public event Action<DamageEvent> OnKilled = delegate { };
     private bool isKilled = false;
+    public bool IsAlive => !isKilled;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -33,10 +34,6 @@ public class Entity : MonoBehaviour
     public void Respawn()
     {
         isKilled = false;
-        if (TryGetComponent(out FirstPersonController controller))
-        {
-            controller.enabled = true;
-        }
     }
 
     public async void Kill(DamageEvent damageEvent)
@@ -44,11 +41,6 @@ public class Entity : MonoBehaviour
         if (!isKilled)
         {
             isKilled = true;
-
-            if (TryGetComponent(out FirstPersonController controller))
-            {
-                controller.enabled = false;
-            }
 
             var context = System.Threading.SynchronizationContext.Current;
 

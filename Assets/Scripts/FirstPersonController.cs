@@ -109,6 +109,7 @@ public class FirstPersonController : MonoBehaviour
     private InputAction? rotateRightAction;
 
     private Modifiers? modifiers = null;
+    private Entity? entity = null;
 
     public bool IsUsingGamepad => playerInput != null && playerInput.currentControlScheme == "Gamepad";
 
@@ -138,6 +139,7 @@ public class FirstPersonController : MonoBehaviour
     {
         modifiers = GetComponent<Modifiers>();
         oxygenSystem = GetComponent<OxygenSystem>();
+        entity = GetComponent<Entity>();
 
         //if (TryGetComponent<CoherenceSync>(out var _sync) && _sync.HasStateAuthority)
         //{
@@ -265,6 +267,11 @@ public class FirstPersonController : MonoBehaviour
 
     void Update()
     {
+        if (entity == null || !entity.IsAlive)
+        {
+            return;
+        }
+
         if (gravityController == null)
         {
             Debug.LogWarning("FirstPersonController does not have a sibling GravityController!");
@@ -376,6 +383,11 @@ public class FirstPersonController : MonoBehaviour
 
     public void FixedUpdate()
     {
+        if (entity == null || !entity.IsAlive)
+        {
+            return;
+        }
+
         if (_rigidbody == null)
         {
             return;
