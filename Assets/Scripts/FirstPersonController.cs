@@ -16,8 +16,10 @@ public class FirstPersonController : MonoBehaviour
     public float maxWalkSpeed;
     public float maxRunSpeed;
     private bool isGrounded = false;
+    private bool isGroundedOnEdge = false;
     private Vector3 surfaceNormal = Vector3.up;
     public float groundedDistance;
+    public float edgeRaycastMultiplier = 2f;
     public float jumpForce;
     public float jumpCooldown = 0.3f;
     private float lastJumpTime = -1f;
@@ -37,7 +39,15 @@ public class FirstPersonController : MonoBehaviour
     public float jumpForceTier3;
     public float jumpTargetRaycastDistance = 200f;
     public float jumpDirectionalAngleThreshold = 135f;
+    public float approachDuration = 0.5f;
+    public float edgeJumpSearchStep = 1f;
+    public float edgeJumpMaxClearDistance = 5f;
+    public float edgeJumpLerpDuration = 0.15f;
+    public float ignoredSourceCollisionGrace = 0.3f;
     private GravitySourceComponent? ignoredGravitySource;
+    private Vector3 ignoredGravityDirection;
+    private float approachTimer = 0f;
+    private float ignoredSourceSetTime = 0f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -114,7 +124,7 @@ public class FirstPersonController : MonoBehaviour
 
     public bool IsUsingGamepad => playerInput != null && playerInput.currentControlScheme == "Gamepad";
 
-    public bool ShouldDisplayJumpTarget => CameraAngleFromGravity > jumpDirectionalAngleThreshold && MovementMode == ControllerMovementMode.Magnetized;
+    public bool ShouldDisplayJumpTarget => (isGroundedOnEdge || CameraAngleFromGravity > jumpDirectionalAngleThreshold) && MovementMode == ControllerMovementMode.Magnetized;
 
     [Header("Oxygen")]
     public float minOxygenBurnRate = 0.33f;
@@ -281,11 +291,23 @@ public class FirstPersonController : MonoBehaviour
 
         if (ignoredGravitySource != null)
         {
-            Vector2? moveInput = moveAction?.ReadValue<Vector2>();
-            if ((moveInput.HasValue && moveInput.Value.sqrMagnitude > 0.01f) ||
-                !gravityController.GetGravitySources().Contains(ignoredGravitySource))
+            if (!gravityController.GetGravitySources().Contains(ignoredGravitySource))
             {
                 ClearIgnoredGravitySource();
+            }
+            // if we are approaching the gravity source we left, we want to re-enable it
+            else if (Time.time > ignoredSourceSetTime + ignoredSourceCollisionGrace
+                && _rigidbody != null && Vector3.Dot(_rigidbody.linearVelocity, ignoredGravityDirection) > 0.01f)
+            {
+                approachTimer += Time.deltaTime;
+                if (approachTimer >= approachDuration)
+                {
+                    ClearIgnoredGravitySource();
+                }
+            }
+            else
+            {
+                approachTimer = 0f;
             }
         }
 
@@ -534,6 +556,7 @@ public class FirstPersonController : MonoBehaviour
     private void HandleGrounded()
     {
         isGrounded = false;
+        isGroundedOnEdge = false;
 
         if (gravityController == null)
         {
@@ -557,6 +580,14 @@ public class FirstPersonController : MonoBehaviour
         {
             isGrounded = true;
             surfaceNormal = centerHit.normal;
+
+            // check to see if we are near an edge
+            Vector3 centerEdgeOrigin = transform.position + transform.forward * (halfRadius * edgeRaycastMultiplier);
+            if (!Physics.Raycast(new Ray(centerEdgeOrigin, gravityDir), groundedDistance, groundMask))
+            {
+                isGroundedOnEdge = true;
+            }
+
             return;
         }
 
@@ -692,7 +723,7 @@ public class FirstPersonController : MonoBehaviour
             // If camera angle exceeds threshold and a surface is in range, jump toward it —
             // unless the hit surface is the one we're already standing on
             Ray jumpRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            if (cameraAngleFromGravity > jumpDirectionalAngleThreshold
+            if ((isGroundedOnEdge || cameraAngleFromGravity > jumpDirectionalAngleThreshold)
                 && Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default"))
                 && jumpHit.collider.GetComponentInParent<GravitySourceComponent>() != activeSource)
             {
@@ -704,11 +735,30 @@ public class FirstPersonController : MonoBehaviour
                 jumpDirection = -1.0f * gravity.normalized;
             }
 
+            if (isGroundedOnEdge && bodyCollider != null && _rigidbody != null)
+            {
+                var clearPosition = TryFindEdgeJumpClearPosition(jumpDirection);
+                if (clearPosition.HasValue)
+                {
+                    Vector3 visualOffset = transform.position - clearPosition.Value;
+                    bodyCollider.enabled = false;
+                    transform.position = clearPosition.Value;
+                    _rigidbody.position = clearPosition.Value;
+                    bodyCollider.enabled = true;
+                    if (cameraArm != null)
+                    {
+                        StartCoroutine(LagCameraFromEdgeJump(visualOffset, edgeJumpLerpDuration));
+                    }
+                }
+            }
+
             _rigidbody.AddForce(jumpDirection * jumpForce);
 
             if (activeSource != null)
             {
                 ignoredGravitySource = activeSource;
+                ignoredGravityDirection = gravity.normalized;
+                ignoredSourceSetTime = Time.time;
                 activeSource.isGravityEnabled = false;
             }
         }
@@ -898,6 +948,91 @@ public class FirstPersonController : MonoBehaviour
         playerCamera.transform.localPosition = originalPos;
     }
 
+    private Vector3? TryFindEdgeJumpClearPosition(Vector3 jumpDirection)
+    {
+        if (bodyCollider == null) { return null; }
+
+        float scaledHeight = bodyCollider.height * bodyCollider.transform.lossyScale.y;
+        float scaledRadius = bodyCollider.radius * bodyCollider.transform.lossyScale.x;
+        Vector3 worldCenter = transform.TransformPoint(bodyCollider.center);
+        Vector3 p1Base = worldCenter + transform.up * (scaledHeight / 2f - scaledRadius);
+        Vector3 p2Base = worldCenter - transform.up * (scaledHeight / 2f - scaledRadius);
+        int groundMask = LayerMask.GetMask("Default");
+
+        // Step forward until finding a position clear of ground geometry
+        float low = 0f;
+        float high = -1f;
+        for (float t = edgeJumpSearchStep; t <= edgeJumpMaxClearDistance; t += edgeJumpSearchStep)
+        {
+            if (!HasCapsuleOverlap(p1Base + jumpDirection * t, p2Base + jumpDirection * t, scaledRadius, groundMask))
+            {
+                high = t;
+                break;
+            }
+            low = t;
+        }
+
+        if (high < 0f)
+        {
+            return null;
+        }
+
+        // Binary search to narrow to the minimum clear distance
+        for (int i = 0; i < 5; i++)
+        {
+            float mid = (low + high) / 2f;
+            if (HasCapsuleOverlap(p1Base + jumpDirection * mid, p2Base + jumpDirection * mid, scaledRadius, groundMask))
+            {
+                low = mid;
+            }
+            else
+            {
+                high = mid;
+            }
+        }
+
+        // Check if the clear position introduces any other collisions
+        Vector3 clearP1 = p1Base + jumpDirection * high;
+        Vector3 clearP2 = p2Base + jumpDirection * high;
+        if (HasCapsuleOverlap(clearP1, clearP2, scaledRadius, ~0))
+        {
+            return null;
+        }
+
+        return transform.position + jumpDirection * high;
+    }
+
+    private bool HasCapsuleOverlap(Vector3 p1, Vector3 p2, float radius, int layerMask)
+    {
+        Collider[] overlaps = Physics.OverlapCapsule(p1, p2, radius, layerMask, QueryTriggerInteraction.Ignore);
+        foreach (Collider c in overlaps)
+        {
+            if (c != bodyCollider) { return true; }
+        }
+        return false;
+    }
+
+    private IEnumerator LagCameraFromEdgeJump(Vector3 worldOffset, float duration)
+    {
+        if (cameraArm == null) { yield break; }
+
+        Vector3 localOffset = transform.InverseTransformVector(worldOffset);
+        Vector3 startLocalPos = cameraArm.transform.localPosition;
+        cameraArm.transform.localPosition = startLocalPos + localOffset;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float tEased = t < 0.5f ? 2f * t * t : 1f - 2f * (1f - t) * (1f - t);
+            cameraArm.transform.localPosition = Vector3.Lerp(startLocalPos + localOffset, startLocalPos, tEased);
+            yield return null;
+        }
+
+        cameraArm.transform.localPosition = startLocalPos;
+    }
+
     private void ClearIgnoredGravitySource()
     {
         if (ignoredGravitySource != null)
@@ -905,11 +1040,12 @@ public class FirstPersonController : MonoBehaviour
             ignoredGravitySource.isGravityEnabled = true;
             ignoredGravitySource = null;
         }
+        approachTimer = 0f;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (ignoredGravitySource != null)
+        if (ignoredGravitySource != null && Time.time > ignoredSourceSetTime + ignoredSourceCollisionGrace)
         {
             var source = collision.collider.GetComponentInParent<GravitySourceComponent>();
             if (source == ignoredGravitySource)

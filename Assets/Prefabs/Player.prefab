@@ -840,6 +840,7 @@ MonoBehaviour:
   maxWalkSpeed: 4
   maxRunSpeed: 8
   groundedDistance: 0.6
+  edgeRaycastMultiplier: 5
   jumpForce: 6
   jumpCooldown: 0.5
   airControlMultiplier: 0.08
@@ -852,8 +853,13 @@ MonoBehaviour:
   jumpForceTier1: 250
   jumpForceTier2: 0
   jumpForceTier3: 0
-  jumpTargetRaycastDistance: 100
+  jumpTargetRaycastDistance: 150
   jumpDirectionalAngleThreshold: 90
+  approachDuration: 0.25
+  edgeJumpSearchStep: 1
+  edgeJumpMaxClearDistance: 5
+  edgeJumpLerpDuration: 2
+  ignoredSourceCollisionGrace: 0.5
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
