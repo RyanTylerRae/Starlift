@@ -752,7 +752,7 @@ public class FirstPersonController : MonoBehaviour
                 }
             }
 
-            _rigidbody.AddForce(jumpDirection * jumpForce);
+            _rigidbody?.AddForce(jumpDirection * jumpForce);
 
             if (activeSource != null)
             {
