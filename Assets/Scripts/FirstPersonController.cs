@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 using Steamworks;
 using Unity.Mathematics;
 using UnityEngine;
@@ -36,7 +37,7 @@ public class FirstPersonController : MonoBehaviour
     public float jumpForceTier3;
     public float jumpTargetRaycastDistance = 200f;
     public float jumpDirectionalAngleThreshold = 135f;
-    public float jumpGravityDisableDuration = 2.0f;
+    private GravitySourceComponent? ignoredGravitySource;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -276,6 +277,16 @@ public class FirstPersonController : MonoBehaviour
         {
             Debug.LogWarning("FirstPersonController does not have a sibling GravityController!");
             return;
+        }
+
+        if (ignoredGravitySource != null)
+        {
+            Vector2? moveInput = moveAction?.ReadValue<Vector2>();
+            if ((moveInput.HasValue && moveInput.Value.sqrMagnitude > 0.01f) ||
+                !gravityController.GetGravitySources().Contains(ignoredGravitySource))
+            {
+                ClearIgnoredGravitySource();
+            }
         }
 
         if (modifiers != null)
@@ -697,8 +708,8 @@ public class FirstPersonController : MonoBehaviour
 
             if (activeSource != null)
             {
-                // @todo trae - is this really going to be ok?
-                activeSource.DisableForSeconds(jumpGravityDisableDuration);
+                ignoredGravitySource = activeSource;
+                activeSource.isGravityEnabled = false;
             }
         }
     }
@@ -887,8 +898,26 @@ public class FirstPersonController : MonoBehaviour
         playerCamera.transform.localPosition = originalPos;
     }
 
+    private void ClearIgnoredGravitySource()
+    {
+        if (ignoredGravitySource != null)
+        {
+            ignoredGravitySource.isGravityEnabled = true;
+            ignoredGravitySource = null;
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
+        if (ignoredGravitySource != null)
+        {
+            var source = collision.collider.GetComponentInParent<GravitySourceComponent>();
+            if (source == ignoredGravitySource)
+            {
+                ClearIgnoredGravitySource();
+            }
+        }
+
         if (isGrounded) { return; }
         if (MovementMode != ControllerMovementMode.Gravity) { return; }
         if (collision.rigidbody == null || collision.rigidbody.isKinematic) { return; }

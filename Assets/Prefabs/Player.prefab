@@ -852,9 +852,8 @@ MonoBehaviour:
   jumpForceTier1: 250
   jumpForceTier2: 0
   jumpForceTier3: 0
-  jumpTargetRaycastDistance: 400
-  jumpDirectionalAngleThreshold: 45
-  jumpGravityDisableDuration: 2
+  jumpTargetRaycastDistance: 100
+  jumpDirectionalAngleThreshold: 90
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
