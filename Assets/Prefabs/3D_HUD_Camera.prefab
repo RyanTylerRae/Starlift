@@ -247,7 +247,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   centerDotWidget: {fileID: 4421286903830893901}
   jumpTargetWidget: {fileID: 8839783383489812832}
-  jumpTargetRaycastDistance: 1000
   jumpTargetRotationOffset: {x: 90, y: 0, z: 0}
   oxygenProgressRendererForeground: {fileID: 2800109065990380789}
   oxygenProgressLaggyRenderer: {fileID: 7476008073064474590}
@@ -432,8 +431,8 @@ Transform:
   m_GameObject: {fileID: 4002790259570053324}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.15, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -0.15, z: 2}
+  m_LocalScale: {x: 1.025, y: 1, z: 1.6}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7709478757347196524}

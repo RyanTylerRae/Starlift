@@ -438,8 +438,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2394685937431221657}
-  - {fileID: 9108685966080103495}
   - {fileID: 3915216298633541530}
+  - {fileID: 9108685966080103495}
   m_Father: {fileID: 7542315045478018143}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -850,7 +850,7 @@ MonoBehaviour:
   maxMagnetizedWalkSpeed: 3
   magnetizeRadius: 0.4
   gravityAlignmentSpeed: 3
-  jumpForceTier1: 250
+  jumpForceTier1: 180
   jumpForceTier2: 0
   jumpForceTier3: 0
   jumpTargetRaycastDistance: 150
@@ -863,10 +863,11 @@ MonoBehaviour:
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
-  zeroGRollSpeed: 45
-  stabilizeMultiplier: 0.5
-  flightForce: 0.6
-  maxFlightSpeed: 7
+  rollSpeed: 50
+  rollDamping: 0.9
+  stabilizeMultiplier: 0.45
+  flightForce: 0.9
+  maxFlightSpeed: 5.5
   jumpTier1Time: 0.4
   jumpTier2Time: 0
   jumpTier3Time: 0
@@ -1030,10 +1031,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 4
-  thrustMultiplier: 4
+  usagePerSecond: 3
+  thrustMultiplier: 3
   sprintMultiplier: 1.5
-  magnetizedWalkMultiplier: 1.5
+  magnetizedWalkMultiplier: 1
 --- !u!114 &3039922705185681957
 MonoBehaviour:
   m_ObjectHideFlags: 0

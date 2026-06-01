@@ -53,7 +53,8 @@ public class FirstPersonController : MonoBehaviour
     public float lookSensitivity = 2f;
     public float maxLookAngle = 90f;
     public float controllerLookMultiplier = 2.0f;
-    public float zeroGRollSpeed = 45f;
+    public float rollSpeed = 45f;
+    public float rollDamping = 0.5f;
 
     private float xRotation = 0f;
 
@@ -272,6 +273,14 @@ public class FirstPersonController : MonoBehaviour
             if (_rigidbody != null)
             {
                 _rigidbody.freezeRotation = false;
+                _rigidbody.angularVelocity = Vector3.zero;
+            }
+
+            if (cameraArm != null && playerCamera != null)
+            {
+                transform.rotation = playerCamera.transform.rotation;
+                cameraArm.transform.localRotation = Quaternion.identity;
+                xRotation = 0f;
             }
         }
     }
@@ -845,13 +854,15 @@ public class FirstPersonController : MonoBehaviour
         float rotateLeftInput = rotateLeftAction?.ReadValue<float>() ?? 0f;
         float rotateRightInput = rotateRightAction?.ReadValue<float>() ?? 0f;
 
-        // Apply roll rotation around the camera's forward vector
         float rollInput = rotateLeftInput - rotateRightInput;
         if (Mathf.Abs(rollInput) > 0.01f)
         {
-            float rollAmount = rollInput * zeroGRollSpeed * Time.deltaTime;
-            _rigidbody.transform.Rotate(playerCamera.transform.forward, rollAmount, Space.World);
+            _rigidbody.AddTorque(transform.forward * rollInput * rollSpeed * Time.deltaTime, ForceMode.Force);
         }
+
+        // roll damping force
+        Vector3 stabilizationTorque = -_rigidbody.angularVelocity * rollDamping;
+        _rigidbody.AddTorque(stabilizationTorque, ForceMode.Acceleration);
     }
 
     void HandleZeroGMovement()

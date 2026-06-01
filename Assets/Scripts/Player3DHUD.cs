@@ -15,7 +15,7 @@ public class PlayerHUD : MonoBehaviour
 
     [Header("Jump Target Widget")]
     public GameObject? jumpTargetWidget = null;
-public Vector3 jumpTargetRotationOffset = Vector3.zero;
+    public Vector3 jumpTargetRotationOffset = Vector3.zero;
 
     [Header("Material Instances")]
     public MeshRenderer? oxygenProgressRendererForeground;
@@ -186,10 +186,10 @@ public Vector3 jumpTargetRotationOffset = Vector3.zero;
             oxygenProgressLaggyRendererMaterialInstance.SetFloat("_Progress", laggyOxygenProgress / modifiers.GetMax(ModifierType.Oxygen));
         }
 
-        if (oxygenProgressBackgroundMaterialInstance != null)
-        {
-            oxygenProgressBackgroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
-        }
+        // if (oxygenProgressBackgroundMaterialInstance != null)
+        // {
+        //     oxygenProgressBackgroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
+        // }
 
         if (jumpTier1MaterialInstance != null)
         {
