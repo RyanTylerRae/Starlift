@@ -55,6 +55,9 @@ public class FirstPersonController : MonoBehaviour
     public float controllerLookMultiplier = 2.0f;
     public float rollSpeed = 45f;
     public float rollDamping = 0.5f;
+    public float autoRollRaycastDistance = 20f;
+    public float autoRollSpeed = 10f;
+    public float autoRollAngleThreshold = 45f;
 
     private float xRotation = 0f;
 
@@ -858,6 +861,22 @@ public class FirstPersonController : MonoBehaviour
         if (Mathf.Abs(rollInput) > 0.01f)
         {
             _rigidbody.AddTorque(transform.forward * rollInput * rollSpeed * Time.deltaTime, ForceMode.Force);
+        }
+        else
+        {
+            Ray forwardRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+            if (Physics.Raycast(forwardRay, out RaycastHit surfaceHit, autoRollRaycastDistance)
+                && Vector3.Angle(transform.forward, -surfaceHit.normal) > autoRollAngleThreshold)
+            {
+                Vector3 normalOnPlane = Vector3.ProjectOnPlane(surfaceHit.normal, transform.forward);
+                if (normalOnPlane.sqrMagnitude > 0.001f)
+                {
+                    float t = surfaceHit.distance / autoRollRaycastDistance;
+                    float easing = Mathf.Log(1f + (1f - t) * (Mathf.Exp(1f) - 1f));
+                    float angle = Vector3.SignedAngle(transform.up, normalOnPlane.normalized, transform.forward);
+                    _rigidbody.AddTorque(transform.forward * angle * autoRollSpeed * easing * Time.deltaTime, ForceMode.Force);
+                }
+            }
         }
 
         // roll damping force
