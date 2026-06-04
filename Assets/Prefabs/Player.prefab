@@ -855,10 +855,10 @@ MonoBehaviour:
   jumpForceTier3: 0
   jumpTargetRaycastDistance: 150
   jumpDirectionalAngleThreshold: 90
-  approachDuration: 1
+  approachDuration: 0.25
   edgeJumpSearchStep: 1
-  edgeJumpMaxClearDistance: 5
-  edgeJumpLerpDuration: 2
+  edgeJumpMaxClearDistance: 6
+  edgeJumpLerpDuration: 1
   ignoredSourceCollisionGrace: 0.5
   lookSensitivity: 0.1
   maxLookAngle: 85

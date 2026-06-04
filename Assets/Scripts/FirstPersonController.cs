@@ -1050,9 +1050,12 @@ public class FirstPersonController : MonoBehaviour
     {
         if (cameraArm == null) { yield break; }
 
-        Vector3 localOffset = transform.InverseTransformVector(worldOffset);
         Vector3 startLocalPos = cameraArm.transform.localPosition;
+        Quaternion futureBodyRot = playerCamera != null ? playerCamera.transform.rotation : transform.rotation;
+        Vector3 localOffset = Quaternion.Inverse(futureBodyRot) * worldOffset;
         cameraArm.transform.localPosition = startLocalPos + localOffset;
+
+        yield return null;
 
         float elapsed = 0f;
         while (elapsed < duration)
@@ -1060,6 +1063,7 @@ public class FirstPersonController : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
             float tEased = t < 0.5f ? 2f * t * t : 1f - 2f * (1f - t) * (1f - t);
+            localOffset = transform.InverseTransformVector(worldOffset);
             cameraArm.transform.localPosition = Vector3.Lerp(startLocalPos + localOffset, startLocalPos, tEased);
             yield return null;
         }
