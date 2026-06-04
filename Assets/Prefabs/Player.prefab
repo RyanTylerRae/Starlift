@@ -865,8 +865,8 @@ MonoBehaviour:
   controllerLookMultiplier: 1800
   rollSpeed: 50
   rollDamping: 0.9
-  autoRollRaycastDistance: 30
-  autoRollSpeed: 0.5
+  autoRollRaycastDistance: 20
+  autoRollSpeed: 0.55
   autoRollAngleThreshold: 35
   stabilizeMultiplier: 0.45
   flightForce: 0.9
