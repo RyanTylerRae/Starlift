@@ -58,6 +58,7 @@ public class FirstPersonController : MonoBehaviour
     public float autoRollRaycastDistance = 20f;
     public float autoRollSpeed = 10f;
     public float autoRollAngleThreshold = 45f;
+    public float autoRollMinSpeed = 0f;
 
     private float xRotation = 0f;
 
@@ -300,6 +301,8 @@ public class FirstPersonController : MonoBehaviour
             Debug.LogWarning("FirstPersonController does not have a sibling GravityController!");
             return;
         }
+
+        Debug.Log($"Speed: {_rigidbody?.linearVelocity.magnitude:F2}");
 
         if (ignoredGravitySource != null)
         {
@@ -865,7 +868,8 @@ public class FirstPersonController : MonoBehaviour
         else
         {
             Ray forwardRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            if (Physics.Raycast(forwardRay, out RaycastHit surfaceHit, autoRollRaycastDistance)
+            if (_rigidbody.linearVelocity.magnitude >= autoRollMinSpeed
+                && Physics.Raycast(forwardRay, out RaycastHit surfaceHit, autoRollRaycastDistance)
                 && Vector3.Angle(transform.forward, -surfaceHit.normal) > autoRollAngleThreshold)
             {
                 Vector3 normalOnPlane = Vector3.ProjectOnPlane(surfaceHit.normal, transform.forward);

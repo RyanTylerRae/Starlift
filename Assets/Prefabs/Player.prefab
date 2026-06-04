@@ -855,7 +855,7 @@ MonoBehaviour:
   jumpForceTier3: 0
   jumpTargetRaycastDistance: 150
   jumpDirectionalAngleThreshold: 90
-  approachDuration: 0.25
+  approachDuration: 1
   edgeJumpSearchStep: 1
   edgeJumpMaxClearDistance: 5
   edgeJumpLerpDuration: 2
@@ -868,6 +868,7 @@ MonoBehaviour:
   autoRollRaycastDistance: 20
   autoRollSpeed: 0.55
   autoRollAngleThreshold: 35
+  autoRollMinSpeed: 4
   stabilizeMultiplier: 0.45
   flightForce: 0.9
   maxFlightSpeed: 5.5
