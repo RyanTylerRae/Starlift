@@ -872,7 +872,7 @@ MonoBehaviour:
   stabilizeMultiplier: 0.45
   flightForce: 0.9
   maxFlightSpeed: 5.5
-  jumpTier1Time: 0.4
+  jumpTier1Time: 0.2
   jumpTier2Time: 0
   jumpTier3Time: 0
   substepDistance: 0.01
