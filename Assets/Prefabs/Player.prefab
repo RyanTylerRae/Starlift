@@ -866,9 +866,10 @@ MonoBehaviour:
   rollSpeed: 50
   rollDamping: 0.9
   autoRollRaycastDistance: 20
-  autoRollSpeed: 0.55
-  autoRollAngleThreshold: 35
-  autoRollMinSpeed: 4
+  autoRollSpeed: 0.65
+  autoRollAngleThreshold: 30
+  autoRollMinSpeed: 3.5
+  autoRollLookAngleThreshold: 15
   stabilizeMultiplier: 0.45
   flightForce: 0.9
   maxFlightSpeed: 5.5
@@ -880,8 +881,8 @@ MonoBehaviour:
   maxDepenetrationVelocity: 0.5
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
-  minOxygenBurnRate: 0.2
-  jumpOxygenCost: 2
+  minOxygenBurnRate: 0.5
+  jumpOxygenCost: 5
 --- !u!114 &4662095033839872499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1035,7 +1036,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 3
+  usagePerSecond: 4
   thrustMultiplier: 3
   sprintMultiplier: 1.5
   magnetizedWalkMultiplier: 1

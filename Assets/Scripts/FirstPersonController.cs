@@ -59,6 +59,7 @@ public class FirstPersonController : MonoBehaviour
     public float autoRollSpeed = 10f;
     public float autoRollAngleThreshold = 45f;
     public float autoRollMinSpeed = 0f;
+    public float autoRollLookAngleThreshold = 90f;
 
     private float xRotation = 0f;
 
@@ -868,9 +869,11 @@ public class FirstPersonController : MonoBehaviour
         else
         {
             Ray forwardRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+            Ray velocityRay = new Ray(playerCamera.transform.position, _rigidbody.linearVelocity);
             if (_rigidbody.linearVelocity.magnitude >= autoRollMinSpeed
                 && Physics.Raycast(forwardRay, out RaycastHit surfaceHit, autoRollRaycastDistance)
-                && Vector3.Angle(transform.forward, -surfaceHit.normal) > autoRollAngleThreshold)
+                && Vector3.Angle(transform.forward, -surfaceHit.normal) > autoRollAngleThreshold
+                && Vector3.Angle(_rigidbody.linearVelocity, forwardRay.direction) < autoRollLookAngleThreshold)
             {
                 Vector3 normalOnPlane = Vector3.ProjectOnPlane(surfaceHit.normal, transform.forward);
                 if (normalOnPlane.sqrMagnitude > 0.001f)

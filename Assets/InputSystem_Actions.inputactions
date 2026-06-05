@@ -973,28 +973,6 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "d206c6e8-faac-459f-b0ea-05d41cb351b6",
-                    "path": "<Keyboard>/space",
-                    "interactions": "Hold",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Stabilize",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "56f55e55-1a7b-4211-bcb0-32a0482dd682",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "Hold",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "Stabilize",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "a98be837-cd88-4667-85e5-3a97db295f31",
                     "path": "<Keyboard>/s",
                     "interactions": "Hold",
@@ -1062,7 +1040,7 @@
                 {
                     "name": "",
                     "id": "5d632d9d-e771-4212-86ed-6287aede5cfd",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/space",
                     "interactions": "Hold",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
@@ -1084,7 +1062,7 @@
                 {
                     "name": "",
                     "id": "1e1551ee-a4d0-486c-bbf1-bdede175cb5b",
-                    "path": "<Keyboard>/ctrl",
+                    "path": "<Keyboard>/shift",
                     "interactions": "Hold",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
