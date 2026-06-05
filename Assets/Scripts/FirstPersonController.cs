@@ -7,6 +7,7 @@ using Steamworks;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class FirstPersonController : MonoBehaviour
@@ -72,6 +73,7 @@ public class FirstPersonController : MonoBehaviour
 
     public float flightForce;
     public float maxFlightSpeed;
+    public float zeroGIdleDamping = 0.5f;
 
     // camera angle tracking
     private float cameraAngleFromGravity = 0f;
@@ -180,6 +182,8 @@ public class FirstPersonController : MonoBehaviour
             Camera mainCamera = cameraArm.AddComponent<Camera>();
             mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
             mainCamera.depth = -1.0f;
+            var cameraData = cameraArm.AddComponent<UniversalAdditionalCameraData>();
+            cameraData.renderPostProcessing = true;
             cameraArm.AddComponent<AkAudioListener>();
             playerCamera = mainCamera;
         }
@@ -947,6 +951,11 @@ public class FirstPersonController : MonoBehaviour
         }
 
         _rigidbody.AddForce(thrustVector.normalized * flightForce);
+
+        if (!isStabilizePressed.Value && thrustVector.sqrMagnitude == 0f)
+        {
+            _rigidbody.AddForce(-_rigidbody.linearVelocity * zeroGIdleDamping, ForceMode.Acceleration);
+        }
 
         velocity = _rigidbody.linearVelocity;
         if (velocity.sqrMagnitude > maxFlightSpeed * maxFlightSpeed)
