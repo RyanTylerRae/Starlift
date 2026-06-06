@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using Steamworks;
+using Unity.Cinemachine;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -735,7 +736,7 @@ public class FirstPersonController : MonoBehaviour
 
         if (jumpForce > 0.0f && _rigidbody != null && gravityController != null && playerCamera != null)
         {
-            Vector3 jumpDirection;
+            Vector3 jumpDirection = new();
 
             Vector3 gravity = gravityController.GetGravityVector();
             GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
@@ -743,16 +744,24 @@ public class FirstPersonController : MonoBehaviour
             // If camera angle exceeds threshold and a surface is in range, jump toward it —
             // unless the hit surface is the one we're already standing on
             Ray jumpRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            if ((isGroundedOnEdge || cameraAngleFromGravity > jumpDirectionalAngleThreshold)
-                && Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default"))
-                && jumpHit.collider.GetComponentInParent<GravitySourceComponent>() != activeSource)
+            if (isGroundedOnEdge || cameraAngleFromGravity > jumpDirectionalAngleThreshold)
             {
-                jumpDirection = playerCamera.transform.forward;
-                gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
+                if (!Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default"))
+                    || jumpHit.collider.GetComponentInParent<GravitySourceComponent>() != activeSource)
+                {
+                    jumpDirection = playerCamera.transform.forward;
+                    gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
+                }
             }
-            else
+            // jump straight upwards
+            // else
+            // {
+            //     jumpDirection = -1.0f * gravity.normalized;
+            // }
+
+            if (jumpDirection.AlmostZero())
             {
-                jumpDirection = -1.0f * gravity.normalized;
+                return;
             }
 
             if (isGroundedOnEdge && bodyCollider != null && _rigidbody != null)

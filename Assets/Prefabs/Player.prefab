@@ -858,22 +858,22 @@ MonoBehaviour:
   approachDuration: 0.25
   edgeJumpSearchStep: 1
   edgeJumpMaxClearDistance: 6
-  edgeJumpLerpDuration: 1
+  edgeJumpLerpDuration: 2
   ignoredSourceCollisionGrace: 0.5
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
-  rollSpeed: 50
-  rollDamping: 0.9
+  rollSpeed: 55
+  rollDamping: 0.95
   autoRollRaycastDistance: 20
-  autoRollSpeed: 0.65
-  autoRollAngleThreshold: 30
-  autoRollMinSpeed: 3.5
+  autoRollSpeed: 0.7
+  autoRollAngleThreshold: 25
+  autoRollMinSpeed: 4
   autoRollLookAngleThreshold: 15
   stabilizeMultiplier: 0.45
   flightForce: 0.9
-  maxFlightSpeed: 5
-  zeroGIdleDamping: 0.1
+  maxFlightSpeed: 6
+  zeroGIdleDamping: 0.03
   jumpTier1Time: 0.2
   jumpTier2Time: 0
   jumpTier3Time: 0
@@ -883,7 +883,7 @@ MonoBehaviour:
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
   minOxygenBurnRate: 0.5
-  jumpOxygenCost: 5
+  jumpOxygenCost: 4
 --- !u!114 &4662095033839872499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1037,7 +1037,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 4
+  usagePerSecond: 3
   thrustMultiplier: 3
   sprintMultiplier: 1.5
   magnetizedWalkMultiplier: 1
