@@ -1260,6 +1260,45 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""DiageticUI"",
+            ""id"": ""451a445f-e1f1-498d-b504-35ac7a3d5442"",
+            ""actions"": [
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""2e73192e-89ff-4636-80e2-99ac94c9b309"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""00bae606-ed16-4d2c-9757-f71c1e52f4f3"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1fe434b1-c77e-41ee-8d65-7a8023bd2f41"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1363,6 +1402,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_DEBUG_KillPlayer = m_DEBUG.FindAction("KillPlayer", throwIfNotFound: true);
         m_DEBUG_TeleportPlayer = m_DEBUG.FindAction("TeleportPlayer", throwIfNotFound: true);
         m_DEBUG_SupplyMaxOxygen = m_DEBUG.FindAction("SupplyMaxOxygen", throwIfNotFound: true);
+        // DiageticUI
+        m_DiageticUI = asset.FindActionMap("DiageticUI", throwIfNotFound: true);
+        m_DiageticUI_Interact = m_DiageticUI.FindAction("Interact", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -1372,6 +1414,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputSystem_Actions.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_MovementZeroG.enabled, "This will cause a leak and performance issues, InputSystem_Actions.MovementZeroG.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_DEBUG.enabled, "This will cause a leak and performance issues, InputSystem_Actions.DEBUG.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_DiageticUI.enabled, "This will cause a leak and performance issues, InputSystem_Actions.DiageticUI.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -1843,6 +1886,52 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         }
     }
     public DEBUGActions @DEBUG => new DEBUGActions(this);
+
+    // DiageticUI
+    private readonly InputActionMap m_DiageticUI;
+    private List<IDiageticUIActions> m_DiageticUIActionsCallbackInterfaces = new List<IDiageticUIActions>();
+    private readonly InputAction m_DiageticUI_Interact;
+    public struct DiageticUIActions
+    {
+        private @InputSystem_Actions m_Wrapper;
+        public DiageticUIActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Interact => m_Wrapper.m_DiageticUI_Interact;
+        public InputActionMap Get() { return m_Wrapper.m_DiageticUI; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(DiageticUIActions set) { return set.Get(); }
+        public void AddCallbacks(IDiageticUIActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DiageticUIActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DiageticUIActionsCallbackInterfaces.Add(instance);
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
+        }
+
+        private void UnregisterCallbacks(IDiageticUIActions instance)
+        {
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
+        }
+
+        public void RemoveCallbacks(IDiageticUIActions instance)
+        {
+            if (m_Wrapper.m_DiageticUIActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IDiageticUIActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DiageticUIActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DiageticUIActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public DiageticUIActions @DiageticUI => new DiageticUIActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1930,5 +2019,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnKillPlayer(InputAction.CallbackContext context);
         void OnTeleportPlayer(InputAction.CallbackContext context);
         void OnSupplyMaxOxygen(InputAction.CallbackContext context);
+    }
+    public interface IDiageticUIActions
+    {
+        void OnInteract(InputAction.CallbackContext context);
     }
 }

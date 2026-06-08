@@ -1,18 +1,22 @@
 #nullable enable
 
 using UnityEngine;
+using UnityEngine.Events;
 
-public class Interactable : MonoBehaviour
+public abstract class Interactable : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public abstract ETooltipActionType ActionType { get; }
+
+    public bool CanInteract() => HandleCanInteract();
+
+    protected abstract bool HandleCanInteract();
+
+    public void Interact() => HandleInteract();
+
+    protected abstract void HandleInteract();
+
+    public void PlayTestSound()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        AkUnitySoundEngine.PostEvent("play_line_1A_arrived", gameObject);
     }
 }

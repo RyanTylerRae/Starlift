@@ -127,6 +127,8 @@ public class FirstPersonController : MonoBehaviour
     private InputAction? downThrustAction;
     private InputAction? rotateLeftAction;
     private InputAction? rotateRightAction;
+    private InputAction? interactAction;
+    private InteractSystem? interactSystem = null;
 
     private Modifiers? modifiers = null;
     private Entity? entity = null;
@@ -161,22 +163,33 @@ public class FirstPersonController : MonoBehaviour
         oxygenSystem = GetComponent<OxygenSystem>();
         entity = GetComponent<Entity>();
 
-        //if (TryGetComponent<CoherenceSync>(out var _sync) && _sync.HasStateAuthority)
-        //{
         playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
         if (_rigidbody != null)
         {
             _rigidbody.maxDepenetrationVelocity = maxDepenetrationVelocity;
         }
+
         characterController = GetComponent<CharacterController>();
         gravityController = GetComponent<GravityController>();
         bodyCollider = GetComponentInChildren<CapsuleCollider>();
 
         if (gravityController != null)
+        {
             gravityController.ActiveSourceChanged += OnActiveGravitySourceChanged;
+        }
 
         SetMovementMode(ControllerMovementMode.Gravity);
+
+        interactSystem = GetComponent<InteractSystem>();
+
+        var diageticUI = playerInput?.actions.FindActionMap("DiageticUI");
+        diageticUI?.Enable();
+        interactAction = diageticUI?.FindAction("Interact");
+        if (interactAction != null)
+        {
+            interactAction.performed += OnInteractPerformed;
+        }
 
         if (cameraArm != null)
         {
@@ -188,7 +201,6 @@ public class FirstPersonController : MonoBehaviour
             cameraArm.AddComponent<AkAudioListener>();
             playerCamera = mainCamera;
         }
-        //}
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -307,8 +319,6 @@ public class FirstPersonController : MonoBehaviour
             Debug.LogWarning("FirstPersonController does not have a sibling GravityController!");
             return;
         }
-
-        Debug.Log($"Speed: {_rigidbody?.linearVelocity.magnitude:F2}");
 
         if (ignoredGravitySource != null)
         {
@@ -704,6 +714,11 @@ public class FirstPersonController : MonoBehaviour
             jumpPressStartTime = 0f;
             SetMovementMode(ControllerMovementMode.Gravity);
         }
+    }
+
+    private void OnInteractPerformed(InputAction.CallbackContext context)
+    {
+        interactSystem?.TryInteractFirst();
     }
 
     private void OnJumpStarted(InputAction.CallbackContext context)
@@ -1127,6 +1142,10 @@ public class FirstPersonController : MonoBehaviour
         {
             jumpAction.started -= OnJumpStarted;
             jumpAction.canceled -= OnJumpCanceled;
+        }
+        if (interactAction != null)
+        {
+            interactAction.performed -= OnInteractPerformed;
         }
         if (gravityController != null)
             gravityController.ActiveSourceChanged -= OnActiveGravitySourceChanged;
