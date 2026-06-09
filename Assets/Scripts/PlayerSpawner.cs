@@ -8,13 +8,12 @@ public class PlayerSpawner : MonoBehaviour
     private GameObject? player;
     public Vector3 spawnOffset = new Vector3(0, 2, 0);
 
-    private Transform? checkpointRoot;
+    private GameObject? checkpointRoot = null;
     private Vector3 checkpointLocalPosition;
 
-    public void SetCheckpoint(Transform pocketTransform)
+    public void SetCheckpoint(GameObject? checkpoint)
     {
-        checkpointRoot = pocketTransform.root;
-        checkpointLocalPosition = checkpointRoot.InverseTransformPoint(pocketTransform.position);
+        checkpointRoot = checkpoint;
     }
 
     private void Start()
@@ -22,12 +21,7 @@ public class PlayerSpawner : MonoBehaviour
         // spawn the player for the first time
         if (playerPrefab != null)
         {
-            Vector3 basePosition = checkpointRoot != null
-                ? checkpointRoot.TransformPoint(checkpointLocalPosition)
-                : transform.position;
-            Vector3 spawnPosition = basePosition + spawnOffset;
-
-            player = Instantiate(playerPrefab, spawnPosition, transform.rotation);
+            player = Instantiate(playerPrefab, transform.position + spawnOffset, transform.rotation);
 
             // register for death
             var entity = player.GetComponentInChildren<Entity>();
@@ -36,12 +30,16 @@ public class PlayerSpawner : MonoBehaviour
                 entity.OnKilled += OnPlayerKilled;
             }
 
-            // fade in from black
-            if (player.TryGetComponent<ScreenFader>(out ScreenFader screenFader))
-            {
-                screenFader.SetOpacity(1.0f);
-                _ = screenFader.FadeToOpacity(0.0f, 8.0f);
-            }
+            FadeInFromDeath(player);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        var entity = player?.GetComponentInChildren<Entity>();
+        if (entity != null)
+        {
+            entity.OnKilled -= OnPlayerKilled;
         }
     }
 
@@ -52,10 +50,18 @@ public class PlayerSpawner : MonoBehaviour
             return;
         }
 
-        Vector3 basePosition = checkpointRoot != null
-            ? checkpointRoot.TransformPoint(checkpointLocalPosition)
-            : transform.position;
-        player.transform.SetPositionAndRotation(basePosition + spawnOffset, transform.rotation);
+        Vector3 respawnPosition = transform.position;
+        Quaternion respawnRotation = transform.rotation;
+
+        if (checkpointRoot != null)
+        {
+            respawnPosition = checkpointRoot.transform.position;
+            respawnRotation = checkpointRoot.transform.rotation;
+        }
+
+        respawnPosition += spawnOffset;
+
+        player.transform.SetPositionAndRotation(respawnPosition, respawnRotation);
 
         if (player.TryGetComponent<Rigidbody>(out Rigidbody rb))
         {
@@ -78,8 +84,16 @@ public class PlayerSpawner : MonoBehaviour
             entity.Respawn();
         }
 
+        FadeInFromDeath(player);
+    }
+
+    private async void FadeInFromDeath(GameObject player)
+    {
         if (player.TryGetComponent<ScreenFader>(out ScreenFader screenFader))
         {
+            // fades in from black, with an initial delay
+            screenFader.SetOpacity(1.0f);
+            await screenFader.FadeToOpacity(1.0f, 1.0f);
             _ = screenFader.FadeToOpacity(0.0f, 8.0f);
         }
     }

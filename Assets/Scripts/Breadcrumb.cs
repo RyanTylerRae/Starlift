@@ -17,6 +17,22 @@ public class Breadcrumb : MonoBehaviour
     public void Start()
     {
         materialInstance = materialRenderer?.material;
+
+        // destroy self when the player dies
+        var entity = StarliftStatics.FindPlayer()?.GetComponentInChildren<Entity>();
+        if (entity != null)
+        {
+            entity.OnKilled += OnPlayerKilled;
+        }
+    }
+
+    public void OnDestroy()
+    {
+        var entity = StarliftStatics.FindPlayer()?.GetComponentInChildren<Entity>();
+        if (entity != null)
+        {
+            entity.OnKilled -= OnPlayerKilled;
+        }
     }
 
     public void Update()
@@ -31,5 +47,10 @@ public class Breadcrumb : MonoBehaviour
         float alpha = initialAlpha * (1.0f - (float)Math.Pow(ratio, fadePowExponent));
 
         materialInstance?.SetFloat("_Alpha", alpha);
+    }
+
+    public void OnPlayerKilled(DamageEvent _)
+    {
+        Destroy(gameObject);
     }
 }

@@ -5072,6 +5072,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3359631911944870969, guid: bd8826580fd88424d861a8edb740f2d8, type: 3}
   m_PrefabInstance: {fileID: 1069508652}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1160943546 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1243007101183379000, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
+  m_PrefabInstance: {fileID: 2558568793752389175}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1180495832
 GameObject:
   m_ObjectHideFlags: 0
@@ -8567,6 +8572,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4306015892736088132, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
+      propertyPath: checkpointRoot
+      value: 
+      objectReference: {fileID: 1160943546}
     - target: {fileID: 4752207667882248568, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
       propertyPath: m_Name
       value: CubeWithOxygenBubble
@@ -8590,6 +8599,30 @@ PrefabInstance:
     - target: {fileID: 8446701729900834178, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8450514036148290651, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.586
+      objectReference: {fileID: 0}
+    - target: {fileID: 8450514036148290651, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.77992153
+      objectReference: {fileID: 0}
+    - target: {fileID: 8450514036148290651, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8450514036148290651, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8450514036148290651, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.62587726
+      objectReference: {fileID: 0}
+    - target: {fileID: 8450514036148290651, guid: c78076f5e9504bd45b0d93d6ba53e147, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -77.493
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

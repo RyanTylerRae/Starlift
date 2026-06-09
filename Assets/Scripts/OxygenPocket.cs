@@ -7,6 +7,8 @@ public class OxygenPocket : MonoBehaviour
 {
     public float replenishRate = 10f;
 
+    public GameObject? checkpointRoot;
+
     private Collider? volumeCollider;
     private GameObject? playerInPocket;
     private OxygenSystem? playerOxygenSystem;
@@ -59,22 +61,12 @@ public class OxygenPocket : MonoBehaviour
             Debug.Log("Player entered oxygen pocket - replenishing oxygen");
         }
 
-
-        // if (player.TryGetComponent(out PlayerHelmetController helmetController))
-        // {
-        //     helmetController.RaiseHelmet();
-        // }
+        Object.FindFirstObjectByType<PlayerSpawner>()?.SetCheckpoint(checkpointRoot);
     }
 
     private void OnPlayerExitPocket(GameObject player)
     {
         playerOxygenSystem = null;
         Debug.Log("Player exited oxygen pocket - stopping oxygen replenishment");
-        Object.FindFirstObjectByType<PlayerSpawner>()?.SetCheckpoint(transform);
-
-        // if (player.TryGetComponent(out PlayerHelmetController helmetController))
-        // {
-        //     helmetController.LowerHelmet();
-        // }
     }
 }
