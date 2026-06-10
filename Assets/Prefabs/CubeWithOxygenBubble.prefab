@@ -189,6 +189,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: OxygenBubble
       objectReference: {fileID: 0}
+    - target: {fileID: 333089352620247163, guid: ae30640b598d0a3498ed8e3856c49287, type: 3}
+      propertyPath: checkpointRoot
+      value: 
+      objectReference: {fileID: 1243007101183379000}
     - target: {fileID: 2311729339302510153, guid: ae30640b598d0a3498ed8e3856c49287, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -246,6 +250,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae30640b598d0a3498ed8e3856c49287, type: 3}
+--- !u!1 &1243007101183379000 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3322911042451756551, guid: ae30640b598d0a3498ed8e3856c49287, type: 3}
+  m_PrefabInstance: {fileID: 4565899758993772607}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2254540027434692214 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2311729339302510153, guid: ae30640b598d0a3498ed8e3856c49287, type: 3}

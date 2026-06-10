@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
-  checkpointRoot: {fileID: 0}
+  checkpointRoot: {fileID: 3322911042451756551}
 --- !u!64 &1188368722881603254
 MeshCollider:
   m_ObjectHideFlags: 0

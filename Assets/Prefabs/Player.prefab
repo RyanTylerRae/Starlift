@@ -947,9 +947,9 @@ MonoBehaviour:
   rollSpeed: 55
   rollDamping: 0.95
   autoRollRaycastDistance: 20
-  autoRollSpeed: 0.7
-  autoRollAngleThreshold: 25
-  autoRollMinSpeed: 4
+  autoRollSpeed: 0.8
+  autoRollAngleThreshold: 20
+  autoRollMinSpeed: 2.5
   autoRollLookAngleThreshold: 15
   stabilizeMultiplier: 0.45
   flightForce: 0.9
