@@ -743,7 +743,7 @@
     },
     "m_PreviewData": {
         "serializedMesh": {
-            "m_SerializedMesh": "{\"mesh\":{\"fileID\":-5495902117074765545,\"guid\":\"11aea1aebb77c0646afa754aa0206286\",\"type\":3}}",
+            "m_SerializedMesh": "{\"mesh\":{\"fileID\":10203,\"guid\":\"0000000000000000e000000000000000\",\"type\":0}}",
             "m_Guid": ""
         },
         "preventRotation": false
@@ -1070,9 +1070,9 @@
     },
     "m_Color": {
         "color": {
-            "r": 1.0,
-            "g": 0.0,
-            "b": 0.0,
+            "r": 0.0,
+            "g": 1.0,
+            "b": 0.05629706382751465,
             "a": 0.0
         },
         "mode": 0
@@ -2296,9 +2296,9 @@
     },
     "m_Color": {
         "color": {
-            "r": 0.26355838775634768,
-            "g": 0.0,
-            "b": 1.0,
+            "r": 1.0,
+            "g": 0.44339609146118166,
+            "b": 0.7826288938522339,
             "a": 0.0
         },
         "mode": 0
@@ -5351,7 +5351,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.009999999776482582,
+    "m_Value": 0.02500000037252903,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
@@ -5424,7 +5424,7 @@
     "m_ShaderOutputName": "B",
     "m_StageCapability": 3,
     "m_Value": {
-        "e00": 8.0,
+        "e00": 10.0,
         "e01": 2.0,
         "e02": 2.0,
         "e03": 2.0,
