@@ -1195,7 +1195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f62c8b174e2193a4d9db800e8cd2717d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRange: 5
+  interactRange: 2.5
   useActionUI: {fileID: 6616553307617517861}
 --- !u!1001 &798813607772686613
 PrefabInstance:
