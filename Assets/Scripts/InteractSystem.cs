@@ -48,7 +48,7 @@ public class InteractSystem : MonoBehaviour
                 hoverTooltip.IsHovered = true;
 
                 var interactable = hit.collider.gameObject.GetComponent<Interactable>();
-                if (interactable != null)
+                if (interactable != null && interactable.CanInteract())
                 {
                     SetUIActive(true, interactable.ActionType);
                 }

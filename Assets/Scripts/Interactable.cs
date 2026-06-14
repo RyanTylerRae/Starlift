@@ -14,9 +14,4 @@ public abstract class Interactable : MonoBehaviour
     public void Interact() => HandleInteract();
 
     protected abstract void HandleInteract();
-
-    public void PlayTestSound()
-    {
-        AkUnitySoundEngine.PostEvent("play_line_1A_arrived", gameObject);
-    }
 }

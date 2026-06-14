@@ -20,5 +20,10 @@ public class ToggleLever : MonoBehaviour
         {
             Blackboard.Instance?.Set(blackboardId, true);
         }
+
+        if (TryGetComponent(out InteractUseable interactUseable))
+        {
+            interactUseable.canUse = false;
+        }
     }
 }
