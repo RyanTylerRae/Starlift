@@ -944,7 +944,7 @@ MonoBehaviour:
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
-  rollSpeed: 55
+  rollSpeed: 1
   rollDamping: 0.95
   autoRollRaycastDistance: 20
   autoRollSpeed: 0.8

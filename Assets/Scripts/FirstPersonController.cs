@@ -102,6 +102,9 @@ public class FirstPersonController : MonoBehaviour
     private Vector3 desiredGravityForce = Vector3.zero;
     private float gravityModeMaxSpeed = 0f;
 
+    // ZeroG roll torque computed in Update, applied in FixedUpdate
+    private Vector3 _pendingRollTorque = Vector3.zero;
+
     [Header("Player")]
     private CharacterController? characterController;
     private PlayerInput? playerInput;
@@ -488,6 +491,13 @@ public class FirstPersonController : MonoBehaviour
                 _rigidbody.linearVelocity = velocityTangent + velocityInGravityDir;
             }
             _preCollisionVelocity = _rigidbody.linearVelocity;
+            return;
+        }
+
+        if (MovementMode == ControllerMovementMode.ZeroG)
+        {
+            _rigidbody.AddTorque(_pendingRollTorque, ForceMode.Force);
+            _rigidbody.AddTorque(-_rigidbody.angularVelocity * rollDamping, ForceMode.Acceleration);
             return;
         }
 
@@ -892,12 +902,11 @@ public class FirstPersonController : MonoBehaviour
         float rollInput = rotateLeftInput - rotateRightInput;
         if (Mathf.Abs(rollInput) > 0.01f)
         {
-            _rigidbody.AddTorque(transform.forward * rollInput * rollSpeed * Time.deltaTime, ForceMode.Force);
+            _pendingRollTorque = transform.forward * rollInput * rollSpeed;
         }
         else
         {
             Ray forwardRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            Ray velocityRay = new Ray(playerCamera.transform.position, _rigidbody.linearVelocity);
             if (_rigidbody.linearVelocity.magnitude >= autoRollMinSpeed
                 && Physics.Raycast(forwardRay, out RaycastHit surfaceHit, autoRollRaycastDistance)
                 && Vector3.Angle(transform.forward, -surfaceHit.normal) > autoRollAngleThreshold
@@ -909,14 +918,18 @@ public class FirstPersonController : MonoBehaviour
                     float t = surfaceHit.distance / autoRollRaycastDistance;
                     float easing = Mathf.Log(1f + (1f - t) * (Mathf.Exp(1f) - 1f));
                     float angle = Vector3.SignedAngle(transform.up, normalOnPlane.normalized, transform.forward);
-                    _rigidbody.AddTorque(transform.forward * angle * autoRollSpeed * easing * Time.deltaTime, ForceMode.Force);
+                    _pendingRollTorque = transform.forward * angle * autoRollSpeed * easing;
+                }
+                else
+                {
+                    _pendingRollTorque = Vector3.zero;
                 }
             }
+            else
+            {
+                _pendingRollTorque = Vector3.zero;
+            }
         }
-
-        // roll damping force
-        Vector3 stabilizationTorque = -_rigidbody.angularVelocity * rollDamping;
-        _rigidbody.AddTorque(stabilizationTorque, ForceMode.Acceleration);
     }
 
     void HandleZeroGMovement()

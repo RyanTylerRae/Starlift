@@ -1,18 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8b713e0776681540b5d0e9d9cde762a, type: 3}
-  m_Name: DCC72C97-E5AA-402A-843D-2428598C6E1E
-  m_EditorClassIdentifier: 
-  objectName: play_line_1C_sorry
-  id: 1813665153
-  guid: DCC72C97-E5AA-402A-843D-2428598C6E1E
-  IsInUserDefinedSoundBank: 1
+version https://git-lfs.github.com/spec/v1
+oid sha256:88376cfbaaccb2996906d51739dc21cdb3ac257d646425e97db3589bfcb8bc1f
+size 568
