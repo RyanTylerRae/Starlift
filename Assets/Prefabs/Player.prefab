@@ -944,16 +944,16 @@ MonoBehaviour:
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
-  rollSpeed: 1
-  rollDamping: 0.95
-  autoRollRaycastDistance: 20
+  rollSpeed: 0.5
+  rollDamping: 0.9
+  autoRollRaycastDistance: 0
   autoRollSpeed: 0.8
   autoRollAngleThreshold: 20
   autoRollMinSpeed: 2.5
   autoRollLookAngleThreshold: 15
   stabilizeMultiplier: 0.45
   flightForce: 0.9
-  maxFlightSpeed: 6
+  maxFlightSpeed: 5
   zeroGIdleDamping: 0.03
   jumpTier1Time: 0.2
   jumpTier2Time: 0

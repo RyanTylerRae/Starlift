@@ -9,14 +9,34 @@ public class GravitySourceMesh : GravitySourceComponent
 
     private bool isPlayerInRange = false;
 
+    private bool isInitialized = false;
+    private GameObject? player = null;
+    private FirstPersonController? firstPersonController = null;
+    private static float MIN_UPDATE_DISTANCE_SQRD = 100.0f * 100.0f;
+
     public override void Update()
     {
+        if (!isInitialized)
+        {
+            player = StarliftStatics.FindPlayer();
+            firstPersonController = StarliftStatics.FindFirstPersonController();
+            isInitialized = true;
+        }
+
+        if (player == null || meshCollider == null)
+        {
+            return;
+        }
+
+        Vector3 checkDistance = player.transform.position - meshCollider.transform.position;
+        if (checkDistance.sqrMagnitude > MIN_UPDATE_DISTANCE_SQRD)
+        {
+            return;
+        }
+
         bool wasPlayerInRange = isPlayerInRange;
 
-        GameObject? player = StarliftStatics.FindPlayer();
-        FirstPersonController? firstPersonController = StarliftStatics.FindFirstPersonController();
-
-        if (player != null && firstPersonController != null && meshCollider != null)
+        if (firstPersonController != null)
         {
             Vector3 playerPos = player.transform.position;
             Vector3 closestPoint = meshCollider.ClosestPoint(player.transform.position);
