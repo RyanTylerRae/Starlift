@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class FoliagePainterWindow : EditorWindow
 {
-    private enum BrushMode { Hard, Soft }
+    private enum BrushShape { Circle, Square }
+    private enum SelectionMode { Grid }
 
     // Paint mode
     private bool paintingEnabled = false;
@@ -15,28 +16,32 @@ public class FoliagePainterWindow : EditorWindow
     // Brush
     private Color paintColor = Color.green;
     private float brushRadius = 1f;
+    private BrushShape brushShape = BrushShape.Circle;
+    private float brushRotation = 0f;
+    private float normalOffset = 0f;
+    private float raycastDistance = 1f;
+    private float brushStrength = 1f;
+    private float falloffPower = 1f;
     private float sampleSpacing = 0.2f;
-    private BrushMode brushMode = BrushMode.Soft;
     private bool eraseMode = false;
-    private LayerMask paintableLayers = ~0;
+    private float maxNormalDeviation = 15f;
+    private LayerMask paintableLayers = ~(1 << 2); // exclude Ignore Raycast by default
+
+    // Stroke state
+    private Vector3 strokeStartNormal;
+
+    // Point selection
+    private SelectionMode selectionMode = SelectionMode.Grid;
 
     // Layers
     private List<FoliageLayer?> layers = new();
     private Vector2 layerScroll;
 
-    // Preview
-    private List<FoliageDistributor.FoliageCandidate> previewPoints = new();
-    private bool showPreview = false;
-
     [MenuItem("Tools/Starlift/Foliage Painter")]
     private static void Open() => GetWindow<FoliagePainterWindow>("Foliage Painter");
 
     private void OnEnable() => SceneView.duringSceneGui += OnSceneGUI;
-    private void OnDisable()
-    {
-        SceneView.duringSceneGui -= OnSceneGUI;
-        showPreview = false;
-    }
+    private void OnDisable() => SceneView.duringSceneGui -= OnSceneGUI;
 
     private void OnGUI()
     {
@@ -52,16 +57,26 @@ public class FoliagePainterWindow : EditorWindow
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Brush", EditorStyles.boldLabel);
-        paintColor = EditorGUILayout.ColorField("Paint Color", paintColor);
-        brushRadius = EditorGUILayout.Slider("Brush Radius", brushRadius, 0.1f, 20f);
-        sampleSpacing = EditorGUILayout.Slider("Sample Spacing", sampleSpacing, 0.05f, 2f);
-        brushMode = (BrushMode)EditorGUILayout.EnumPopup("Brush Mode", brushMode);
+        paintColor = EditorGUILayout.ColorField(new GUIContent("Paint Color"), paintColor, true, false, false);
+        brushRadius = EditorGUILayout.FloatField("Brush Radius", brushRadius);
+        brushShape = (BrushShape)EditorGUILayout.EnumPopup("Brush Shape", brushShape);
+        brushRotation = EditorGUILayout.Slider("Rotation", brushRotation, 0f, 360f);
+        normalOffset = EditorGUILayout.FloatField("Normal Offset", normalOffset);
+        raycastDistance = EditorGUILayout.FloatField("Raycast Distance", raycastDistance);
+        brushStrength = EditorGUILayout.Slider("Brush Strength", brushStrength, 0f, 1f);
+        falloffPower = EditorGUILayout.Slider("Falloff Power", falloffPower, 0.1f, 5f);
+        sampleSpacing = EditorGUILayout.FloatField("Sample Spacing", sampleSpacing);
         eraseMode = EditorGUILayout.Toggle("Erase Mode", eraseMode);
+        maxNormalDeviation = EditorGUILayout.Slider("Max Normal Deviation", maxNormalDeviation, 0f, 180f);
         paintableLayers = (LayerMask)EditorGUILayout.MaskField(
             "Paintable Layers",
             InternalEditorUtility.LayerMaskToConcatenatedLayersMask(paintableLayers),
             InternalEditorUtility.layers);
         paintableLayers = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(paintableLayers);
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Point Selection", EditorStyles.boldLabel);
+        selectionMode = (SelectionMode)EditorGUILayout.EnumPopup("Selection Mode", selectionMode);
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Foliage Layers", EditorStyles.boldLabel);
@@ -93,13 +108,6 @@ public class FoliagePainterWindow : EditorWindow
 
         if (GUILayout.Button("+ Add Layer"))
             layers.Add(null);
-
-        EditorGUILayout.Space();
-
-        if (GUILayout.Button("Preview Distribution"))
-            RefreshPreview();
-
-        showPreview = EditorGUILayout.Toggle("Show Preview Gizmos", showPreview);
 
         EditorGUILayout.Space();
 
@@ -157,18 +165,43 @@ public class FoliagePainterWindow : EditorWindow
 
         Event e = Event.current;
         Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
-        bool didHit = Physics.Raycast(ray, out RaycastHit hitInfo, float.MaxValue, paintableLayers);
-        bool isValidTarget = didHit && hitInfo.collider.gameObject.isStatic;
+        RaycastHit[] allHits = Physics.RaycastAll(ray, float.MaxValue, paintableLayers);
+        System.Array.Sort(allHits, (a, b) => a.distance.CompareTo(b.distance));
 
-        // Brush disc
+        bool didHit = allHits.Length > 0;
+        bool isValidTarget = false;
+        RaycastHit hitInfo = default;
+
+        if (didHit)
+        {
+            hitInfo = allHits[0];
+            foreach (var h in allHits)
+            {
+                if (h.collider.gameObject.isStatic)
+                {
+                    hitInfo = h;
+                    isValidTarget = true;
+                    break;
+                }
+            }
+        }
+
+        // Brush outline + normal offset preview
         if (didHit && e.type == EventType.Repaint)
         {
             Handles.color = !isValidTarget
-                ? new Color(1f, 0.5f, 0f, 0.8f)
+                ? new Color(1f, 0.2f, 0.2f, 0.8f)
                 : eraseMode
                     ? new Color(1f, 0.2f, 0.2f, 0.8f)
-                    : new Color(paintColor.r, paintColor.g, paintColor.b, 0.8f);
-            Handles.DrawWireDisc(hitInfo.point, hitInfo.normal, brushRadius);
+                    : new Color(1f, 1f, 1f, 0.8f);
+
+            var (right, fwd) = BuildBasis(hitInfo.normal, brushRotation);
+            Vector3 brushCenter = hitInfo.point + hitInfo.normal * normalOffset;
+
+            if (normalOffset != 0f)
+                Handles.DrawAAPolyLine(20f, hitInfo.point, brushCenter);
+
+            DrawBrushOutline(brushCenter, right, fwd, brushRadius, brushShape);
         }
 
         bool isPaintEvent = (e.type == EventType.MouseDown || e.type == EventType.MouseDrag)
@@ -176,31 +209,24 @@ public class FoliagePainterWindow : EditorWindow
 
         if (isPaintEvent && isValidTarget)
         {
-            FoliagePaintData data = GetOrCreatePaintData();
+            if (e.type == EventType.MouseDown)
+                strokeStartNormal = hitInfo.normal;
 
-            if (eraseMode)
+            bool normalOk = Vector3.Angle(hitInfo.normal, strokeStartNormal) <= maxNormalDeviation;
+
+            if (normalOk)
             {
-                data.Erase(hitInfo.point, brushRadius, paintColor.a, brushMode == BrushMode.Soft);
-            }
-            else
-            {
-                ApplyPaintBrush(data, hitInfo.point, hitInfo.normal);
+                FoliagePaintData data = GetOrCreatePaintData();
+
+                if (eraseMode)
+                    data.Erase(hitInfo.point, brushRadius, brushStrength, true);
+                else
+                    ApplyPaintBrush(data, hitInfo.point, hitInfo.normal);
+
+                EditorUtility.SetDirty(data);
             }
 
-            EditorUtility.SetDirty(data);
-            showPreview = false;
             e.Use();
-        }
-
-        // Preview distribution gizmos
-        if (showPreview && e.type == EventType.Repaint)
-        {
-            Handles.color = Color.yellow;
-            foreach (var p in previewPoints)
-            {
-                if (IsInFrustum(p.position, sceneView.camera))
-                    Handles.DotHandleCap(0, p.position, Quaternion.identity, 0.06f, EventType.Repaint);
-            }
         }
 
         sceneView.Repaint();
@@ -208,93 +234,139 @@ public class FoliagePainterWindow : EditorWindow
 
     private void ApplyPaintBrush(FoliagePaintData data, Vector3 hitPoint, Vector3 hitNormal)
     {
-        // Build a coordinate frame in the plane perpendicular to the hit normal
-        Vector3 right = Vector3.Cross(hitNormal, Vector3.up);
-        if (right.sqrMagnitude < 0.001f)
-            right = Vector3.Cross(hitNormal, Vector3.forward);
-        right.Normalize();
-        Vector3 fwd = Vector3.Cross(right, hitNormal).normalized;
+        var (right, fwd) = BuildBasis(hitNormal, brushRotation);
+        Vector3 brushCenter = hitPoint + hitNormal * normalOffset;
 
         Color32 col32 = (Color32)paintColor;
-        int steps = Mathf.CeilToInt(brushRadius * 2f / sampleSpacing);
-        float rayOffset = 0.5f;
 
-        for (int gx = 0; gx <= steps; gx++)
+        float jitter = sampleSpacing * 0.4f;
+
+        float uc = Vector3.Dot(brushCenter, right);
+        float vc = Vector3.Dot(brushCenter, fwd);
+        float hc = Vector3.Dot(brushCenter, hitNormal);
+
+        int gxMin = Mathf.FloorToInt((uc - brushRadius) / sampleSpacing);
+        int gxMax = Mathf.FloorToInt((uc + brushRadius) / sampleSpacing);
+        int gyMin = Mathf.FloorToInt((vc - brushRadius) / sampleSpacing);
+        int gyMax = Mathf.FloorToInt((vc + brushRadius) / sampleSpacing);
+
+        float eraseRadius = sampleSpacing * 0.6f;
+
+        // Phase 1: collect hits and snapshot existing alpha before any erasure
+        var cellHits = new List<(Vector3 position, Vector3 normal, byte addAlpha, byte existingAlpha)>();
+        for (int gx = gxMin; gx <= gxMax; gx++)
         {
-            for (int gy = 0; gy <= steps; gy++)
+            for (int gy = gyMin; gy <= gyMax; gy++)
             {
-                float u = (gx / (float)steps - 0.5f) * brushRadius * 2f;
-                float v = (gy / (float)steps - 0.5f) * brushRadius * 2f;
-                float dist = Mathf.Sqrt(u * u + v * v);
-                if (dist > brushRadius) continue;
+                var cellRng = new System.Random(HashCell(gx, gy));
+                float u = (gx + 0.5f) * sampleSpacing + (float)(cellRng.NextDouble() * 2 - 1) * jitter;
+                float v = (gy + 0.5f) * sampleSpacing + (float)(cellRng.NextDouble() * 2 - 1) * jitter;
 
-                Vector3 candidate = hitPoint + right * u + fwd * v;
-                Vector3 rayOrigin = candidate + hitNormal * rayOffset;
-
-                if (!Physics.Raycast(rayOrigin, -hitNormal, out RaycastHit hit, rayOffset * 3f, paintableLayers))
+                float du = u - uc;
+                float dv = v - vc;
+                if (brushShape == BrushShape.Circle && du * du + dv * dv > brushRadius * brushRadius)
                     continue;
-                if (!hit.collider.gameObject.isStatic) continue;
+                if (brushShape == BrushShape.Square && (Mathf.Abs(du) > brushRadius || Mathf.Abs(dv) > brushRadius))
+                    continue;
 
-                float normalizedDist = dist / brushRadius;
-                byte alpha;
-                if (brushMode == BrushMode.Hard)
+                float t = brushShape == BrushShape.Circle
+                    ? Mathf.Sqrt(du * du + dv * dv) / brushRadius
+                    : (Mathf.Abs(du) + Mathf.Abs(dv)) / (brushRadius * 2f);
+                byte addAlpha = (byte)Mathf.RoundToInt(brushStrength * Mathf.Pow(1f - t, falloffPower) * 255f);
+                if (addAlpha == 0) continue;
+
+                Vector3 candidate = right * u + fwd * v + hitNormal * hc;
+                RaycastHit[] hits = Physics.RaycastAll(candidate, -hitNormal, raycastDistance, paintableLayers);
+                System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+                foreach (var h in hits)
                 {
-                    alpha = col32.a;
+                    if (!h.collider.gameObject.isStatic) continue;
+                    byte existing = data.GetAlphaAt(h.point, eraseRadius);
+                    cellHits.Add((h.point, h.normal, addAlpha, existing));
+                    break;
                 }
-                else
-                {
-                    float t = normalizedDist;
-                    float falloff = 1f - (3f * t * t - 2f * t * t * t);
-                    alpha = (byte)Mathf.RoundToInt(col32.a * falloff);
-                }
-
-                if (alpha == 0) continue;
-
-                data.Paint(new FoliageSample
-                {
-                    position = hit.point,
-                    normal = hit.normal,
-                    color = new Color32(col32.r, col32.g, col32.b, alpha)
-                }, sampleSpacing);
             }
         }
+
+        // Phase 2: erase near all hit positions
+        foreach (var (pos, _, _, _) in cellHits)
+            data.EraseInShape(pos, right, fwd, eraseRadius, false);
+
+        // Phase 3: place with accumulated alpha (existing + new delta)
+        foreach (var (pos, norm, addAlpha, existingAlpha) in cellHits)
+        {
+            byte finalAlpha = (byte)Mathf.Min(255, existingAlpha + addAlpha);
+            data.Paint(new FoliageSample
+            {
+                position = pos,
+                normal = norm,
+                color = new Color32(col32.r, col32.g, col32.b, finalAlpha)
+            }, sampleSpacing * 0.5f);
+        }
+    }
+
+    private static int HashCell(int gx, int gy)
+    {
+        unchecked { return gx * 73856093 ^ gy * 19349663; }
     }
 
     private void DrawSamples(FoliagePaintData data, Camera camera)
     {
-        float discRadius = sampleSpacing * 0.45f;
+        const float armLength = 0.15f;
         foreach (var s in data.GetAll())
         {
             if (!IsInFrustum(s.position, camera)) continue;
             Color32 c = s.color;
             Handles.color = new Color(c.r / 255f, c.g / 255f, c.b / 255f, c.a / 255f * 0.85f + 0.15f);
-            Handles.DrawSolidDisc(s.position, s.normal, discRadius);
+            Vector3 right = Mathf.Abs(Vector3.Dot(s.normal, Vector3.up)) < 0.99f
+                ? Vector3.Cross(s.normal, Vector3.up).normalized
+                : Vector3.Cross(s.normal, Vector3.forward).normalized;
+            Vector3 fwd = Vector3.Cross(s.normal, right);
+            Handles.DrawAAPolyLine(12f, s.position - right * armLength, s.position + right * armLength);
+            Handles.DrawAAPolyLine(12f, s.position - fwd * armLength, s.position + fwd * armLength);
         }
-    }
-
-    private void RefreshPreview()
-    {
-        previewPoints.Clear();
-        FoliagePaintData? data = FindPaintData();
-        if (data == null) return;
-
-        var candidates = FoliageDistributor.SampleCandidates(data);
-        foreach (var layer in layers)
-        {
-            if (layer == null || layer.prefab == null) continue;
-            previewPoints.AddRange(FoliageDistributor.PoissonThin(candidates, layer));
-        }
-
-        showPreview = true;
-        SceneView.RepaintAll();
     }
 
     private void ClearAllPaint(FoliagePaintData data)
     {
         data.Clear();
         EditorUtility.SetDirty(data);
-        previewPoints.Clear();
         SceneView.RepaintAll();
+    }
+
+    private static void DrawBrushOutline(Vector3 center, Vector3 right, Vector3 fwd, float radius, BrushShape shape)
+    {
+        if (shape == BrushShape.Circle)
+        {
+            const int N = 64;
+            var pts = new Vector3[N + 1];
+            for (int i = 0; i <= N; i++)
+            {
+                float a = i * Mathf.PI * 2f / N;
+                pts[i] = center + (right * Mathf.Cos(a) + fwd * Mathf.Sin(a)) * radius;
+            }
+            Handles.DrawAAPolyLine(20f, pts);
+        }
+        else
+        {
+            var pts = new Vector3[5];
+            pts[0] = center + (right + fwd) * radius;
+            pts[1] = center + (-right + fwd) * radius;
+            pts[2] = center + (-right - fwd) * radius;
+            pts[3] = center + (right - fwd) * radius;
+            pts[4] = pts[0];
+            Handles.DrawAAPolyLine(20f, pts);
+        }
+    }
+
+    private static (Vector3 right, Vector3 fwd) BuildBasis(Vector3 normal, float rotationDeg)
+    {
+        Vector3 right = Vector3.Cross(normal, Vector3.up);
+        if (right.sqrMagnitude < 0.001f)
+            right = Vector3.Cross(normal, Vector3.forward);
+        right = Quaternion.AngleAxis(rotationDeg, normal) * right.normalized;
+        Vector3 fwd = Vector3.Cross(right, normal).normalized;
+        return (right, fwd);
     }
 
     private static FoliagePaintData GetOrCreatePaintData()

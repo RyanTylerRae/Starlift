@@ -31,8 +31,11 @@ public class FoliageManager : MonoBehaviour
             var thinned = FoliageDistributor.PoissonThin(candidates, layer, distributionSeed);
             foreach (var c in thinned)
             {
-                Quaternion rot = Quaternion.FromToRotation(Vector3.up, c.normal);
-                Instantiate(layer.prefab, c.position, rot, instanceRoot);
+                Quaternion alignToNormal = Quaternion.FromToRotation(Vector3.up, c.normal);
+                Quaternion yaw = Quaternion.AngleAxis(Random.Range(0f, 360f), c.normal);
+                float scale = Random.Range(layer.minScale, layer.maxScale);
+                GameObject go = Instantiate(layer.prefab, c.position, yaw * alignToNormal, instanceRoot);
+                go.transform.localScale = Vector3.one * scale;
             }
         }
     }

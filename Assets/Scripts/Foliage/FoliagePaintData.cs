@@ -25,13 +25,7 @@ public class FoliagePaintData : MonoBehaviour
         if (closestIdx >= 0)
         {
             var s = samples[closestIdx];
-            s.color = new Color32(
-                newSample.color.r,
-                newSample.color.g,
-                newSample.color.b,
-                (byte)Mathf.Min(255, s.color.a + newSample.color.a));
-            s.position = newSample.position;
-            s.normal = newSample.normal;
+            s.color.a = (byte)Mathf.Min(255, s.color.a + newSample.color.a);
             samples[closestIdx] = s;
         }
         else
@@ -64,6 +58,39 @@ public class FoliagePaintData : MonoBehaviour
                 samples[i] = s;
             }
         }
+    }
+
+    public void EraseInShape(Vector3 origin, Vector3 right, Vector3 fwd, float radius, bool isSquare)
+    {
+        float radiusSq = radius * radius;
+        for (int i = samples.Count - 1; i >= 0; i--)
+        {
+            Vector3 delta = samples[i].position - origin;
+            if (delta.sqrMagnitude > radiusSq) continue;
+            float u = Vector3.Dot(delta, right);
+            float v = Vector3.Dot(delta, fwd);
+            bool inside = isSquare
+                ? Mathf.Abs(u) <= radius && Mathf.Abs(v) <= radius
+                : u * u + v * v <= radius * radius;
+            if (inside) samples.RemoveAt(i);
+        }
+    }
+
+    public byte GetAlphaAt(Vector3 position, float radius)
+    {
+        float radiusSq = radius * radius;
+        float closestDist = float.MaxValue;
+        byte alpha = 0;
+        for (int i = 0; i < samples.Count; i++)
+        {
+            float dSq = (samples[i].position - position).sqrMagnitude;
+            if (dSq < radiusSq && dSq < closestDist)
+            {
+                closestDist = dSq;
+                alpha = samples[i].color.a;
+            }
+        }
+        return alpha;
     }
 
     public void Clear() => samples.Clear();

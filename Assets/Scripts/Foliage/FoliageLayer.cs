@@ -7,6 +7,8 @@ public class FoliageLayer : ScriptableObject
     public Color32 colorTolerance = new Color32(10, 10, 10, 0);
     public GameObject prefab;
     public float averageSpacing = 1f;
+    public float minScale = 0.8f;
+    public float maxScale = 1.2f;
 
     public float GetEffectiveSpacing(byte alpha)
     {

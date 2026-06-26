@@ -46,21 +46,24 @@ public static class FoliageDistributor
         var accepted = new List<FoliageCandidate>();
         foreach (var candidate in matching)
         {
-            float minDist = layer.GetEffectiveSpacing(candidate.color.a);
-            if (float.IsPositiveInfinity(minDist)) continue;
+            if (candidate.color.a == 0) continue;
 
             bool tooClose = false;
             foreach (var a in accepted)
             {
-                if (Vector3.Distance(candidate.position, a.position) < minDist)
+                if (Vector3.Distance(candidate.position, a.position) < layer.averageSpacing)
                 {
                     tooClose = true;
                     break;
                 }
             }
+            if (tooClose) continue;
 
-            if (!tooClose)
-                accepted.Add(candidate);
+            // Alpha drives spawn probability exponentially: p = (a/255)^2
+            double p = candidate.color.a / 255.0;
+            if (rng.NextDouble() > p * p) continue;
+
+            accepted.Add(candidate);
         }
 
         return accepted;
