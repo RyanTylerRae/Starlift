@@ -40,8 +40,15 @@ public class FoliagePainterWindow : EditorWindow
     [MenuItem("Tools/Starlift/Foliage Painter")]
     private static void Open() => GetWindow<FoliagePainterWindow>("Foliage Painter");
 
-    private void OnEnable() => SceneView.duringSceneGui += OnSceneGUI;
-    private void OnDisable() => SceneView.duringSceneGui -= OnSceneGUI;
+    private void OnEnable()
+    {
+        SceneView.duringSceneGui += OnSceneGUI;
+    }
+
+    private void OnDisable()
+    {
+        SceneView.duringSceneGui -= OnSceneGUI;
+    }
 
     private void OnGUI()
     {
@@ -152,11 +159,6 @@ public class FoliagePainterWindow : EditorWindow
     private void OnSceneGUI(SceneView sceneView)
     {
         if (Application.isPlaying) return;
-
-        // Always draw existing samples regardless of mode
-        FoliagePaintData? existingData = FindPaintData();
-        if (existingData != null && Event.current.type == EventType.Repaint)
-            DrawSamples(existingData, sceneView.camera);
 
         if (!paintingEnabled) return;
 
@@ -310,22 +312,6 @@ public class FoliagePainterWindow : EditorWindow
         unchecked { return gx * 73856093 ^ gy * 19349663; }
     }
 
-    private void DrawSamples(FoliagePaintData data, Camera camera)
-    {
-        const float armLength = 0.15f;
-        foreach (var s in data.GetAll())
-        {
-            if (!IsInFrustum(s.position, camera)) continue;
-            Color32 c = s.color;
-            Handles.color = new Color(c.r / 255f, c.g / 255f, c.b / 255f, c.a / 255f * 0.85f + 0.15f);
-            Vector3 right = Mathf.Abs(Vector3.Dot(s.normal, Vector3.up)) < 0.99f
-                ? Vector3.Cross(s.normal, Vector3.up).normalized
-                : Vector3.Cross(s.normal, Vector3.forward).normalized;
-            Vector3 fwd = Vector3.Cross(s.normal, right);
-            Handles.DrawAAPolyLine(12f, s.position - right * armLength, s.position + right * armLength);
-            Handles.DrawAAPolyLine(12f, s.position - fwd * armLength, s.position + fwd * armLength);
-        }
-    }
 
     private void ClearAllPaint(FoliagePaintData data)
     {
@@ -379,10 +365,4 @@ public class FoliagePainterWindow : EditorWindow
     private static FoliagePaintData? FindPaintData() =>
         FindAnyObjectByType<FoliagePaintData>();
 
-    private static bool IsInFrustum(Vector3 worldPos, Camera camera)
-    {
-        if (camera == null) return false;
-        Vector3 vp = camera.WorldToViewportPoint(worldPos);
-        return vp.x >= 0f && vp.x <= 1f && vp.y >= 0f && vp.y <= 1f && vp.z > 0f;
-    }
 }
