@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerCameraRelativeUpAlignment : MonoBehaviour
 {
-    private Camera? targetCamera;
-    private Quaternion defaultRotation;
+    private Camera? targetCamera = null;
+    private Quaternion defaultRotation = Quaternion.identity;
 
     private void Start()
     {

@@ -5,12 +5,12 @@ using UnityEngine.VFX;
 
 public class GravityVectorField : MonoBehaviour
 {
-    [SerializeField] private int gridResolution = 16;
-    [SerializeField] private float fieldRadius = 20f;
-    [SerializeField] private float updateInterval = 0.1f;
-    [SerializeField] private float meshSourceBoundaryMultiplier = 5f;
+    public int gridResolution = 16;
+    public float fieldRadius = 20f;
+    public float updateInterval = 0.1f;
+    public float meshSourceBoundaryMultiplier = 5f;
 
-    [SerializeField] private VisualEffect? vfx;
+    public VisualEffect? vfx;
 
     private Texture3D? _texture;
     private Color[]? _pixels;
@@ -55,7 +55,9 @@ public class GravityVectorField : MonoBehaviour
     private void LateUpdate()
     {
         if (!_initialized || vfx == null)
+        {
             return;
+        }
 
         Vector3 center = transform.position;
         vfx.SetVector3("GravityFieldCenter", center);
@@ -63,7 +65,9 @@ public class GravityVectorField : MonoBehaviour
         _timeSinceLastUpdate += Time.deltaTime;
 
         if (_timeSinceLastUpdate < updateInterval)
+        {
             return;
+        }
 
         _timeSinceLastUpdate = 0f;
 
@@ -77,24 +81,34 @@ public class GravityVectorField : MonoBehaviour
         {
             GravitySourceComponent source = _allSources[i];
             if (!source.isGravityEnabled)
+            {
                 continue;
+            }
 
             bool inside;
             if (source is GravitySourceMesh meshSource)
             {
-                if (meshSource.meshCollider == null) continue;
+                if (meshSource.meshCollider == null)
+                {
+                    continue;
+                }
                 float threshold = meshSource.maxDistanceToSurface * meshSourceBoundaryMultiplier;
                 inside = (worldPoint - meshSource.meshCollider.ClosestPoint(worldPoint)).sqrMagnitude <= threshold * threshold;
             }
             else
             {
                 Collider? col = source.GetComponent<Collider>();
-                if (col == null || !col.isTrigger) continue;
+                if (col == null || !col.isTrigger)
+                {
+                    continue;
+                }
                 inside = (col.ClosestPoint(worldPoint) - worldPoint).sqrMagnitude < 0.001f;
             }
 
             if (inside)
+            {
                 return source.GetGravityVector(worldPoint);
+            }
         }
 
         return Vector3.zero;
@@ -103,7 +117,9 @@ public class GravityVectorField : MonoBehaviour
     private void RebuildTexture(Vector3 center)
     {
         if (_pixels == null)
+        {
             return;
+        }
 
         int res = gridResolution;
         float diameter = fieldRadius * 2f;
@@ -145,7 +161,9 @@ public class GravityVectorField : MonoBehaviour
     private void UploadAndPush(Vector3 center)
     {
         if (_texture == null || _pixels == null || vfx == null)
+        {
             return;
+        }
 
         _texture.SetPixels(_pixels);
         _texture.Apply(updateMipmaps: false, makeNoLongerReadable: false);
@@ -158,6 +176,8 @@ public class GravityVectorField : MonoBehaviour
     private void OnDestroy()
     {
         if (_texture != null)
+        {
             Destroy(_texture);
+        }
     }
 }

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
@@ -7,15 +9,15 @@ using UnityEngine.Splines;
 [ExecuteAlways]
 public class SplineTube : MonoBehaviour
 {
-    [SerializeField] float radius = 0.5f;
-    [SerializeField] float interval = 0.5f;
-    [SerializeField, Min(3)] int sides = 8;
-    [SerializeField] bool caps = true;
+    public float radius = 0.5f;
+    public float interval = 0.5f;
+    [Min(3)] public int sides = 8;
+    public bool caps = true;
 
-    SplineContainer splineContainer;
-    MeshFilter meshFilter;
-    Mesh mesh;
-    bool dirty;
+    private SplineContainer? splineContainer = null;
+    private MeshFilter? meshFilter = null;
+    private Mesh? mesh = null;
+    private bool dirty = false;
 
     void OnEnable()
     {

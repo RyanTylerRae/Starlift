@@ -6,39 +6,46 @@ using UnityEngine;
 public class ObjectSpawner : MonoBehaviour
 {
     [Header("Cylinder Volume")]
-    [SerializeField] private float radius = 5f;
-    [SerializeField] private float height = 10f;
+    public float radius = 5f;
+    public float height = 10f;
 
     [Header("Spawning")]
-    [SerializeField] private GameObject[] prefabs = new GameObject[0];
-    [SerializeField] private int maxObjects = 100;
-    [SerializeField] private bool spawnOnStart = true;
+    public GameObject[] prefabs = new GameObject[0];
+    public int maxObjects = 100;
+    public bool spawnOnStart = true;
 
     [Header("Placement")]
-    [SerializeField] private float minSpacing = 1.5f;
-    [SerializeField] private int poissonAttempts = 30;
+    public float minSpacing = 1.5f;
+    public int poissonAttempts = 30;
 
     [Header("Scale")]
-    [SerializeField] private float minScale = 0.5f;
-    [SerializeField] private float maxScale = 2.0f;
+    public float minScale = 0.5f;
+    public float maxScale = 2.0f;
 
     [Header("Rotation")]
-    [SerializeField] [Range(0f, 1f)] private float rotateChance = 0.5f;
-    [SerializeField] private float minRotationSpeed = 0.1f;
-    [SerializeField] private float maxRotationSpeed = 1.0f;
+    [Range(0f, 1f)] public float rotateChance = 0.5f;
+    public float minRotationSpeed = 0.1f;
+    public float maxRotationSpeed = 1.0f;
 
     private void Start()
     {
         if (spawnOnStart)
+        {
             SpawnObjects();
+        }
     }
 
     public void SpawnObjects()
     {
-        if (prefabs.Length == 0) return;
+        if (prefabs.Length == 0)
+        {
+            return;
+        }
 
         foreach (Vector3 localPos in PoissonDiskSample())
+        {
             SpawnAt(localPos);
+        }
     }
 
     private List<Vector3> PoissonDiskSample()
@@ -52,9 +59,15 @@ public class ObjectSpawner : MonoBehaviour
 
         int[,,] grid = new int[gx, gy, gz];
         for (int i = 0; i < gx; i++)
+        {
             for (int j = 0; j < gy; j++)
+            {
                 for (int k = 0; k < gz; k++)
+                {
                     grid[i, j, k] = -1;
+                }
+            }
+        }
 
         List<Vector3> result = new List<Vector3>();
         List<Vector3> active = new List<Vector3>();
@@ -62,9 +75,14 @@ public class ObjectSpawner : MonoBehaviour
         Vector3 seed = RandomInBounds(bounds);
         int seedAttempts = 0;
         while (!IsInsideCylinder(seed) && seedAttempts++ < 1000)
+        {
             seed = RandomInBounds(bounds);
+        }
 
-        if (!IsInsideCylinder(seed)) return result;
+        if (!IsInsideCylinder(seed))
+        {
+            return result;
+        }
 
         result.Add(seed);
         active.Add(seed);
@@ -81,19 +99,30 @@ public class ObjectSpawner : MonoBehaviour
                 float dist = Random.Range(minSpacing, 2f * minSpacing);
                 Vector3 candidate = origin + Random.onUnitSphere * dist;
 
-                if (!IsInsideCylinder(candidate)) continue;
-                if (!IsFarEnough(candidate, result, grid, bounds, cellSize)) continue;
+                if (!IsInsideCylinder(candidate))
+                {
+                    continue;
+                }
+                if (!IsFarEnough(candidate, result, grid, bounds, cellSize))
+                {
+                    continue;
+                }
 
                 result.Add(candidate);
                 active.Add(candidate);
                 SetGrid(candidate, result.Count - 1, bounds, cellSize, grid);
                 found = true;
 
-                if (result.Count >= maxObjects) break;
+                if (result.Count >= maxObjects)
+                {
+                    break;
+                }
             }
 
             if (!found)
+            {
                 active.RemoveAt(activeIdx);
+            }
         }
 
         return result;
@@ -108,9 +137,9 @@ public class ObjectSpawner : MonoBehaviour
     private bool IsFarEnough(Vector3 candidate, List<Vector3> points, int[,,] grid, Bounds bounds, float cellSize)
     {
         Vector3Int g = WorldToGrid(candidate, bounds, cellSize);
-        int gx = grid.GetLength(0);
-        int gy = grid.GetLength(1);
-        int gz = grid.GetLength(2);
+        int gxLen = grid.GetLength(0);
+        int gyLen = grid.GetLength(1);
+        int gzLen = grid.GetLength(2);
 
         for (int dx = -2; dx <= 2; dx++)
         {
@@ -122,12 +151,21 @@ public class ObjectSpawner : MonoBehaviour
                     int ny = g.y + dy;
                     int nz = g.z + dz;
 
-                    if (nx < 0 || nx >= gx || ny < 0 || ny >= gy || nz < 0 || nz >= gz) continue;
+                    if (nx < 0 || nx >= gxLen || ny < 0 || ny >= gyLen || nz < 0 || nz >= gzLen)
+                    {
+                        continue;
+                    }
 
                     int idx = grid[nx, ny, nz];
-                    if (idx == -1) continue;
+                    if (idx == -1)
+                    {
+                        continue;
+                    }
 
-                    if (Vector3.Distance(candidate, points[idx]) < minSpacing) return false;
+                    if (Vector3.Distance(candidate, points[idx]) < minSpacing)
+                    {
+                        return false;
+                    }
                 }
             }
         }
@@ -159,7 +197,10 @@ public class ObjectSpawner : MonoBehaviour
         );
     }
 
-    private Vector3 LocalToWorld(Vector3 localPos) => transform.position + transform.rotation * localPos;
+    private Vector3 LocalToWorld(Vector3 localPos)
+    {
+        return transform.position + transform.rotation * localPos;
+    }
 
     private void OnDrawGizmosSelected()
     {
@@ -181,14 +222,18 @@ public class ObjectSpawner : MonoBehaviour
             Gizmos.DrawLine(topA, topB);
 
             if (i % (segments / 8) == 0)
+            {
                 Gizmos.DrawLine(baseA, topA);
+            }
         }
-
     }
 
     private void SpawnAt(Vector3 localPos)
     {
-        if (prefabs.Length == 0) return;
+        if (prefabs.Length == 0)
+        {
+            return;
+        }
 
         Vector3 worldPos = LocalToWorld(localPos);
         GameObject prefab = prefabs[Random.Range(0, prefabs.Length)];

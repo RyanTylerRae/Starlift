@@ -122,7 +122,10 @@ public class GravityController : MonoBehaviour
         return (direction + offset).normalized;
     }
 
-    public IReadOnlyList<GravitySourceComponent> GetGravitySources() => gravitySources;
+    public IReadOnlyList<GravitySourceComponent> GetGravitySources()
+    {
+        return gravitySources;
+    }
 
     public void AddGravitySource(GravitySourceComponent gravityComponent)
     {
@@ -149,7 +152,9 @@ public class GravityController : MonoBehaviour
         if (_intermediateParents.TryGetValue(gravityComponent, out var ip))
         {
             if (transform.parent == ip.transform)
+            {
                 transform.SetParent(null, true);
+            }
             Destroy(ip);
             _intermediateParents.Remove(gravityComponent);
         }
@@ -161,9 +166,13 @@ public class GravityController : MonoBehaviour
     {
         var active = GetHighestPrioritySource();
         if (active != null && _intermediateParents.TryGetValue(active, out var ip))
+        {
             transform.SetParent(ip.transform, true);
+        }
         else
+        {
             transform.SetParent(null, true);
+        }
 
         if (active != _activeSource)
         {
@@ -172,10 +181,12 @@ public class GravityController : MonoBehaviour
         }
     }
 
-    private GravitySourceComponent? GetHighestPrioritySource() =>
-        gravitySources.Count > 0
+    private GravitySourceComponent? GetHighestPrioritySource()
+    {
+        return gravitySources.Count > 0
             ? gravitySources.OrderByDescending(s => s.priority).First()
             : null;
+    }
 
     public Vector3 GetGravityVector()
     {
@@ -183,5 +194,8 @@ public class GravityController : MonoBehaviour
         return source != null ? source.GetGravityVector(gameObject.transform.position) : Vector3.zero;
     }
 
-    public GravitySourceComponent? GetActiveGravitySource() => GetHighestPrioritySource();
+    public GravitySourceComponent? GetActiveGravitySource()
+    {
+        return GetHighestPrioritySource();
+    }
 }

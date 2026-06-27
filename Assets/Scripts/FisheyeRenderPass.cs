@@ -8,7 +8,7 @@ using UnityEngine.Rendering.RenderGraphModule.Util;
 
 public class FisheyeRenderPass : ScriptableRenderPass
 {
-    private Material? fisheyeMaterial;
+    private Material? fisheyeMaterial = null;
 
     public void Setup(Material material)
     {

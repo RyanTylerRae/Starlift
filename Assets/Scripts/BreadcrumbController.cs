@@ -8,7 +8,7 @@ public class BreadcrumbController : MonoBehaviour
     public GameObject? breadcrumbGameObject;
 
     public float delayDistance;
-    private Vector3 lastSpawnPos;
+    private Vector3 lastSpawnPos = Vector3.zero;
     private GravityController? gravityController;
 
     public void Start()

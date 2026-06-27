@@ -8,7 +8,7 @@ using UnityEngine.Rendering.RenderGraphModule.Util;
 
 public class CRTEffectRenderPass : ScriptableRenderPass
 {
-    private Material? crtEffectMaterial;
+    private Material? crtEffectMaterial = null;
 
     public void Setup(Material material)
     {

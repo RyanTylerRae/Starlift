@@ -9,7 +9,7 @@ public class Breadcrumb : MonoBehaviour
     public float lifetimeSeconds;
     public float initialAlpha;
     public float fadePowExponent;
-    private float counterSeconds;
+    private float counterSeconds = 0f;
 
     public MeshRenderer? materialRenderer;
     private Material? materialInstance = null;

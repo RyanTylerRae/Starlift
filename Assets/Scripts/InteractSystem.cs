@@ -27,8 +27,7 @@ public class InteractSystem : MonoBehaviour
 
         foreach (HoverTooltip hoverTooltip in tooltipsInContext)
         {
-            var interactable = hoverTooltip.gameObject.GetComponent<Interactable>();
-            if (interactable != null)
+            if (hoverTooltip.gameObject.TryGetComponent(out Interactable interactable))
             {
                 SetUIActive(false, interactable.ActionType);
             }
@@ -47,8 +46,7 @@ public class InteractSystem : MonoBehaviour
                 tooltipsInContext.Add(hoverTooltip);
                 hoverTooltip.IsHovered = true;
 
-                var interactable = hit.collider.gameObject.GetComponent<Interactable>();
-                if (interactable != null && interactable.CanInteract())
+                if (hit.collider.gameObject.TryGetComponent(out Interactable interactable) && interactable.CanInteract())
                 {
                     SetUIActive(true, interactable.ActionType);
                 }
@@ -63,8 +61,7 @@ public class InteractSystem : MonoBehaviour
             return;
         }
 
-        var interactable = tooltipsInContext[0].gameObject.GetComponent<Interactable>();
-        if (interactable != null && interactable.CanInteract())
+        if (tooltipsInContext[0].gameObject.TryGetComponent(out Interactable interactable) && interactable.CanInteract())
         {
             interactable.Interact();
         }

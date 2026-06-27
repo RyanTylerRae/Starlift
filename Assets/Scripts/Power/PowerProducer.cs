@@ -36,7 +36,9 @@ public class PowerProducer : MonoBehaviour
         foreach (PowerConsumer consumer in allConsumers)
         {
             if (remainingEnergy <= 0)
+            {
                 break;
+            }
 
             float energyNeeded = consumer.requiredEnergy - consumer.energyReceivedThisFrame;
             float energyToSend = Mathf.Min(remainingEnergy, energyNeeded);

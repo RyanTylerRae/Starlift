@@ -1,9 +1,11 @@
+#nullable enable
+
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FoliagePaintData : MonoBehaviour
 {
-    [SerializeField] private List<FoliageSample> samples = new();
+    public List<FoliageSample> samples = new();
 
     // Paint a sample, blending alpha with any existing nearby sample.
     public void Paint(FoliageSample newSample, float mergeRadius)
@@ -41,7 +43,10 @@ public class FoliagePaintData : MonoBehaviour
         for (int i = samples.Count - 1; i >= 0; i--)
         {
             float dSq = (samples[i].position - brushCenter).sqrMagnitude;
-            if (dSq > radiusSq) continue;
+            if (dSq > radiusSq)
+            {
+                continue;
+            }
 
             float t = Mathf.Sqrt(dSq) / brushRadius;
             float amount = softFalloff ? brushAlpha * (1f - (3 * t * t - 2 * t * t * t)) : brushAlpha;
@@ -66,13 +71,19 @@ public class FoliagePaintData : MonoBehaviour
         for (int i = samples.Count - 1; i >= 0; i--)
         {
             Vector3 delta = samples[i].position - origin;
-            if (delta.sqrMagnitude > radiusSq) continue;
+            if (delta.sqrMagnitude > radiusSq)
+            {
+                continue;
+            }
             float u = Vector3.Dot(delta, right);
             float v = Vector3.Dot(delta, fwd);
             bool inside = isSquare
                 ? Mathf.Abs(u) <= radius && Mathf.Abs(v) <= radius
                 : u * u + v * v <= radius * radius;
-            if (inside) samples.RemoveAt(i);
+            if (inside)
+            {
+                samples.RemoveAt(i);
+            }
         }
     }
 
@@ -93,6 +104,13 @@ public class FoliagePaintData : MonoBehaviour
         return alpha;
     }
 
-    public void Clear() => samples.Clear();
-    public IReadOnlyList<FoliageSample> GetAll() => samples;
+    public void Clear()
+    {
+        samples.Clear();
+    }
+
+    public IReadOnlyList<FoliageSample> GetAll()
+    {
+        return samples;
+    }
 }

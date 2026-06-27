@@ -78,7 +78,7 @@ public class FirstPersonController : MonoBehaviour
 
     // camera angle tracking
     private float cameraAngleFromGravity = 0f;
-    public float CameraAngleFromGravity => cameraAngleFromGravity;
+    public float CameraAngleFromGravity { get { return cameraAngleFromGravity; } }
 
     // jump charge
     private float jumpPressStartTime = 0f;
@@ -136,15 +136,15 @@ public class FirstPersonController : MonoBehaviour
     private Modifiers? modifiers = null;
     private Entity? entity = null;
 
-    public bool IsUsingGamepad => playerInput != null && playerInput.currentControlScheme == "Gamepad";
+    public bool IsUsingGamepad { get { return playerInput != null && playerInput.currentControlScheme == "Gamepad"; } }
 
-    public bool ShouldDisplayJumpTarget => (isGroundedOnEdge || CameraAngleFromGravity > jumpDirectionalAngleThreshold) && MovementMode == ControllerMovementMode.Magnetized;
+    public bool ShouldDisplayJumpTarget { get { return (isGroundedOnEdge || CameraAngleFromGravity > jumpDirectionalAngleThreshold) && MovementMode == ControllerMovementMode.Magnetized; } }
 
     [Header("Oxygen")]
     public float minOxygenBurnRate = 0.33f;
     public float jumpOxygenCost;
     private float oxygenBurnRate = 0.0f;
-    public float OxygenBurnRate => oxygenBurnRate;
+    public float OxygenBurnRate { get { return oxygenBurnRate; } }
     private OxygenSystem? oxygenSystem = null;
 
     public enum ControllerMovementMode
@@ -157,7 +157,7 @@ public class FirstPersonController : MonoBehaviour
     private ControllerMovementMode movementMode = ControllerMovementMode.Magnetized;
     public ControllerMovementMode MovementMode
     {
-        get => movementMode;
+        get { return movementMode; }
     }
 
     void Start()
@@ -1161,6 +1161,8 @@ public class FirstPersonController : MonoBehaviour
             interactAction.performed -= OnInteractPerformed;
         }
         if (gravityController != null)
+        {
             gravityController.ActiveSourceChanged -= OnActiveGravitySourceChanged;
+        }
     }
 }

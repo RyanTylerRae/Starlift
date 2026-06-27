@@ -35,7 +35,10 @@ public class FoliagePainterWindow : EditorWindow
     private int selectedLayerIndex = -1;
 
     [MenuItem("Tools/Starlift/Foliage Painter")]
-    private static void Open() => GetWindow<FoliagePainterWindow>("Foliage Painter");
+    private static void Open()
+    {
+        GetWindow<FoliagePainterWindow>("Foliage Painter");
+    }
 
     private void OnEnable()
     {
@@ -92,7 +95,9 @@ public class FoliagePainterWindow : EditorWindow
                 layers[i], typeof(FoliageLayer), false, GUILayout.ExpandWidth(true));
 
             if (GUILayout.Button("−", GUILayout.Width(22)))
+            {
                 removeIndex = i;
+            }
 
             EditorGUILayout.EndHorizontal();
 
@@ -140,7 +145,9 @@ public class FoliagePainterWindow : EditorWindow
 
         bool clicked = Event.current.type == EventType.MouseDown && swatchRect.Contains(Event.current.mousePosition);
         if (clicked)
+        {
             Event.current.Use();
+        }
 
         EditorGUILayout.LabelField(
             $"spacing: {layer.averageSpacing:F2}m  prefab: {(layer.prefab != null ? layer.prefab.name : "none")}",
@@ -168,9 +175,15 @@ public class FoliagePainterWindow : EditorWindow
 
     private void OnSceneGUI(SceneView sceneView)
     {
-        if (Application.isPlaying) return;
+        if (Application.isPlaying)
+        {
+            return;
+        }
 
-        if (!paintingEnabled) return;
+        if (!paintingEnabled)
+        {
+            return;
+        }
 
         int controlID = GUIUtility.GetControlID(FocusType.Passive);
         HandleUtility.AddDefaultControl(controlID);
@@ -277,22 +290,32 @@ public class FoliagePainterWindow : EditorWindow
                 float du = u - uc;
                 float dv = v - vc;
                 if (brushShape == BrushShape.Circle && du * du + dv * dv > brushRadius * brushRadius)
+                {
                     continue;
+                }
                 if (brushShape == BrushShape.Square && (Mathf.Abs(du) > brushRadius || Mathf.Abs(dv) > brushRadius))
+                {
                     continue;
+                }
 
                 float t = brushShape == BrushShape.Circle
                     ? Mathf.Sqrt(du * du + dv * dv) / brushRadius
                     : (Mathf.Abs(du) + Mathf.Abs(dv)) / (brushRadius * 2f);
                 byte addAlpha = (byte)Mathf.RoundToInt(brushStrength * Mathf.Pow(1f - t, falloffPower) * 255f);
-                if (addAlpha == 0) continue;
+                if (addAlpha == 0)
+                {
+                    continue;
+                }
 
                 Vector3 candidate = right * u + fwd * v + hitNormal * hc;
                 RaycastHit[] hits = Physics.RaycastAll(candidate, -hitNormal, raycastDistance, paintableLayers);
                 System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
                 foreach (var h in hits)
                 {
-                    if (!h.collider.gameObject.isStatic) continue;
+                    if (!h.collider.gameObject.isStatic)
+                    {
+                        continue;
+                    }
                     byte existing = data.GetAlphaAt(h.point, eraseRadius);
                     cellHits.Add((h.point, h.normal, addAlpha, existing));
                     break;
@@ -302,7 +325,9 @@ public class FoliagePainterWindow : EditorWindow
 
         // Phase 2: erase near all hit positions
         foreach (var (pos, _, _, _) in cellHits)
+        {
             data.EraseInShape(pos, right, fwd, eraseRadius, false);
+        }
 
         // Phase 3: place with accumulated alpha (existing + new delta)
         foreach (var (pos, norm, addAlpha, existingAlpha) in cellHits)
@@ -368,11 +393,16 @@ public class FoliagePainterWindow : EditorWindow
     private static FoliagePaintData GetOrCreatePaintData()
     {
         FoliagePaintData? existing = FindPaintData();
-        if (existing != null) return existing;
+        if (existing != null)
+        {
+            return existing;
+        }
         return new GameObject("FoliagePaintData").AddComponent<FoliagePaintData>();
     }
 
-    private static FoliagePaintData? FindPaintData() =>
-        FindAnyObjectByType<FoliagePaintData>();
+    private static FoliagePaintData? FindPaintData()
+    {
+        return FindAnyObjectByType<FoliagePaintData>();
+    }
 
 }

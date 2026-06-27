@@ -209,7 +209,9 @@ public class PowerController : Singleton<PowerController>
             WireNode current = toVisit.Dequeue();
 
             if (visited.Contains(current))
+            {
                 continue;
+            }
 
             visited.Add(current);
 

@@ -25,7 +25,10 @@ public class FoliageLayer : ScriptableObject
 
     public float GetEffectiveSpacing(byte alpha)
     {
-        if (alpha == 0) return float.PositiveInfinity;
+        if (alpha == 0)
+        {
+            return float.PositiveInfinity;
+        }
         return averageSpacing * (255f / alpha);
     }
 

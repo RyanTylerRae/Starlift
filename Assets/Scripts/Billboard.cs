@@ -13,7 +13,10 @@ public class Billboard : MonoBehaviour
             return;
         }
 
-        Camera cam = cameraObject.GetComponent<Camera>();
+        if (!cameraObject.TryGetComponent(out Camera cam))
+        {
+            return;
+        }
 
         // Get camera position but lock Y rotation
         Vector3 lookPos = cam.transform.position;

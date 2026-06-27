@@ -13,8 +13,7 @@ public class LocalizationEntry
 
 public class LocalizationData : ScriptableObject
 {
-    [SerializeField]
-    private List<LocalizationEntry> entries = new List<LocalizationEntry>();
+    public List<LocalizationEntry> entries = new List<LocalizationEntry>();
 
     private Dictionary<string, LocalizedString>? _dictionary;
 

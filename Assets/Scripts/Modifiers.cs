@@ -43,8 +43,7 @@ public class Modifiers : MonoBehaviour
 {
     private const string MODIFIERS_FOLDER_PATH = "Modifiers";
 
-    [SerializeField]
-    private string modifiersConfigName = "modifiers";
+    public string modifiersConfigName = "modifiers";
 
     public ModifierData[] modifiers = new ModifierData[Enum.GetValues(typeof(ModifierType)).Length];
 

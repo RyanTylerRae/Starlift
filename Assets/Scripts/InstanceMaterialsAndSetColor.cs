@@ -5,11 +5,11 @@ using UnityEngine;
 [ExecuteAlways]
 public class HexColorToMaterial : MonoBehaviour
 {
-    [SerializeField] private string colorProperty = "_BaseColor";
-    [SerializeField] private string hexColor = "#FFFFFF";
+    public string colorProperty = "_BaseColor";
+    public string hexColor = "#FFFFFF";
 
-    private Renderer[]? renderers;
-    private MaterialPropertyBlock? block;
+    private Renderer[]? renderers = null;
+    private MaterialPropertyBlock? block = null;
 
     void OnEnable()
     {
@@ -25,14 +25,22 @@ public class HexColorToMaterial : MonoBehaviour
 
     void Apply()
     {
-        if (renderers == null || block == null) return;
+        if (renderers == null || block == null)
+        {
+            return;
+        }
 
         if (!ColorUtility.TryParseHtmlString(hexColor, out Color color))
+        {
             return;
+        }
 
         foreach (var r in renderers)
         {
-            if (!r) continue;
+            if (!r)
+            {
+                continue;
+            }
 
             r.GetPropertyBlock(block);
             block.SetColor(colorProperty, color);

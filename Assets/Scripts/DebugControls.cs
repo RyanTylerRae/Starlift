@@ -61,8 +61,7 @@ public class DebugControls : MonoBehaviour
     private void SupplyMaxOxygen()
     {
         FirstPersonController playerController = Object.FindFirstObjectByType<FirstPersonController>(FindObjectsInactive.Exclude);
-        Modifiers? modifiers = playerController.GetComponent<Modifiers>();
-        if (modifiers != null)
+        if (playerController.TryGetComponent(out Modifiers modifiers))
         {
             modifiers.Set(ModifierType.Oxygen, modifiers.GetMax(ModifierType.Oxygen));
         }
@@ -83,8 +82,7 @@ public class DebugControls : MonoBehaviour
             Vector3 targetPosition = hit.point + hit.normal * 1.5f;
             playerController.transform.position = targetPosition;
 
-            Rigidbody? rb = playerController.GetComponent<Rigidbody>();
-            if (rb != null)
+            if (playerController.TryGetComponent(out Rigidbody rb))
             {
                 rb.position = targetPosition;
                 rb.linearVelocity = Vector3.zero;

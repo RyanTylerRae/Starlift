@@ -43,11 +43,11 @@ public class PlayerHUD : MonoBehaviour
     public float lookCorrectionSpeed;
     public float maxLookAngle;
 
-    private Quaternion prevCameraRotation;
+    private Quaternion prevCameraRotation = Quaternion.identity;
 
     [Header("Laggy Oxygen Bar")]
     private bool wasBurningOxygen = false;
-    private float laggyOxygenProgress;
+    private float laggyOxygenProgress = 0f;
     public float laggyOxygenSpeed;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

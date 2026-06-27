@@ -8,7 +8,7 @@ public class FisheyeRendererFeature : ScriptableRendererFeature
     public Material? material;
     public RenderPassEvent renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
 
-    private FisheyeRenderPass? fisheyePass;
+    private FisheyeRenderPass? fisheyePass = null;
 
     public override void Create()
     {

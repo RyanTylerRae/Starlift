@@ -32,7 +32,10 @@ public class LocalizationManager : MonoBehaviour
 
         foreach (var bank in wordBanks.localizationBanks)
         {
-            if (bank == null) continue;
+            if (bank == null)
+            {
+                continue;
+            }
 
             var localizedString = bank.GetLocalizedString(key);
             if (localizedString != null)

@@ -9,7 +9,6 @@ public class PlayerSpawner : MonoBehaviour
     public Vector3 spawnOffset = new Vector3(0, 2, 0);
 
     private GameObject? checkpointRoot = null;
-    private Vector3 checkpointLocalPosition;
 
     public void SetCheckpoint(GameObject? checkpoint)
     {

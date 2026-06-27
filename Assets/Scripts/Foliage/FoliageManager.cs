@@ -20,7 +20,7 @@ public class FoliageManager : MonoBehaviour
     private float debugRenderMs = 0f;
     private readonly Stopwatch renderStopwatch = new();
 
-    public IReadOnlyList<FoliageEntry> Entries => entries;
+    public IReadOnlyList<FoliageEntry> Entries { get { return entries; } }
 
     private void OnEnable()
     {

@@ -9,7 +9,10 @@ public class Entity : MonoBehaviour
     private DamageEventHandler? damageEventHandler = null;
     public event Action<DamageEvent> OnKilled = delegate { };
     private bool isKilled = false;
-    public bool IsAlive => !isKilled;
+    public bool IsAlive
+    {
+        get { return !isKilled; }
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class EntityDamager : MonoBehaviour
 {
-    [SerializeField] private int damageAmount = 10;
-    [SerializeField] private float damageInterval = 1f;
-    [SerializeField] private DamageType damageType = DamageType.None;
+    public int damageAmount = 10;
+    public float damageInterval = 1f;
+    public DamageType damageType = DamageType.None;
 
     private HashSet<Entity> entitiesInTrigger = new HashSet<Entity>();
     private float damageTimer = 0f;
@@ -31,8 +31,7 @@ public class EntityDamager : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        Entity entity = other.GetComponent<Entity>();
-        if (entity != null)
+        if (other.TryGetComponent(out Entity entity))
         {
             entitiesInTrigger.Add(entity);
         }
@@ -40,8 +39,7 @@ public class EntityDamager : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        Entity entity = other.GetComponent<Entity>();
-        if (entity != null)
+        if (other.TryGetComponent(out Entity entity))
         {
             entitiesInTrigger.Remove(entity);
         }

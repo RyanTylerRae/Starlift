@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,7 +19,9 @@ public static class FoliageDistributor
         foreach (var s in data.GetAll())
         {
             if (s.color.a > 0)
+            {
                 result.Add(new FoliageCandidate { position = s.position, normal = s.normal, color = s.color });
+            }
         }
         return result;
     }
@@ -32,7 +36,9 @@ public static class FoliageDistributor
         foreach (var c in candidates)
         {
             if (layer.ColorMatches(c.color) && c.color.a > 0)
+            {
                 matching.Add(c);
+            }
         }
 
         // Fisher-Yates shuffle
@@ -46,7 +52,10 @@ public static class FoliageDistributor
         var accepted = new List<FoliageCandidate>();
         foreach (var candidate in matching)
         {
-            if (candidate.color.a == 0) continue;
+            if (candidate.color.a == 0)
+            {
+                continue;
+            }
 
             bool tooClose = false;
             foreach (var a in accepted)
@@ -57,11 +66,17 @@ public static class FoliageDistributor
                     break;
                 }
             }
-            if (tooClose) continue;
+            if (tooClose)
+            {
+                continue;
+            }
 
             // Alpha drives spawn probability exponentially: p = (a/255)^2
             double p = candidate.color.a / 255.0;
-            if (rng.NextDouble() > p * p) continue;
+            if (rng.NextDouble() > p * p)
+            {
+                continue;
+            }
 
             accepted.Add(candidate);
         }

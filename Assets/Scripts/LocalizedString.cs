@@ -11,7 +11,7 @@ public class LocalizedString
     public string? fr;
     public string? de;
     public string? ja;
-    private string? zh_CN;
+    private string? zhCN = null;
     public string? ko;
 
     public string? GetTranslation(string languageCode)
@@ -23,7 +23,7 @@ public class LocalizedString
             "fr" => fr,
             "de" => de,
             "ja" => ja,
-            "zh-CN" => zh_CN,
+            "zh-CN" => zhCN,
             "ko" => ko,
             _ => en
         };

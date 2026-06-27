@@ -7,11 +7,17 @@ public abstract class Interactable : MonoBehaviour
 {
     public abstract ETooltipActionType ActionType { get; }
 
-    public bool CanInteract() => HandleCanInteract();
+    public bool CanInteract()
+    {
+        return HandleCanInteract();
+    }
 
     protected abstract bool HandleCanInteract();
 
-    public void Interact() => HandleInteract();
+    public void Interact()
+    {
+        HandleInteract();
+    }
 
     protected abstract void HandleInteract();
 }

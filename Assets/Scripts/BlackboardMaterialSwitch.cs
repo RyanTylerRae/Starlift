@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class BlackboardMaterialSwitch : MonoBehaviour
 {
-    [SerializeField] string key = "";
-    [SerializeField] Material? trueMaterial;
-    [SerializeField] Material? falseMaterial;
+    public string key = "";
+    public Material? trueMaterial;
+    public Material? falseMaterial;
 
-    Renderer? targetRenderer;
-    bool lastValue;
+    private Renderer? targetRenderer = null;
+    private bool lastValue = false;
 
     void Awake()
     {

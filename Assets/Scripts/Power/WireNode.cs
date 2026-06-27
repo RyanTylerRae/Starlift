@@ -36,37 +36,25 @@ public class WireNode : MonoBehaviour
 
         foreach (GameObject wireObj in wireObjectsToConnect)
         {
-            if (wireObj != null)
+            if (wireObj != null && wireObj.TryGetComponent(out WireNode wireNode) && !connectedWires.Contains(wireNode))
             {
-                WireNode wireNode = wireObj.GetComponent<WireNode>();
-                if (wireNode != null && !connectedWires.Contains(wireNode))
-                {
-                    connectedWires.Add(wireNode);
-                }
+                connectedWires.Add(wireNode);
             }
         }
 
         foreach (GameObject producerObj in producerObjectsToConnect)
         {
-            if (producerObj != null)
+            if (producerObj != null && producerObj.TryGetComponent(out PowerProducer producer) && !connectedProducers.Contains(producer))
             {
-                PowerProducer producer = producerObj.GetComponent<PowerProducer>();
-                if (producer != null && !connectedProducers.Contains(producer))
-                {
-                    connectedProducers.Add(producer);
-                }
+                connectedProducers.Add(producer);
             }
         }
 
         foreach (GameObject consumerObj in consumerObjectsToConnect)
         {
-            if (consumerObj != null)
+            if (consumerObj != null && consumerObj.TryGetComponent(out PowerConsumer consumer) && !connectedConsumers.Contains(consumer))
             {
-                PowerConsumer consumer = consumerObj.GetComponent<PowerConsumer>();
-                if (consumer != null && !connectedConsumers.Contains(consumer))
-                {
-                    connectedConsumers.Add(consumer);
-                }
+                connectedConsumers.Add(consumer);
             }
         }
 

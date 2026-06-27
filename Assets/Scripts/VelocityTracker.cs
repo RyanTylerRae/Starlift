@@ -12,29 +12,29 @@ public class VelocityTracker : MonoBehaviour
     public float mediumThreshold = 10f;
     public float fastThreshold = 20f;
 
-    [SerializeField] private GameObject? upSlow;
-    [SerializeField] private GameObject? upMedium;
-    [SerializeField] private GameObject? upFast;
+    public GameObject? upSlow;
+    public GameObject? upMedium;
+    public GameObject? upFast;
 
-    [SerializeField] private GameObject? downSlow;
-    [SerializeField] private GameObject? downMedium;
-    [SerializeField] private GameObject? downFast;
+    public GameObject? downSlow;
+    public GameObject? downMedium;
+    public GameObject? downFast;
 
-    [SerializeField] private GameObject? northSlow;
-    [SerializeField] private GameObject? northMedium;
-    [SerializeField] private GameObject? northFast;
+    public GameObject? northSlow;
+    public GameObject? northMedium;
+    public GameObject? northFast;
 
-    [SerializeField] private GameObject? southSlow;
-    [SerializeField] private GameObject? southMedium;
-    [SerializeField] private GameObject? southFast;
+    public GameObject? southSlow;
+    public GameObject? southMedium;
+    public GameObject? southFast;
 
-    [SerializeField] private GameObject? eastSlow;
-    [SerializeField] private GameObject? eastMedium;
-    [SerializeField] private GameObject? eastFast;
+    public GameObject? eastSlow;
+    public GameObject? eastMedium;
+    public GameObject? eastFast;
 
-    [SerializeField] private GameObject? westSlow;
-    [SerializeField] private GameObject? westMedium;
-    [SerializeField] private GameObject? westFast;
+    public GameObject? westSlow;
+    public GameObject? westMedium;
+    public GameObject? westFast;
 
     private void Start()
     {

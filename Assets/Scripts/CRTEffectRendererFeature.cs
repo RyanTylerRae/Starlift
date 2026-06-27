@@ -8,7 +8,7 @@ public class CRTEffectRendererFeature : ScriptableRendererFeature
     public Material? material;
     public RenderPassEvent renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
 
-    private CRTEffectRenderPass? crtEffectRenderPass;
+    private CRTEffectRenderPass? crtEffectRenderPass = null;
 
     public override void Create()
     {
