@@ -8,7 +8,6 @@ using UnityEngine;
 public class FoliagePainterWindow : EditorWindow
 {
     private enum BrushShape { Circle, Square }
-    private enum SelectionMode { Grid }
 
     // Paint mode
     private bool paintingEnabled = false;
@@ -30,12 +29,10 @@ public class FoliagePainterWindow : EditorWindow
     // Stroke state
     private Vector3 strokeStartNormal;
 
-    // Point selection
-    private SelectionMode selectionMode = SelectionMode.Grid;
-
-    // Layers
+    // Palette
     private List<FoliageLayer?> layers = new();
     private Vector2 layerScroll;
+    private int selectedLayerIndex = -1;
 
     [MenuItem("Tools/Starlift/Foliage Painter")]
     private static void Open() => GetWindow<FoliagePainterWindow>("Foliage Painter");
@@ -82,11 +79,7 @@ public class FoliagePainterWindow : EditorWindow
         paintableLayers = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(paintableLayers);
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Point Selection", EditorStyles.boldLabel);
-        selectionMode = (SelectionMode)EditorGUILayout.EnumPopup("Selection Mode", selectionMode);
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Foliage Layers", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Palette", EditorStyles.boldLabel);
 
         layerScroll = EditorGUILayout.BeginScrollView(layerScroll, GUILayout.Height(200));
         int removeIndex = -1;
@@ -103,15 +96,23 @@ public class FoliagePainterWindow : EditorWindow
 
             EditorGUILayout.EndHorizontal();
 
-            if (layers[i] != null)
-                DrawLayerRow(layers[i]!);
+            if (layers[i] != null && DrawLayerRow(layers[i]!, i == selectedLayerIndex))
+            {
+                selectedLayerIndex = i;
+                Color32 tc = layers[i]!.targetColor;
+                paintColor = new Color(tc.r / 255f, tc.g / 255f, tc.b / 255f);
+            }
 
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndScrollView();
 
         if (removeIndex >= 0)
+        {
+            if (selectedLayerIndex >= removeIndex)
+                selectedLayerIndex--;
             layers.RemoveAt(removeIndex);
+        }
 
         if (GUILayout.Button("+ Add Layer"))
             layers.Add(null);
@@ -126,13 +127,20 @@ public class FoliagePainterWindow : EditorWindow
         }
     }
 
-    private void DrawLayerRow(FoliageLayer layer)
+    private bool DrawLayerRow(FoliageLayer layer, bool isSelected)
     {
         EditorGUILayout.BeginHorizontal();
 
         Color32 c = layer.targetColor;
         Rect swatchRect = EditorGUILayout.GetControlRect(GUILayout.Width(20), GUILayout.Height(16));
+
+        if (isSelected)
+            EditorGUI.DrawRect(new Rect(swatchRect.x - 1, swatchRect.y - 1, swatchRect.width + 2, swatchRect.height + 2), Color.white);
         EditorGUI.DrawRect(swatchRect, new Color(c.r / 255f, c.g / 255f, c.b / 255f));
+
+        bool clicked = Event.current.type == EventType.MouseDown && swatchRect.Contains(Event.current.mousePosition);
+        if (clicked)
+            Event.current.Use();
 
         EditorGUILayout.LabelField(
             $"spacing: {layer.averageSpacing:F2}m  prefab: {(layer.prefab != null ? layer.prefab.name : "none")}",
@@ -154,6 +162,8 @@ public class FoliagePainterWindow : EditorWindow
             Color col = new Color(c.r / 255f, c.g / 255f, c.b / 255f, density);
             EditorGUI.DrawRect(new Rect(barRect.x + s * stepW, barRect.y, stepW + 1, barRect.height), col);
         }
+
+        return clicked;
     }
 
     private void OnSceneGUI(SceneView sceneView)
