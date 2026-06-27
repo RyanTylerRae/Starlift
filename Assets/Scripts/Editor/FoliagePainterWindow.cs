@@ -21,7 +21,7 @@ public class FoliagePainterWindow : EditorWindow
     private float raycastDistance = 1f;
     private float brushStrength = 1f;
     private float falloffPower = 1f;
-    private float sampleSpacing = 0.2f;
+    private const float sampleSpacing = 2f;
     private bool eraseMode = false;
     private float maxNormalDeviation = 15f;
     private LayerMask paintableLayers = ~(1 << 2); // exclude Ignore Raycast by default
@@ -72,8 +72,7 @@ public class FoliagePainterWindow : EditorWindow
         raycastDistance = EditorGUILayout.FloatField("Raycast Distance", raycastDistance);
         brushStrength = EditorGUILayout.Slider("Brush Strength", brushStrength, 0f, 1f);
         falloffPower = EditorGUILayout.Slider("Falloff Power", falloffPower, 0.1f, 5f);
-        sampleSpacing = EditorGUILayout.FloatField("Sample Spacing", sampleSpacing);
-        eraseMode = EditorGUILayout.Toggle("Erase Mode", eraseMode);
+eraseMode = EditorGUILayout.Toggle("Erase Mode", eraseMode);
         maxNormalDeviation = EditorGUILayout.Slider("Max Normal Deviation", maxNormalDeviation, 0f, 180f);
         paintableLayers = (LayerMask)EditorGUILayout.MaskField(
             "Paintable Layers",
