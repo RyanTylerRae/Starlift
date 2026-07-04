@@ -62,6 +62,11 @@ public class OxygenPocket : MonoBehaviour
         }
 
         Object.FindFirstObjectByType<PlayerSpawner>()?.SetCheckpoint(checkpointRoot);
+
+        if (player.TryGetComponent<SaveRadialIndicator>(out var saveRadialIndicator))
+        {
+            saveRadialIndicator.TriggerSave();
+        }
     }
 
     private void OnPlayerExitPocket(GameObject player)

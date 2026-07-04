@@ -4,7 +4,10 @@
       "Bash(Get-ChildItem -Path \"D:\\\\Projects\\\\Starlift\" -Directory)",
       "Bash(Select-Object Name)",
       "Bash(Remove-Item \"D:\\\\Projects\\\\Starlift\\\\Assets\\\\Scripts\\\\EmbarkController.cs\" -Force)",
-      "Bash(Remove-Item \"D:\\\\Projects\\\\Starlift\\\\Assets\\\\Scripts\\\\EmbarkController.cs.meta\" -Force)"
+      "Bash(Remove-Item \"D:\\\\Projects\\\\Starlift\\\\Assets\\\\Scripts\\\\EmbarkController.cs.meta\" -Force)",
+      "Bash(grep *)",
+      "Bash(git log *)",
+      "Bash(awk ' *)"
     ]
   }
 }

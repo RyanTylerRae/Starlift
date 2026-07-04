@@ -5,7 +5,7 @@ using UnityEngine;
 public class ToggleLever : MonoBehaviour
 {
     public Animator? leverAnimator;
-    public string blackboardId;
+    public string blackboardId = "";
 
     public void DoToggleLever()
     {
