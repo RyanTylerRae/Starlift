@@ -551,6 +551,23 @@ public class FirstPersonController : MonoBehaviour
             position += velocity * subDeltaTime;
         }
 
+        // sweep from the starting position to the projected position; if we would hit static geometry
+        // other than the surface we are walking on, clamp movement to just before the point of contact
+        // and slide along the obstacle's surface with whatever movement remains, instead of stopping dead
+        Vector3 startPosition = _rigidbody.position;
+        Vector3 movementDelta = position - startPosition;
+        if (TryGetObstacleHit(startPosition, movementDelta, gravitySource, out float obstacleDistance, out Vector3 obstacleNormal))
+        {
+            const float skinWidth = 0.01f;
+            float clampedDistance = Mathf.Max(0f, obstacleDistance - skinWidth);
+            Vector3 blockedPosition = startPosition + movementDelta.normalized * clampedDistance;
+            Vector3 remainingDelta = movementDelta - movementDelta.normalized * clampedDistance;
+            Vector3 tangentDelta = Vector3.ProjectOnPlane(remainingDelta, obstacleNormal);
+
+            position = blockedPosition + tangentDelta;
+            velocity = Vector3.ProjectOnPlane(velocity, obstacleNormal);
+        }
+
         // apply final state to rigidbody, included the new adjusted velocity
         _rigidbody.position = position;
         _rigidbody.linearVelocity = gravitySourceVelocity + velocity;
@@ -1095,6 +1112,67 @@ public class FirstPersonController : MonoBehaviour
             if (c != bodyCollider) { return true; }
         }
         return false;
+    }
+
+    private bool TryGetObstacleHit(Vector3 startPosition, Vector3 movementDelta, GravitySourceComponent gravitySource, out float hitDistance, out Vector3 hitNormal)
+    {
+        hitDistance = 0f;
+        hitNormal = Vector3.zero;
+
+        if (bodyCollider == null)
+        {
+            return false;
+        }
+
+        float distance = movementDelta.magnitude;
+        if (distance < 0.0001f)
+        {
+            return false;
+        }
+
+        float scaledHeight = bodyCollider.height * bodyCollider.transform.lossyScale.y;
+        float scaledRadius = bodyCollider.radius * bodyCollider.transform.lossyScale.x;
+        Vector3 worldCenter = startPosition + transform.TransformVector(bodyCollider.center);
+        Vector3 p1 = worldCenter + transform.up * (scaledHeight / 2f - scaledRadius);
+        Vector3 p2 = worldCenter - transform.up * (scaledHeight / 2f - scaledRadius);
+        int groundMask = LayerMask.GetMask("Default");
+
+        RaycastHit[] hits = Physics.CapsuleCastAll(p1, p2, scaledRadius, movementDelta / distance, distance, groundMask, QueryTriggerInteraction.Ignore);
+
+        bool foundHit = false;
+        float closestDistance = float.MaxValue;
+        Vector3 closestNormal = Vector3.zero;
+
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.collider == bodyCollider)
+            {
+                continue;
+            }
+
+            // the surface we are actively walking on is expected to overlap us; only halt for other geometry.
+            // gravity sources are nested under their own surface's collider (not a shared scene-graph root),
+            // so walk up from the gravity source instead of comparing transform.root
+            if (gravitySource.transform.IsChildOf(hit.collider.transform))
+            {
+                continue;
+            }
+
+            if (hit.distance < closestDistance)
+            {
+                closestDistance = hit.distance;
+                closestNormal = hit.normal;
+                foundHit = true;
+            }
+        }
+
+        if (foundHit)
+        {
+            hitDistance = closestDistance;
+            hitNormal = closestNormal;
+        }
+
+        return foundHit;
     }
 
     private IEnumerator LagCameraFromEdgeJump(Vector3 worldOffset, float duration)
