@@ -165,14 +165,7 @@ public class GravityController : MonoBehaviour
     private void RefreshActiveParenting()
     {
         var active = GetHighestPrioritySource();
-        if (active != null && _intermediateParents.TryGetValue(active, out var ip))
-        {
-            transform.SetParent(ip.transform, true);
-        }
-        else
-        {
-            transform.SetParent(null, true);
-        }
+        transform.SetParent(active != null ? GetIntermediateParent(active) : null, true);
 
         if (active != _activeSource)
         {
@@ -197,5 +190,10 @@ public class GravityController : MonoBehaviour
     public GravitySourceComponent? GetActiveGravitySource()
     {
         return GetHighestPrioritySource();
+    }
+
+    public Transform? GetIntermediateParent(GravitySourceComponent source)
+    {
+        return _intermediateParents.TryGetValue(source, out var ip) ? ip.transform : null;
     }
 }
