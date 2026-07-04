@@ -32,7 +32,6 @@ public class BreadcrumbController : MonoBehaviour
 
         GameObject breadcrumb = GameObject.Instantiate(breadcrumbGameObject, gameObject.transform.position, gameObject.transform.rotation);
 
-        // grounded breadcrumbs
         GravitySourceComponent? activeSource = gravityController?.GetActiveGravitySource();
         if (activeSource != null && activeSource.isMagnetized)
         {

@@ -140,6 +140,8 @@ public class FirstPersonController : MonoBehaviour
 
     public bool ShouldDisplayJumpTarget { get { return (isGroundedOnEdge || CameraAngleFromGravity > jumpDirectionalAngleThreshold) && MovementMode == ControllerMovementMode.Magnetized; } }
 
+    public bool IsGrounded { get { return isGrounded; } }
+
     [Header("Oxygen")]
     public float minOxygenBurnRate = 0.33f;
     public float jumpOxygenCost;
