@@ -24,7 +24,7 @@
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
 										</Reference>
 										<Reference Name="OutputBus">
-											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+											<ObjectRef Name="External Audio Bus" ID="{C4067BA1-B5B8-4EAB-ACDC-C1A65B53D55B}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
@@ -187,7 +187,7 @@
 															</Point>
 															<Point>
 																<XPos>15</XPos>
-																<YPos>-0</YPos>
+																<YPos>0</YPos>
 																<Flags>0</Flags>
 																<SegmentShape>SCurve</SegmentShape>
 															</Point>
@@ -535,6 +535,36 @@
 											</ChildrenList>
 											<ActiveSourceList>
 												<ActiveSource Name="line_prototype_1A_cutscene_placeholder" ID="{A885C03F-6BE7-4416-98C0-C76BEE185E79}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="music_worldonfire" ID="{69711F49-1EDC-43BE-ACE1-ADCF4FC121DB}" ShortID="1013077029">
+											<PropertyList>
+												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-10</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="External Audio Bus" ID="{C4067BA1-B5B8-4EAB-ACDC-C1A65B53D55B}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="musics_inkspots_worldonfire" ID="{C3BB574E-E471-4AFF-95B4-E1F07D600FED}">
+													<Language>SFX</Language>
+													<AudioFile>musics_inkspots_worldonfire.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="686684793"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="musics_inkspots_worldonfire" ID="{C3BB574E-E471-4AFF-95B4-E1F07D600FED}" Platform="Linked"/>
 											</ActiveSourceList>
 										</Sound>
 									</ChildrenList>

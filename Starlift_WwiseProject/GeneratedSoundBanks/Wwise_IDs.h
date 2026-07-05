@@ -28,12 +28,14 @@ namespace AK
         static const AkUniqueID PLAY_LINE_1C_UTHEBEST = 1403434038U;
         static const AkUniqueID PLAY_OXYGEN_REPLENISH = 2303161985U;
         static const AkUniqueID PLAY_PROTO_LINE_1A_PLACEHOLDER = 1793226300U;
+        static const AkUniqueID PLAY_PROTO_WORLDONFIRE = 2277322074U;
         static const AkUniqueID STOP_BLEND_BREATHING = 2817166606U;
     } // namespace EVENTS
 
     namespace GAME_PARAMETERS
     {
         static const AkUniqueID PLAYEROXYGENAMOUNT = 2812181674U;
+        static const AkUniqueID SPACEVACUUM = 2032362872U;
     } // namespace GAME_PARAMETERS
 
     namespace BANKS
@@ -44,6 +46,7 @@ namespace AK
 
     namespace BUSSES
     {
+        static const AkUniqueID EXTERNAL_AUDIO_BUS = 2723892092U;
         static const AkUniqueID MAIN_AUDIO_BUS = 2246998526U;
     } // namespace BUSSES
 

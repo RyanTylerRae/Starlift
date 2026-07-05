@@ -10,6 +10,110 @@
 						</Reference>
 					</ReferenceList>
 				</Bus>
+				<Bus Name="External Audio Bus" ID="{C4067BA1-B5B8-4EAB-ACDC-C1A65B53D55B}">
+					<ReferenceList>
+						<Reference Name="AudioDevice" PluginName="System" CompanyID="0" PluginID="174" PluginType="7">
+							<ObjectRef Name="System" ID="{A1176674-E8BB-43A3-8B0F-6D1233A16BC7}" WorkUnitID="{2DF20BCE-3947-4CC5-A409-E0165B7CF702}"/>
+						</Reference>
+					</ReferenceList>
+					<ObjectLists>
+						<ObjectList Name="RTPC">
+							<RTPC Name="" ID="{3656CFD0-CC3E-42C9-AB9F-84FA491747E2}" ShortID="997719116">
+								<PropertyList>
+									<Property Name="PropertyName" Type="string" Value="Lowpass"/>
+								</PropertyList>
+								<ReferenceList>
+									<Reference Name="ControlInput">
+										<ObjectRef Name="SpaceVacuum" ID="{2027AD85-131A-42DB-88C2-091084BC0DE1}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+									</Reference>
+									<Reference Name="Curve">
+										<Custom>
+											<Curve Name="" ID="{B29DC517-90AE-449A-925F-8A7507C8A59C}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>0</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>60</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</Custom>
+									</Reference>
+								</ReferenceList>
+							</RTPC>
+							<RTPC Name="" ID="{BE332887-D868-4247-9451-D8FA795E1C63}" ShortID="864086713">
+								<PropertyList>
+									<Property Name="PropertyName" Type="string" Value="Highpass"/>
+								</PropertyList>
+								<ReferenceList>
+									<Reference Name="ControlInput">
+										<ObjectRef Name="SpaceVacuum" ID="{2027AD85-131A-42DB-88C2-091084BC0DE1}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+									</Reference>
+									<Reference Name="Curve">
+										<Custom>
+											<Curve Name="" ID="{850B6A09-079D-41A2-9959-DC7B46EE0A14}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>0</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>10</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</Custom>
+									</Reference>
+								</ReferenceList>
+							</RTPC>
+							<RTPC Name="" ID="{4CA93840-C5BE-44DF-9A52-9B022226F94D}" ShortID="446698237">
+								<PropertyList>
+									<Property Name="PropertyName" Type="string" Value="Pitch"/>
+								</PropertyList>
+								<ReferenceList>
+									<Reference Name="ControlInput">
+										<ObjectRef Name="SpaceVacuum" ID="{2027AD85-131A-42DB-88C2-091084BC0DE1}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+									</Reference>
+									<Reference Name="Curve">
+										<Custom>
+											<Curve Name="" ID="{CA843A3B-C3A8-4BE6-A6C5-9EAB77433BF1}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>0</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>-150</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</Custom>
+									</Reference>
+								</ReferenceList>
+							</RTPC>
+						</ObjectList>
+					</ObjectLists>
+				</Bus>
 			</ChildrenList>
 		</WorkUnit>
 	</Busses>

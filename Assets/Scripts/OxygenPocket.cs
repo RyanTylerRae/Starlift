@@ -67,11 +67,15 @@ public class OxygenPocket : MonoBehaviour
         {
             saveRadialIndicator.TriggerSave();
         }
+
+        AkUnitySoundEngine.SetRTPCValue("SpaceVacuum", 0.0f);
     }
 
     private void OnPlayerExitPocket(GameObject player)
     {
         playerOxygenSystem = null;
         Debug.Log("Player exited oxygen pocket - stopping oxygen replenishment");
+
+        AkUnitySoundEngine.SetRTPCValue("SpaceVacuum", 100.0f);
     }
 }

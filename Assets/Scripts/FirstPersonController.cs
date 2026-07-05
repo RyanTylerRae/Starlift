@@ -176,6 +176,9 @@ public class FirstPersonController : MonoBehaviour
 
     void Start()
     {
+        // @trae todo - remove this
+        AkUnitySoundEngine.PostEvent("play_proto_worldonfire", gameObject);
+
         modifiers = GetComponent<Modifiers>();
         oxygenSystem = GetComponent<OxygenSystem>();
         entity = GetComponent<Entity>();

@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{260E8F87-70AB-B365-F171-CF1C66DA93B7}",
+    "Hash": "{55960EFE-289F-F6CD-EEA6-B1FD5A258C44}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -62,6 +62,14 @@
       "Location": "Memory",
       "ShortName": "Line_1C_lookup.wav",
       "CachePath": "20/{2075B3C3-9AB2-381E-4257-6BA4865C284B}.wem"
+     },
+     {
+      "Id": "686684793",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "musics_inkspots_worldonfire.wav",
+      "CachePath": "84/{84556C36-5704-7AE2-0F73-4EC2D3F034C4}.wem"
      },
      {
       "Id": "829844053",
@@ -357,6 +365,18 @@
       ]
      },
      {
+      "Id": "2277322074",
+      "Name": "play_proto_worldonfire",
+      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\prototype\\play_proto_worldonfire",
+      "GUID": "{5DEFD867-9B3B-4872-9C2C-4884C4943B2A}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "686684793"
+       }
+      ]
+     },
+     {
       "Id": "2817166606",
       "Name": "stop_blend_breathing",
       "ObjectPath": "\\Events\\Default Work Unit\\stop_blend_breathing",
@@ -377,6 +397,6 @@
     ]
    }
   ],
-  "FileHash": "{CA6F3811-BC25-08B6-909C-D19B925462BF}"
+  "FileHash": "{B1B1AECB-AF67-6380-2448-80BF56A0D7B9}"
  }
 }
