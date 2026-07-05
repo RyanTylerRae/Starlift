@@ -50,6 +50,13 @@ public class FirstPersonController : MonoBehaviour
     private Vector3 ignoredGravityDirection;
     private float approachTimer = 0f;
     private float ignoredSourceSetTime = 0f;
+    private float distanceTraveled = 0.0f;
+    private float previousBobPhase = 0.0f;
+    public float headBobSpeed = 1.0f;
+    public float headBobHeight = 0.2f;
+    public float headBobImpactPhaseOffset = 0.3f;
+    public float headBobDipDepth = 0.05f;
+    public float headBobDipDuration = 0.08f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -114,6 +121,11 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Camera")]
     public GameObject? cameraArm;
+    private Vector3 cameraArmRestLocalPos = Vector3.zero;
+    private Vector3 cameraArmLagOffset = Vector3.zero;
+    private float cameraArmBobOffset = 0.0f;
+    private float cameraArmDipOffset = 0.0f;
+    private Coroutine? headBobDipCoroutine = null;
     public Camera? playerCamera;
 
     // input actions
@@ -198,6 +210,8 @@ public class FirstPersonController : MonoBehaviour
 
         if (cameraArm != null)
         {
+            cameraArmRestLocalPos = cameraArm.transform.localPosition;
+
             Camera mainCamera = cameraArm.AddComponent<Camera>();
             mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
             mainCamera.depth = -1.0f;
@@ -209,6 +223,19 @@ public class FirstPersonController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    // composes the arm's rest pose with the current lag/bob offsets so the two effects can be driven independently
+    private void ApplyCameraArmLocalPos()
+    {
+        if (cameraArm == null)
+        {
+            return;
+        }
+
+        Vector3 localPos = cameraArmRestLocalPos + cameraArmLagOffset;
+        localPos.y += cameraArmBobOffset + cameraArmDipOffset;
+        cameraArm.transform.localPosition = localPos;
     }
 
     public void SetMovementMode(ControllerMovementMode newMovementMode)
@@ -568,10 +595,19 @@ public class FirstPersonController : MonoBehaviour
             velocity = Vector3.ProjectOnPlane(velocity, obstacleNormal);
         }
 
+        // track distance for head bobbing. because it is a function of sine, we can just repeat the period over and over again
+        distanceTraveled += totalDistance * headBobSpeed;
+        while (distanceTraveled > 2.0f * Math.PI)
+        {
+            distanceTraveled -= 2.0f * (float)Math.PI;
+        }
+
         // apply final state to rigidbody, included the new adjusted velocity
         _rigidbody.position = position;
         _rigidbody.linearVelocity = gravitySourceVelocity + velocity;
         _preCollisionVelocity = _rigidbody.linearVelocity;
+
+        DoMagnetizedHeadBob(totalDistance);
     }
 
     void HandleMouseLook()
@@ -818,6 +854,7 @@ public class FirstPersonController : MonoBehaviour
                     transform.position = clearPosition.Value;
                     _rigidbody.position = clearPosition.Value;
                     bodyCollider.enabled = true;
+
                     if (cameraArm != null)
                     {
                         StartCoroutine(LagCameraFromEdgeJump(visualOffset, edgeJumpLerpDuration));
@@ -1177,12 +1214,14 @@ public class FirstPersonController : MonoBehaviour
 
     private IEnumerator LagCameraFromEdgeJump(Vector3 worldOffset, float duration)
     {
-        if (cameraArm == null) { yield break; }
+        if (cameraArm == null)
+        {
+            yield break;
+        }
 
-        Vector3 startLocalPos = cameraArm.transform.localPosition;
         Quaternion futureBodyRot = playerCamera != null ? playerCamera.transform.rotation : transform.rotation;
-        Vector3 localOffset = Quaternion.Inverse(futureBodyRot) * worldOffset;
-        cameraArm.transform.localPosition = startLocalPos + localOffset;
+        cameraArmLagOffset = Quaternion.Inverse(futureBodyRot) * worldOffset;
+        ApplyCameraArmLocalPos();
 
         yield return null;
 
@@ -1192,12 +1231,14 @@ public class FirstPersonController : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
             float tEased = t < 0.5f ? 2f * t * t : 1f - 2f * (1f - t) * (1f - t);
-            localOffset = transform.InverseTransformVector(worldOffset);
-            cameraArm.transform.localPosition = Vector3.Lerp(startLocalPos + localOffset, startLocalPos, tEased);
+            Vector3 localOffset = transform.InverseTransformVector(worldOffset);
+            cameraArmLagOffset = Vector3.Lerp(localOffset, Vector3.zero, tEased);
+            ApplyCameraArmLocalPos();
             yield return null;
         }
 
-        cameraArm.transform.localPosition = startLocalPos;
+        cameraArmLagOffset = Vector3.zero;
+        ApplyCameraArmLocalPos();
     }
 
     private void ClearIgnoredGravitySource()
@@ -1208,6 +1249,54 @@ public class FirstPersonController : MonoBehaviour
             ignoredGravitySource = null;
         }
         approachTimer = 0f;
+    }
+
+    private void DoMagnetizedHeadBob(float distanceThisFrame)
+    {
+        if (Mathf.Abs(distanceThisFrame) < 0.01f)
+        {
+            // @todo trae - ease this to 0 instead
+            distanceTraveled = 0.0f;
+        }
+
+        float impactPhase = Mathf.PI - headBobImpactPhaseOffset;
+        if (previousBobPhase < impactPhase && distanceTraveled >= impactPhase)
+        {
+            TriggerHeadBobDip();
+        }
+        previousBobPhase = distanceTraveled;
+
+        // head bob
+        float cosVal = Mathf.Cos(distanceTraveled - 1.0f);
+        cameraArmBobOffset = 0.5f * headBobHeight * cosVal;
+
+        ApplyCameraArmLocalPos();
+    }
+
+    private void TriggerHeadBobDip()
+    {
+        if (headBobDipCoroutine != null)
+        {
+            StopCoroutine(headBobDipCoroutine);
+        }
+        headBobDipCoroutine = StartCoroutine(DoHeadBobDip());
+    }
+
+    private IEnumerator DoHeadBobDip()
+    {
+        float elapsed = 0.0f;
+        while (elapsed < headBobDipDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / headBobDipDuration);
+            cameraArmDipOffset = -headBobDipDepth * Mathf.Sin(t * Mathf.PI);
+            ApplyCameraArmLocalPos();
+            yield return null;
+        }
+
+        cameraArmDipOffset = 0.0f;
+        headBobDipCoroutine = null;
+        ApplyCameraArmLocalPos();
     }
 
     private void OnCollisionEnter(Collision collision)

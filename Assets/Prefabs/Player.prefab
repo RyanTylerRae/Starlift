@@ -879,7 +879,7 @@ MonoBehaviour:
   maxJumpSpeed: 6
   groundFriction: 0.5
   groundStoppingFriction: 20
-  maxMagnetizedWalkSpeed: 3
+  maxMagnetizedWalkSpeed: 2
   magnetizeRadius: 0.4
   gravityAlignmentSpeed: 3
   jumpForceTier1: 180
@@ -892,6 +892,11 @@ MonoBehaviour:
   edgeJumpMaxClearDistance: 6
   edgeJumpLerpDuration: 2
   ignoredSourceCollisionGrace: 0.5
+  headBobSpeed: 2.5
+  headBobHeight: 0.35
+  headBobImpactPhaseOffset: 0.3
+  headBobDipDepth: 0.12
+  headBobDipDuration: 0.15
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
