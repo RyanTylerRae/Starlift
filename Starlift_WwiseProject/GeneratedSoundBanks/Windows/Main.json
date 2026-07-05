@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{55960EFE-289F-F6CD-EEA6-B1FD5A258C44}",
+    "Hash": "{769CF15F-EE2E-BFD0-2AAF-0C276C5BB1CA}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -22,46 +22,6 @@
       "Location": "Memory",
       "ShortName": "breathing.wav",
       "CachePath": "EC/{EC5700C9-7164-036B-2B0F-01F710C72128}.wem"
-     },
-     {
-      "Id": "116466768",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "line_1C_lovethis.wav",
-      "CachePath": "53/{5359212B-59F6-D153-5E7C-3CB71AD0ECBD}.wem"
-     },
-     {
-      "Id": "140921448",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "line_1B_therewasnt.wav",
-      "CachePath": "D7/{D774407E-498F-F38F-6D18-047570EA86F8}.wem"
-     },
-     {
-      "Id": "260305764",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "line_1C_uthebest.wav",
-      "CachePath": "47/{472BEED2-5E80-B07D-C8FA-A4A942550246}.wem"
-     },
-     {
-      "Id": "404414124",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "line_1C_letsgo.wav",
-      "CachePath": "15/{15CCC9E4-CF6C-2B67-5E93-14E070F50C82}.wem"
-     },
-     {
-      "Id": "505130591",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "Line_1C_lookup.wav",
-      "CachePath": "20/{2075B3C3-9AB2-381E-4257-6BA4865C284B}.wem"
      },
      {
       "Id": "686684793",
@@ -80,36 +40,12 @@
       "CachePath": "D8/{D83D8296-C217-AD4E-196D-C81E5DF77266}.wem"
      },
      {
-      "Id": "840728010",
+      "Id": "944293846",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
-      "ShortName": "Line_1B_noinfo.wav",
-      "CachePath": "28/{28FEDD4D-975A-4C50-F802-41F4D1AFDEE9}.wem"
-     },
-     {
-      "Id": "873292320",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "line_1B_isee.wav",
-      "CachePath": "42/{426E75D3-6E14-AE0D-D7BA-F2A2CD049822}.wem"
-     },
-     {
-      "Id": "918648767",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "line_prototype_1A_cutscene_placeholder.wav",
-      "CachePath": "58/{586AFCA7-F1A0-7513-2735-66B7334701D1}.wem"
-     },
-     {
-      "Id": "928797396",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "line_1C_sorry.wav",
-      "CachePath": "8E/{8E54835D-54B0-551B-7061-4E7A063CA755}.wem"
+      "ShortName": "play_footstep_thud.wav",
+      "CachePath": "27/{2791A02B-EDB2-CFA0-F395-438F77978E88}.wem"
      },
      {
       "Id": "987918517",
@@ -118,30 +54,6 @@
       "Location": "Memory",
       "ShortName": "breathing_hard.wav",
       "CachePath": "0D/{0D8C8F93-E823-870D-A783-661486806BE4}.wem"
-     },
-     {
-      "Id": "996563230",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "line_1A_arrived.wav",
-      "CachePath": "00/{00DEFF87-EBB5-F78F-CB98-B18EEAA8C85A}.wem"
-     },
-     {
-      "Id": "1019565772",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "Line_1B_nothappening.wav",
-      "CachePath": "5D/{5D7E2E38-572F-FD8C-6FC9-493511551417}.wem"
-     },
-     {
-      "Id": "1027998533",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "line_1C_sigh.wav",
-      "CachePath": "25/{25E047CC-CD99-E72E-49A0-5E1D458BDE19}.wem"
      },
      {
       "Id": "1073171051",
@@ -183,156 +95,16 @@
       ]
      },
      {
-      "Id": "3461298551",
-      "Name": "play_line_1A_arrived",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1A_arrived",
-      "GUID": "{B636C0B6-E6BB-4F10-B0CA-B4AC2DABD030}",
+      "Id": "19228180",
+      "Name": "play_footstep_thud",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_footstep_thud",
+      "GUID": "{0B3528EE-1AB4-42E9-B09D-ADAAA9DA4254}",
       "DurationType": "OneShot",
-      "DurationMin": "1.896",
-      "DurationMax": "1.896",
+      "DurationMin": "0.61024415",
+      "DurationMax": "0.86301565",
       "MediaRefs": [
        {
-        "Id": "996563230"
-       }
-      ]
-     },
-     {
-      "Id": "2974145203",
-      "Name": "play_line_1B_isee",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1B_isee",
-      "GUID": "{06B3175E-61C3-4528-BEC8-D4A92BDB4EEF}",
-      "DurationType": "OneShot",
-      "DurationMin": "7.2",
-      "DurationMax": "7.2",
-      "MediaRefs": [
-       {
-        "Id": "873292320"
-       }
-      ]
-     },
-     {
-      "Id": "2356089724",
-      "Name": "play_line_1B_noinfo",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1B_noinfo",
-      "GUID": "{F07ED012-DA8D-464F-97A6-72F1D9DFE395}",
-      "DurationType": "OneShot",
-      "DurationMin": "7.248",
-      "DurationMax": "7.248",
-      "MediaRefs": [
-       {
-        "Id": "840728010"
-       }
-      ]
-     },
-     {
-      "Id": "2461422256",
-      "Name": "play_line_1B_nothappening",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1B_nothappening",
-      "GUID": "{9B1F3431-05CA-4E20-B98A-83C88177D124}",
-      "DurationType": "OneShot",
-      "DurationMin": "4.128",
-      "DurationMax": "4.128",
-      "MediaRefs": [
-       {
-        "Id": "1019565772"
-       }
-      ]
-     },
-     {
-      "Id": "3051217546",
-      "Name": "play_line_1B_therewasnt",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1B_therewasnt",
-      "GUID": "{08F8EE4A-E2D7-4314-8FD4-77B7D85E5D77}",
-      "DurationType": "OneShot",
-      "DurationMin": "2.424",
-      "DurationMax": "2.424",
-      "MediaRefs": [
-       {
-        "Id": "140921448"
-       }
-      ]
-     },
-     {
-      "Id": "1395652314",
-      "Name": "play_line_1C_letsgo",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1C_letsgo",
-      "GUID": "{A6B24ECD-649E-4478-AAD2-5960C96ECD13}",
-      "DurationType": "OneShot",
-      "DurationMin": "2.208",
-      "DurationMax": "2.208",
-      "MediaRefs": [
-       {
-        "Id": "404414124"
-       }
-      ]
-     },
-     {
-      "Id": "980341684",
-      "Name": "play_line_1C_lookup",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1C_lookup",
-      "GUID": "{68BDCE5B-3BA5-4A9E-9230-BF45BFB79028}",
-      "DurationType": "OneShot",
-      "DurationMin": "3.528",
-      "DurationMax": "3.528",
-      "MediaRefs": [
-       {
-        "Id": "505130591"
-       }
-      ]
-     },
-     {
-      "Id": "4060026150",
-      "Name": "play_line_1C_lovethis",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1C_lovethis",
-      "GUID": "{F94540BC-B5D1-46A6-8A8B-3EB2F1AF064F}",
-      "DurationType": "OneShot",
-      "DurationMin": "2.4",
-      "DurationMax": "2.4",
-      "MediaRefs": [
-       {
-        "Id": "116466768"
-       }
-      ]
-     },
-     {
-      "Id": "182560379",
-      "Name": "play_line_1C_sigh",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1C_sigh",
-      "GUID": "{A5593477-932A-4078-B024-0931E08E9CA2}",
-      "DurationType": "OneShot",
-      "DurationMin": "1.896",
-      "DurationMax": "1.896",
-      "MediaRefs": [
-       {
-        "Id": "1027998533"
-       }
-      ]
-     },
-     {
-      "Id": "1813665153",
-      "Name": "play_line_1C_sorry",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1C_sorry",
-      "GUID": "{DCC72C97-E5AA-402A-843D-2428598C6E1E}",
-      "DurationType": "OneShot",
-      "DurationMin": "6.288",
-      "DurationMax": "6.288",
-      "MediaRefs": [
-       {
-        "Id": "928797396"
-       }
-      ]
-     },
-     {
-      "Id": "1403434038",
-      "Name": "play_line_1C_uthebest",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\scene_1\\play_line_1C_uthebest",
-      "GUID": "{A7A9B14D-29B3-4CD7-AFFB-69375ADA15D2}",
-      "DurationType": "OneShot",
-      "DurationMin": "10.248",
-      "DurationMax": "10.248",
-      "MediaRefs": [
-       {
-        "Id": "260305764"
+        "Id": "944293846"
        }
       ]
      },
@@ -347,20 +119,6 @@
       "MediaRefs": [
        {
         "Id": "829844053"
-       }
-      ]
-     },
-     {
-      "Id": "1793226300",
-      "Name": "play_proto_line_1A_placeholder",
-      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\prototype\\play_proto_line_1A_placeholder",
-      "GUID": "{40C9D41C-035C-4615-A839-0BD2A8F188FF}",
-      "DurationType": "OneShot",
-      "DurationMin": "2.4",
-      "DurationMax": "2.4",
-      "MediaRefs": [
-       {
-        "Id": "918648767"
        }
       ]
      },
@@ -397,6 +155,6 @@
     ]
    }
   ],
-  "FileHash": "{B1B1AECB-AF67-6380-2448-80BF56A0D7B9}"
+  "FileHash": "{F7BF365D-D93D-CCCC-10FA-FC8F9FC9BFFD}"
  }
 }

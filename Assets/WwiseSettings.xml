@@ -3,7 +3,7 @@
   <CopySoundBanksAsPreBuildStep>true</CopySoundBanksAsPreBuildStep>
   <GenerateSoundBanksAsPreBuildStep>false</GenerateSoundBanksAsPreBuildStep>
   <WwiseStreamingAssetsPath>Audio\GeneratedSoundBanks</WwiseStreamingAssetsPath>
-  <RootOutputPath>../Starlift_WwiseProject/GeneratedSoundBanks/</RootOutputPath>
+  <RootOutputPath>StreamingAssets/Audio/GeneratedSoundBanks</RootOutputPath>
   <CreatedPicker>true</CreatedPicker>
   <CreateWwiseGlobal>true</CreateWwiseGlobal>
   <CreateWwiseListener>true</CreateWwiseListener>
@@ -19,7 +19,7 @@
   <WaapiIP>127.0.0.1</WaapiIP>
   <AutoSyncWaapi>true</AutoSyncWaapi>
   <WaapiChangePending>false</WaapiChangePending>
-  <InstallationWasRequested>false</InstallationWasRequested>
+  <InstallationWasRequested>true</InstallationWasRequested>
   <UseGitRepository>true</UseGitRepository>
   <PackageSource />
   <AddressableBankFolder>WwiseData/Bank</AddressableBankFolder>

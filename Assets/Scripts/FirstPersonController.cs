@@ -1266,6 +1266,8 @@ public class FirstPersonController : MonoBehaviour
         if (previousBobPhase < impactPhase && distanceTraveled >= impactPhase)
         {
             TriggerHeadBobDip();
+
+            AkUnitySoundEngine.PostEvent("play_footstep_thud", gameObject);
         }
         previousBobPhase = distanceTraveled;
 

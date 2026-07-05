@@ -868,14 +868,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ef3528d233fd94eadd571fa4e4f27a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForce: 20
-  maxWalkSpeed: 4
-  maxRunSpeed: 8
+  moveForce: 15
+  maxWalkSpeed: 3
+  maxRunSpeed: 5
   groundedDistance: 0.6
   edgeRaycastMultiplier: 5
   jumpForce: 6
   jumpCooldown: 0.5
-  airControlMultiplier: 0.08
+  airControlMultiplier: 0.1
   maxJumpSpeed: 6
   groundFriction: 0.5
   groundStoppingFriction: 20
@@ -895,8 +895,8 @@ MonoBehaviour:
   headBobSpeed: 2.5
   headBobHeight: 0.35
   headBobImpactPhaseOffset: 0.3
-  headBobDipDepth: 0.12
-  headBobDipDuration: 0.15
+  headBobDipDepth: 0.11
+  headBobDipDuration: 0.17
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
@@ -907,10 +907,10 @@ MonoBehaviour:
   autoRollAngleThreshold: 20
   autoRollMinSpeed: 2.5
   autoRollLookAngleThreshold: 15
-  stabilizeMultiplier: 0.45
-  flightForce: 1.1
-  maxFlightSpeed: 7
-  zeroGIdleDamping: 0.02
+  stabilizeMultiplier: 0.5
+  flightForce: 1.3
+  maxFlightSpeed: 8
+  zeroGIdleDamping: 0.005
   jumpTier1Time: 0.2
   jumpTier2Time: 0
   jumpTier3Time: 0
