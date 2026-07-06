@@ -19,6 +19,7 @@ public class FirstPersonController : MonoBehaviour
     public float maxRunSpeed;
     private bool isGrounded = false;
     private bool isGroundedOnEdge = false;
+    private bool isJumping = false;
     private Vector3 surfaceNormal = Vector3.up;
     public float groundedDistance;
     public float edgeRaycastMultiplier = 2f;
@@ -31,6 +32,12 @@ public class FirstPersonController : MonoBehaviour
     public float groundStoppingFriction = 25f;
     public bool IsSprinting { get; private set; }
     public bool IsMagnetizedWalking { get; private set; }
+    public float footstepSpeed = 1.0f;
+    public float footstepImpactPhaseOffset = 0.3f;
+    private float gravityFootstepPhase = 0.0f;
+    private float gravityFootstepPreviousPhase = 0.0f;
+    private const float impactDoubleSoundDelay = 0.1f;
+    private const float jumpLandingVelocityThreshold = 0.1f;
 
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
@@ -248,6 +255,15 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
+        if (newMovementMode == ControllerMovementMode.Magnetized && movementMode != ControllerMovementMode.Magnetized)
+        {
+            TriggerMagnetizeSound();
+        }
+
+        // entering a gravity zone from ZeroG means we're falling in from open space, so arm the
+        // landing sound the same way a jump does; any other transition (e.g. leaving a magnetized
+        // surface while already standing on it) shouldn't retrigger a landing
+        isJumping = newMovementMode == ControllerMovementMode.Gravity && movementMode == ControllerMovementMode.ZeroG;
         movementMode = newMovementMode;
 
         if (MovementMode == ControllerMovementMode.Gravity)
@@ -521,6 +537,16 @@ public class FirstPersonController : MonoBehaviour
                 }
 
                 _rigidbody.linearVelocity = velocityTangent + velocityInGravityDir;
+
+                if (isGrounded)
+                {
+                    DoGravityFootsteps(velocityTangent.magnitude * Time.fixedDeltaTime);
+                }
+                else
+                {
+                    gravityFootstepPhase = 0.0f;
+                    gravityFootstepPreviousPhase = 0.0f;
+                }
             }
             _preCollisionVelocity = _rigidbody.linearVelocity;
             return;
@@ -669,19 +695,45 @@ public class FirstPersonController : MonoBehaviour
         }
 
         Vector3 gravityDir = gravity.normalized;
+
+        // while jumping, ignore the generous ground-proximity raycast until velocity is confirmed
+        // moving back down towards the surface. requiring a small positive threshold (rather than
+        // just "not ascending") also covers the frame right after the jump impulse is applied but
+        // before physics has integrated it yet, where velocity still reads as ~0
+        if (isJumping)
+        {
+            float velocityAlongGravity = _rigidbody != null ? Vector3.Dot(_rigidbody.linearVelocity, gravityDir) : 0f;
+            if (velocityAlongGravity <= jumpLandingVelocityThreshold)
+            {
+                return;
+            }
+        }
+
         int groundMask = LayerMask.GetMask("Default");
 
         float halfRadius = bodyCollider != null ? bodyCollider.radius * bodyCollider.transform.lossyScale.x : 0f;
 
+        // cast from the base of the capsule rather than the object's own transform, since the
+        // collider's center/height offset means transform.position isn't at the character's feet
+        Vector3 footPosition = bodyCollider != null
+            ? transform.TransformPoint(bodyCollider.center) - transform.up * (bodyCollider.height * bodyCollider.transform.lossyScale.y / 2f)
+            : transform.position;
+
         // perform the middle raycast, this can give us a hint to determine if we are over an edge or not,
         // and also allows us to early-out walking on magnetized surfaces with a steep angle
-        if (Physics.Raycast(new Ray(transform.position, gravityDir), out RaycastHit centerHit, groundedDistance, groundMask))
+        if (Physics.Raycast(new Ray(footPosition, gravityDir), out RaycastHit centerHit, groundedDistance, groundMask))
         {
             isGrounded = true;
             surfaceNormal = centerHit.normal;
 
+            if (isJumping)
+            {
+                TriggerLandingSound();
+                isJumping = false;
+            }
+
             // check to see if we are near an edge
-            Vector3 centerEdgeOrigin = transform.position + transform.forward * (halfRadius * edgeRaycastMultiplier);
+            Vector3 centerEdgeOrigin = footPosition + transform.forward * (halfRadius * edgeRaycastMultiplier);
             if (!Physics.Raycast(new Ray(centerEdgeOrigin, gravityDir), groundedDistance, groundMask))
             {
                 isGroundedOnEdge = true;
@@ -704,11 +756,11 @@ public class FirstPersonController : MonoBehaviour
                     continue;
                 }
 
-                Vector3 origin = transform.position + transform.right * ((i - 1) * halfRadius) + transform.forward * ((j - 1) * halfRadius);
+                Vector3 origin = footPosition + transform.right * ((i - 1) * halfRadius) + transform.forward * ((j - 1) * halfRadius);
                 if (Physics.Raycast(new Ray(origin, gravityDir), groundedDistance, groundMask))
                 {
                     ++numHits;
-                    ray += origin - transform.position;
+                    ray += origin - footPosition;
                     isGrounded = true;
                 }
             }
@@ -716,12 +768,18 @@ public class FirstPersonController : MonoBehaviour
 
         if (isGrounded)
         {
+            if (isJumping)
+            {
+                TriggerLandingSound();
+                isJumping = false;
+            }
+
             // this ray is diagonal and should point back towards the wall we are walking off of from the center
             ray /= numHits;
             ray += gravityDir;
             ray.Normalize();
 
-            if (Physics.Raycast(new Ray(transform.position, ray), out RaycastHit edgeHit, groundedDistance * 2f, groundMask))
+            if (Physics.Raycast(new Ray(footPosition, ray), out RaycastHit edgeHit, groundedDistance * 2f, groundMask))
             {
                 surfaceNormal = edgeHit.normal;
             }
@@ -773,6 +831,7 @@ public class FirstPersonController : MonoBehaviour
 
         // Record jump time for cooldown
         lastJumpTime = Time.time;
+        isJumping = true;
     }
 
     private void OnActiveGravitySourceChanged(GravitySourceComponent? newSource)
@@ -1276,6 +1335,47 @@ public class FirstPersonController : MonoBehaviour
         cameraArmBobOffset = 0.5f * headBobHeight * cosVal;
 
         ApplyCameraArmLocalPos();
+    }
+
+    private void TriggerLandingSound()
+    {
+        StartCoroutine(DoDelayedDoubleSound("play_footstep_soft"));
+    }
+
+    private void TriggerMagnetizeSound()
+    {
+        StartCoroutine(DoDelayedDoubleSound("play_footstep_thud"));
+    }
+
+    private IEnumerator DoDelayedDoubleSound(string eventName)
+    {
+        AkUnitySoundEngine.PostEvent(eventName, gameObject);
+        yield return new WaitForSeconds(impactDoubleSoundDelay);
+        AkUnitySoundEngine.PostEvent(eventName, gameObject);
+    }
+
+    // fires a footstep sound while walking on the ground in normal Gravity mode, no head bob involved
+    private void DoGravityFootsteps(float distanceThisFrame)
+    {
+        if (Mathf.Abs(distanceThisFrame) < 0.01f)
+        {
+            gravityFootstepPhase = 0.0f;
+            gravityFootstepPreviousPhase = 0.0f;
+            return;
+        }
+
+        gravityFootstepPhase += distanceThisFrame * footstepSpeed;
+        while (gravityFootstepPhase > 2.0f * Math.PI)
+        {
+            gravityFootstepPhase -= 2.0f * (float)Math.PI;
+        }
+
+        float impactPhase = Mathf.PI - footstepImpactPhaseOffset;
+        if (gravityFootstepPreviousPhase < impactPhase && gravityFootstepPhase >= impactPhase)
+        {
+            AkUnitySoundEngine.PostEvent("play_footstep_soft", gameObject);
+        }
+        gravityFootstepPreviousPhase = gravityFootstepPhase;
     }
 
     private void TriggerHeadBobDip()

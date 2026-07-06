@@ -376,6 +376,61 @@
 								<ActiveSource Name="play_footstep_thud" ID="{0E6C92D2-1A22-4D37-8536-B2AEF4119881}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
+						<Sound Name="footstep_soft" ID="{E143E274-5A04-41F9-871E-05BF3519819A}" ShortID="1024865905">
+							<PropertyList>
+								<Property Name="Highpass" Type="int16">
+									<ValueList>
+										<Value>20</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Lowpass" Type="int16">
+									<ValueList>
+										<Value>10</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Pitch" Type="int32">
+									<ValueList>
+										<Value>400</Value>
+									</ValueList>
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{72ECCED7-DB43-4B02-AC61-23FEF7B32D3D}">
+												<PropertyList>
+													<Property Name="Enabled" Type="bool" Value="True"/>
+													<Property Name="Max" Type="Real64" Value="150"/>
+													<Property Name="Min" Type="Real64" Value="-150"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-10</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="External Audio Bus" ID="{C4067BA1-B5B8-4EAB-ACDC-C1A65B53D55B}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="play_footstep_thud" ID="{296CC2EC-429D-4E82-BC2B-40EB032ECAB5}">
+									<Language>SFX</Language>
+									<AudioFile>play_footstep_thud.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="891846702"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="play_footstep_thud" ID="{296CC2EC-429D-4E82-BC2B-40EB032ECAB5}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
 					</ChildrenList>
 				</Folder>
 			</ChildrenList>

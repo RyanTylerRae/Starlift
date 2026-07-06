@@ -871,7 +871,7 @@ MonoBehaviour:
   moveForce: 15
   maxWalkSpeed: 3
   maxRunSpeed: 5
-  groundedDistance: 0.6
+  groundedDistance: 0.15
   edgeRaycastMultiplier: 5
   jumpForce: 6
   jumpCooldown: 0.5
@@ -879,6 +879,8 @@ MonoBehaviour:
   maxJumpSpeed: 6
   groundFriction: 0.5
   groundStoppingFriction: 20
+  footstepSpeed: 3
+  footstepImpactPhaseOffset: 0.3
   maxMagnetizedWalkSpeed: 2
   magnetizeRadius: 0.4
   gravityAlignmentSpeed: 3

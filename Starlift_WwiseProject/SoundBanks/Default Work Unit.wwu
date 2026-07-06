@@ -7,6 +7,7 @@
 					<ObjectInclusionList>
 						<ObjectRef Name="play_oxygen_replenish" ID="{66F627F8-1672-4108-9D49-E11AC79B333C}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_footstep_thud" ID="{0B3528EE-1AB4-42E9-B09D-ADAAA9DA4254}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="play_footstep_soft" ID="{C4C3DBDA-DD92-43F6-A396-51502FE819E1}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="dialogue" ID="{6523DB30-1AAB-470D-A210-25C87436D304}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="stop_blend_breathing" ID="{963C0590-F3CE-47C0-9F7C-3BBD2F47FD43}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_breathing_death" ID="{98D1C7B2-BE69-4C93-A5C3-F02D02132A9C}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>

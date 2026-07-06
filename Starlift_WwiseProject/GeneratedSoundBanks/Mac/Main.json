@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{769CF15F-EE2E-BFD0-2AAF-0C276C5BB1CA}",
+    "Hash": "{F3CAC25E-D98E-C71A-FCA1-EC6812FB53FC}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -38,6 +38,14 @@
       "Location": "Memory",
       "ShortName": "oxygen_replenish.wav",
       "CachePath": "D8/{D83D8296-C217-AD4E-196D-C81E5DF77266}.wem"
+     },
+     {
+      "Id": "891846702",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "play_footstep_thud.wav",
+      "CachePath": "27/{2791A02B-EDB2-CFA0-F395-438F77978E88}.wem"
      },
      {
       "Id": "944293846",
@@ -91,6 +99,20 @@
       "MediaRefs": [
        {
         "Id": "1073171051"
+       }
+      ]
+     },
+     {
+      "Id": "3696184339",
+      "Name": "play_footstep_soft",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_footstep_soft",
+      "GUID": "{C4C3DBDA-DD92-43F6-A396-51502FE819E1}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.47056258",
+      "DurationMax": "0.5595964",
+      "MediaRefs": [
+       {
+        "Id": "891846702"
        }
       ]
      },
@@ -155,6 +177,6 @@
     ]
    }
   ],
-  "FileHash": "{D4BAF43F-E0F1-1C31-4692-AA1DF0179A54}"
+  "FileHash": "{21F622C1-0134-1098-BC08-E4578116C1CA}"
  }
 }
