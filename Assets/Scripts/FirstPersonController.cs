@@ -155,6 +155,25 @@ public class FirstPersonController : MonoBehaviour
     private Modifiers? modifiers = null;
     private Entity? entity = null;
 
+    private bool canLook = true;
+    private bool canStabilize = true;
+    private bool canThrust = true;
+
+    public void SetLookEnabled(bool enabled)
+    {
+        canLook = enabled;
+    }
+
+    public void SetStabilizeEnabled(bool enabled)
+    {
+        canStabilize = enabled;
+    }
+
+    public void SetThrustEnabled(bool enabled)
+    {
+        canThrust = enabled;
+    }
+
     public bool IsUsingGamepad { get { return playerInput != null && playerInput.currentControlScheme == "Gamepad"; } }
 
     public bool ShouldDisplayJumpTarget { get { return (isGroundedOnEdge || CameraAngleFromGravity > jumpDirectionalAngleThreshold) && MovementMode == ControllerMovementMode.Magnetized; } }
@@ -646,6 +665,11 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
+        if (!canLook)
+        {
+            return;
+        }
+
         Vector2? lookInput = lookAction?.ReadValue<Vector2>();
         if (lookInput == null)
         {
@@ -987,6 +1011,12 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
+        if (!canLook)
+        {
+            _pendingRollTorque = Vector3.zero;
+            return;
+        }
+
         Vector2? lookInput = lookAction?.ReadValue<Vector2>();
         if (lookInput != null)
         {
@@ -1064,16 +1094,18 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
-        float forwardThrustInput = forwardThrustAction?.ReadValue<float>() ?? 0f;
-        float backwardThrustInput = backwardThrustAction?.ReadValue<float>() ?? 0f;
-        float leftThrustInput = leftThrustAction?.ReadValue<float>() ?? 0f;
-        float rightThrustInput = rightThrustAction?.ReadValue<float>() ?? 0f;
-        float upThrustInput = upThrustAction?.ReadValue<float>() ?? 0f;
-        float downThrustInput = downThrustAction?.ReadValue<float>() ?? 0f;
+        bool stabilizeActive = canStabilize && isStabilizePressed.Value;
+
+        float forwardThrustInput = canThrust ? (forwardThrustAction?.ReadValue<float>() ?? 0f) : 0f;
+        float backwardThrustInput = canThrust ? (backwardThrustAction?.ReadValue<float>() ?? 0f) : 0f;
+        float leftThrustInput = canThrust ? (leftThrustAction?.ReadValue<float>() ?? 0f) : 0f;
+        float rightThrustInput = canThrust ? (rightThrustAction?.ReadValue<float>() ?? 0f) : 0f;
+        float upThrustInput = canThrust ? (upThrustAction?.ReadValue<float>() ?? 0f) : 0f;
+        float downThrustInput = canThrust ? (downThrustAction?.ReadValue<float>() ?? 0f) : 0f;
 
         Vector3 velocity = _rigidbody.linearVelocity;
 
-        if (isStabilizePressed.Value)
+        if (stabilizeActive)
         {
             Vector3 stabilizationForce = -velocity * (1.0f - stabilizeMultiplier);
             _rigidbody.AddForce(stabilizationForce, ForceMode.Acceleration);
@@ -1092,7 +1124,7 @@ public class FirstPersonController : MonoBehaviour
         thrustVector += -playerCamera.transform.up * downThrustInput;
 
         // burn less oxygen the closer the player gets to maximum velocity
-        if (isStabilizePressed.Value && velocity.sqrMagnitude > 1.0f)
+        if (stabilizeActive && velocity.sqrMagnitude > 1.0f)
         {
             oxygenBurnRate = 1.0f;
         }
@@ -1107,7 +1139,7 @@ public class FirstPersonController : MonoBehaviour
 
         _rigidbody.AddForce(thrustVector.normalized * flightForce);
 
-        if (!isStabilizePressed.Value && thrustVector.sqrMagnitude == 0f)
+        if (!stabilizeActive && thrustVector.sqrMagnitude == 0f)
         {
             _rigidbody.AddForce(-_rigidbody.linearVelocity * zeroGIdleDamping, ForceMode.Acceleration);
         }

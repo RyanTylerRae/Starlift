@@ -1,0 +1,7 @@
+
+skills to teach:
+- stop rotation and movement
+- look
+- thrust
+- magnetization
+- jump
