@@ -50,6 +50,14 @@ public class PlayerHUD : MonoBehaviour
     private float laggyOxygenProgress = 0f;
     public float laggyOxygenSpeed;
 
+    public void SetOxygenHudEnabled(bool enabled)
+    {
+        if (oxygenProgressRendererForeground != null)
+        {
+            oxygenProgressRendererForeground.gameObject.SetActive(enabled);
+        }
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
     {

@@ -115,6 +115,37 @@ VisualEffect:
       m_Array: []
     m_Bool:
       m_Array: []
+--- !u!1 &3109630655147749956
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7589257935407190048}
+  m_Layer: 0
+  m_Name: TutorialDialogue
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7589257935407190048
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3109630655147749956}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1256.5286, y: 597.55853, z: 6.1995707}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7542315045478018143}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3858464302000376762
 GameObject:
   m_ObjectHideFlags: 0
@@ -831,6 +862,7 @@ Transform:
   - {fileID: 1723591369367538452}
   - {fileID: 3149830879381995653}
   - {fileID: 2688906038970250317}
+  - {fileID: 7589257935407190048}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &3735377607399560560
@@ -912,7 +944,7 @@ MonoBehaviour:
   stabilizeMultiplier: 0.5
   flightForce: 1.3
   maxFlightSpeed: 8
-  zeroGIdleDamping: 0.005
+  zeroGIdleDamping: 0
   jumpTier1Time: 0.2
   jumpTier2Time: 0
   jumpTier3Time: 0
