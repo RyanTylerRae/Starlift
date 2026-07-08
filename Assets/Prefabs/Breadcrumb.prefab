@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80612568dfcf2ff43bfd2d69ecebcc55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetimeSeconds: 30
-  initialAlpha: 0.4
-  fadePowExponent: 1.5
+  lifetimeSeconds: 6
+  initialAlpha: 0.1
+  fadePowExponent: 1
   materialRenderer: {fileID: 7387954449237762490}
