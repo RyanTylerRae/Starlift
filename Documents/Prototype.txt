@@ -5,3 +5,8 @@ skills to teach:
 - thrust
 - magnetization
 - jump
+
+- leaving the oxygen bubble needs to be obvious
+- better breathing sounds
+- a little bit more oxygen? or fast messages
+- 

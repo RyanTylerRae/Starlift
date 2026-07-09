@@ -916,10 +916,10 @@ MonoBehaviour:
   maxMagnetizedWalkSpeed: 2
   magnetizeRadius: 0.4
   gravityAlignmentSpeed: 3
-  jumpForceTier1: 180
+  jumpForceTier1: 360
   jumpForceTier2: 0
   jumpForceTier3: 0
-  jumpTargetRaycastDistance: 150
+  jumpTargetRaycastDistance: 200
   jumpDirectionalAngleThreshold: 90
   approachDuration: 0.25
   edgeJumpSearchStep: 1
