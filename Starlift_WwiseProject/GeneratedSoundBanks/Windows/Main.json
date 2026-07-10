@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{F3CAC25E-D98E-C71A-FCA1-EC6812FB53FC}",
+    "Hash": "{C7157A94-3E3C-D44C-C301-BBF24AFD5C50}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -48,12 +48,12 @@
       "CachePath": "27/{2791A02B-EDB2-CFA0-F395-438F77978E88}.wem"
      },
      {
-      "Id": "944293846",
+      "Id": "896755970",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
-      "ShortName": "play_footstep_thud.wav",
-      "CachePath": "27/{2791A02B-EDB2-CFA0-F395-438F77978E88}.wem"
+      "ShortName": "stabilized.wav",
+      "CachePath": "7A/{7AF23D0E-C694-2BAD-7599-5D0EB4B39C0E}.wem"
      },
      {
       "Id": "987918517",
@@ -126,7 +126,7 @@
       "DurationMax": "0.86301565",
       "MediaRefs": [
        {
-        "Id": "944293846"
+        "Id": "891846702"
        }
       ]
      },
@@ -157,6 +157,20 @@
       ]
      },
      {
+      "Id": "3529544671",
+      "Name": "play_stabilized",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_stabilized",
+      "GUID": "{C86EE62A-620B-4F94-8BD7-3535E7BA089D}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.2780988",
+      "DurationMax": "0.33071706",
+      "MediaRefs": [
+       {
+        "Id": "896755970"
+       }
+      ]
+     },
+     {
       "Id": "2817166606",
       "Name": "stop_blend_breathing",
       "ObjectPath": "\\Events\\Default Work Unit\\stop_blend_breathing",
@@ -177,6 +191,6 @@
     ]
    }
   ],
-  "FileHash": "{6F92694F-1C27-43A7-E19E-F53ED9EB45B2}"
+  "FileHash": "{5F5A87D3-6198-BD8D-7B06-B10EB9AF21C0}"
  }
 }

@@ -368,7 +368,7 @@
 									<Language>SFX</Language>
 									<AudioFile>play_footstep_thud.wav</AudioFile>
 									<MediaIDList>
-										<MediaID ID="944293846"/>
+										<MediaID ID="891846702"/>
 									</MediaIDList>
 								</AudioFileSource>
 							</ChildrenList>
@@ -429,6 +429,48 @@
 							</ChildrenList>
 							<ActiveSourceList>
 								<ActiveSource Name="play_footstep_thud" ID="{296CC2EC-429D-4E82-BC2B-40EB032ECAB5}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="stablized" ID="{6EE6F841-DBDC-4211-9D00-93CFDCCF547E}" ShortID="843117714">
+							<PropertyList>
+								<Property Name="Pitch" Type="int32">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{96470F87-329C-4A5A-BB15-D0C68C74E99D}">
+												<PropertyList>
+													<Property Name="Enabled" Type="bool" Value="True"/>
+													<Property Name="Max" Type="Real64" Value="100"/>
+													<Property Name="Min" Type="Real64" Value="-200"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-5</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="stabilized" ID="{AD9955B7-5560-45AC-A30C-80D5748117D2}">
+									<Language>SFX</Language>
+									<AudioFile>stabilized.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="896755970"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="stabilized" ID="{AD9955B7-5560-45AC-A30C-80D5748117D2}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>

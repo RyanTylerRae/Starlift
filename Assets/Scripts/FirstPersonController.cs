@@ -89,6 +89,7 @@ public class FirstPersonController : MonoBehaviour
     public float flightForce;
     public float maxFlightSpeed;
     public float zeroGIdleDamping = 0.5f;
+    private bool hasPlayedStabilizedSound = false;
 
     // camera angle tracking
     private float cameraAngleFromGravity = 0f;
@@ -1148,6 +1149,19 @@ public class FirstPersonController : MonoBehaviour
         if (velocity.sqrMagnitude > maxFlightSpeed * maxFlightSpeed)
         {
             _rigidbody.linearVelocity = velocity.normalized * maxFlightSpeed;
+        }
+
+        if (stabilizeActive && _rigidbody.linearVelocity.magnitude < 0.3f && _rigidbody.angularVelocity.magnitude < 0.3f)
+        {
+            if (!hasPlayedStabilizedSound)
+            {
+                AkUnitySoundEngine.PostEvent("play_stabilized", gameObject);
+                hasPlayedStabilizedSound = true;
+            }
+        }
+        else
+        {
+            hasPlayedStabilizedSound = false;
         }
     }
 

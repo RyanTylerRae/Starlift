@@ -91,6 +91,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="play_stabilized" ID="{C86EE62A-620B-4F94-8BD7-3535E7BA089D}">
+					<ChildrenList>
+						<Action Name="" ID="{8FA53D95-9746-4043-B090-A538FDA7EDB4}" ShortID="520464729">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="stablized" ID="{6EE6F841-DBDC-4211-9D00-93CFDCCF547E}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
