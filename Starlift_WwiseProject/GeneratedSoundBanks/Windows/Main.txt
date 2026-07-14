@@ -21,7 +21,6 @@ Effect plug-ins	ID	Name	Type				Notes
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	106386982	breathing	.cache\EC\{EC5700C9-7164-036B-2B0F-01F710C72128}.wem		\Containers\Default Work Unit\BlendContainers\Blend_Breathing\breathing		2222176
 	401349144	thrust_forward_loop	.cache\D7\{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem		\Containers\Default Work Unit\Audio\thrust_forward_loop		42290
-	641998116	thrust_loop	.cache\D7\{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem		\Containers\Default Work Unit\Audio\thrust_rotate\thrust_loop		42290
 	664015539	thrust_stop	.cache\03\{032D85C2-F644-FD40-04B2-5FDB389006FD}.wem		\Containers\Default Work Unit\Audio\thrust_stop		20280
 	679527475	thrust_start	.cache\59\{5980F175-7EA4-2698-43F4-9B1A497F9874}.wem		\Containers\Default Work Unit\Audio\thrust_rotate\thrust_start		15950
 	686684793	music_worldonfire	.cache\84\{84556C36-5704-7AE2-0F73-4EC2D3F034C4}.wem		\Containers\Default Work Unit\Audio\dialogue\prototype\music_worldonfire		31532828

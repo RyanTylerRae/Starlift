@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{7CD20301-D44D-1AFD-D751-DDCC026D627D}",
+    "Hash": "{AA2E8162-6D71-1F1E-A3EC-537385648E55}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -25,14 +25,6 @@
      },
      {
       "Id": "401349144",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "thrust_loop.wav",
-      "CachePath": "D7/{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem"
-     },
-     {
-      "Id": "641998116",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
@@ -241,7 +233,7 @@
       "DurationType": "Infinite",
       "MediaRefs": [
        {
-        "Id": "641998116"
+        "Id": "401349144"
        },
        {
         "Id": "679527475"
@@ -300,6 +292,6 @@
     ]
    }
   ],
-  "FileHash": "{17B5E235-25D1-3011-BEEF-AB69A848573A}"
+  "FileHash": "{3E8D74D4-A065-3425-02B8-12339EF8B453}"
  }
 }

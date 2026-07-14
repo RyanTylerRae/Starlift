@@ -349,11 +349,6 @@
 										</ModifierInfo>
 									</ModifierList>
 								</Property>
-								<Property Name="Volume" Type="Real64">
-									<ValueList>
-										<Value>-4</Value>
-									</ValueList>
-								</Property>
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Conversion">
@@ -514,7 +509,7 @@
 											<Language>SFX</Language>
 											<AudioFile>thrust_loop.wav</AudioFile>
 											<MediaIDList>
-												<MediaID ID="641998116"/>
+												<MediaID ID="401349144"/>
 											</MediaIDList>
 										</AudioFileSource>
 									</ChildrenList>

@@ -72,7 +72,7 @@ public class FirstPersonController : MonoBehaviour
     public float rollSpeed = 45f;
     public float rollDamping = 0.5f;
     public float autoRollRaycastDistance = 20f;
-    public float autoRollSpeed = 10f;
+    public float autoRollSettleTime = 0.4f;
     public float autoRollAngleThreshold = 45f;
     public float autoRollMinSpeed = 0f;
     public float autoRollLookAngleThreshold = 90f;
@@ -123,6 +123,7 @@ public class FirstPersonController : MonoBehaviour
 
     // ZeroG roll torque computed in Update, applied in FixedUpdate
     private Vector3 _pendingRollTorque = Vector3.zero;
+    private Vector3 _pendingAutoRollAcceleration = Vector3.zero;
 
     [Header("Player")]
     private CharacterController? characterController;
@@ -585,6 +586,7 @@ public class FirstPersonController : MonoBehaviour
         if (MovementMode == ControllerMovementMode.ZeroG)
         {
             _rigidbody.AddTorque(_pendingRollTorque, ForceMode.Force);
+            _rigidbody.AddTorque(_pendingAutoRollAcceleration, ForceMode.Acceleration);
             _rigidbody.AddTorque(-_rigidbody.angularVelocity * rollDamping, ForceMode.Acceleration);
             return;
         }
@@ -1070,6 +1072,7 @@ public class FirstPersonController : MonoBehaviour
         if (!canLook)
         {
             _pendingRollTorque = Vector3.zero;
+            _pendingAutoRollAcceleration = Vector3.zero;
             StopRotationThrustSound();
             return;
         }
@@ -1108,10 +1111,13 @@ public class FirstPersonController : MonoBehaviour
         if (Mathf.Abs(rollInput) > 0.01f)
         {
             _pendingRollTorque = transform.forward * rollInput * rollSpeed;
+            _pendingAutoRollAcceleration = Vector3.zero;
             StartRotationThrustSound();
         }
         else
         {
+            _pendingRollTorque = Vector3.zero;
+
             bool stabilizeActive = canStabilize && (stabilizeAction?.IsPressed() ?? false);
             bool isStabilizingAngularVelocity = stabilizeActive && _rigidbody.angularVelocity.magnitude >= stabilizeSoundAngularThreshold;
             if (isStabilizingAngularVelocity)
@@ -1126,8 +1132,9 @@ public class FirstPersonController : MonoBehaviour
             Ray forwardRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
             if (_rigidbody.linearVelocity.magnitude >= autoRollMinSpeed
                 && Physics.Raycast(forwardRay, out RaycastHit surfaceHit, autoRollRaycastDistance)
-                && Vector3.Angle(transform.forward, -surfaceHit.normal) > autoRollAngleThreshold
-                && Vector3.Angle(_rigidbody.linearVelocity, forwardRay.direction) < autoRollLookAngleThreshold)
+                // 0 = looking straight along the surface (grazing), 90 = looking straight into it (head-on)
+                && 90f - Vector3.Angle(transform.forward, -surfaceHit.normal) < autoRollAngleThreshold
+                && Vector3.Angle(transform.forward, forwardRay.direction) < autoRollLookAngleThreshold)
             {
                 Vector3 normalOnPlane = Vector3.ProjectOnPlane(surfaceHit.normal, transform.forward);
                 if (normalOnPlane.sqrMagnitude > 0.001f)
@@ -1135,16 +1142,22 @@ public class FirstPersonController : MonoBehaviour
                     float t = surfaceHit.distance / autoRollRaycastDistance;
                     float easing = Mathf.Log(1f + (1f - t) * (Mathf.Exp(1f) - 1f));
                     float angle = Vector3.SignedAngle(transform.up, normalOnPlane.normalized, transform.forward);
-                    _pendingRollTorque = transform.forward * angle * autoRollSpeed * easing;
+                    float rollAngularSpeedDeg = Vector3.Dot(_rigidbody.angularVelocity, transform.forward) * Mathf.Rad2Deg;
+
+                    // Critically damped (zeta = 1): closes `angle` to 0 in ~autoRollSettleTime with no overshoot,
+                    // regardless of the player's mass/inertia (applied via ForceMode.Acceleration in FixedUpdate).
+                    float omega = 2f / Mathf.Max(autoRollSettleTime, 0.01f);
+                    float accelerationDeg = (angle * omega * omega - rollAngularSpeedDeg * 2f * omega) * easing;
+                    _pendingAutoRollAcceleration = transform.forward * accelerationDeg * Mathf.Deg2Rad;
                 }
                 else
                 {
-                    _pendingRollTorque = Vector3.zero;
+                    _pendingAutoRollAcceleration = Vector3.zero;
                 }
             }
             else
             {
-                _pendingRollTorque = Vector3.zero;
+                _pendingAutoRollAcceleration = Vector3.zero;
             }
         }
     }
