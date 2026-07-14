@@ -1,0 +1,10 @@
+{
+    "partName": "ship_hull_edgecorner_1x1",
+	"connectionPoints": [
+		{
+			"localPos": { "x": 0.8, "y" : 1.0, "z" : 1.0 },
+			"localEulerRot": { "x": 0.0, "y" : 0.0, "z" : 0.0 },
+			"orientation": 90.0
+		}
+	]
+}

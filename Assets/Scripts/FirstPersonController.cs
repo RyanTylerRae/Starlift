@@ -90,6 +90,10 @@ public class FirstPersonController : MonoBehaviour
     public float maxFlightSpeed;
     public float zeroGIdleDamping = 0.5f;
     private bool hasPlayedStabilizedSound = false;
+    private bool isRotationThrustPlaying = false;
+    private bool isThrustForwardPlaying = false;
+    private const float stabilizeSoundVelocityThreshold = 0.3f;
+    private const float stabilizeSoundAngularThreshold = 0.3f;
 
     // camera angle tracking
     private float cameraAngleFromGravity = 0f;
@@ -278,6 +282,12 @@ public class FirstPersonController : MonoBehaviour
         if (newMovementMode == ControllerMovementMode.Magnetized && movementMode != ControllerMovementMode.Magnetized)
         {
             TriggerMagnetizeSound();
+        }
+
+        if (newMovementMode != ControllerMovementMode.ZeroG)
+        {
+            StopRotationThrustSound();
+            StopThrustForwardSound();
         }
 
         // entering a gravity zone from ZeroG means we're falling in from open space, so arm the
@@ -1005,6 +1015,51 @@ public class FirstPersonController : MonoBehaviour
         gravityModeMaxSpeed = isGrounded ? maxSpeed : maxJumpSpeed;
     }
 
+    void StartRotationThrustSound()
+    {
+        if (isRotationThrustPlaying)
+        {
+            return;
+        }
+
+        AkUnitySoundEngine.PostEvent("play_thrust_loop", gameObject);
+        isRotationThrustPlaying = true;
+    }
+
+    void StopRotationThrustSound()
+    {
+        if (!isRotationThrustPlaying)
+        {
+            return;
+        }
+
+        AkUnitySoundEngine.ExecuteActionOnEvent("play_thrust_loop", AkActionOnEventType.AkActionOnEventType_Stop, gameObject);
+        AkUnitySoundEngine.PostEvent("play_thrust_stop", gameObject);
+        isRotationThrustPlaying = false;
+    }
+
+    void StartThrustForwardSound()
+    {
+        if (isThrustForwardPlaying)
+        {
+            return;
+        }
+
+        AkUnitySoundEngine.PostEvent("play_thrust_forward_loop", gameObject);
+        isThrustForwardPlaying = true;
+    }
+
+    void StopThrustForwardSound()
+    {
+        if (!isThrustForwardPlaying)
+        {
+            return;
+        }
+
+        AkUnitySoundEngine.PostEvent("stop_thrust_forward_loop", gameObject);
+        isThrustForwardPlaying = false;
+    }
+
     void HandleZeroGLook()
     {
         if (_rigidbody == null || playerCamera == null)
@@ -1015,6 +1070,7 @@ public class FirstPersonController : MonoBehaviour
         if (!canLook)
         {
             _pendingRollTorque = Vector3.zero;
+            StopRotationThrustSound();
             return;
         }
 
@@ -1052,9 +1108,21 @@ public class FirstPersonController : MonoBehaviour
         if (Mathf.Abs(rollInput) > 0.01f)
         {
             _pendingRollTorque = transform.forward * rollInput * rollSpeed;
+            StartRotationThrustSound();
         }
         else
         {
+            bool stabilizeActive = canStabilize && (stabilizeAction?.IsPressed() ?? false);
+            bool isStabilizingAngularVelocity = stabilizeActive && _rigidbody.angularVelocity.magnitude >= stabilizeSoundAngularThreshold;
+            if (isStabilizingAngularVelocity)
+            {
+                StartRotationThrustSound();
+            }
+            else
+            {
+                StopRotationThrustSound();
+            }
+
             Ray forwardRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
             if (_rigidbody.linearVelocity.magnitude >= autoRollMinSpeed
                 && Physics.Raycast(forwardRay, out RaycastHit surfaceHit, autoRollRaycastDistance)
@@ -1106,6 +1174,19 @@ public class FirstPersonController : MonoBehaviour
 
         Vector3 velocity = _rigidbody.linearVelocity;
 
+        bool isManualThrusting = forwardThrustInput > 0f || backwardThrustInput > 0f
+            || leftThrustInput > 0f || rightThrustInput > 0f
+            || upThrustInput > 0f || downThrustInput > 0f;
+        bool isStabilizingLinearVelocity = stabilizeActive && velocity.magnitude >= stabilizeSoundVelocityThreshold;
+        if (isManualThrusting || isStabilizingLinearVelocity)
+        {
+            StartThrustForwardSound();
+        }
+        else
+        {
+            StopThrustForwardSound();
+        }
+
         if (stabilizeActive)
         {
             Vector3 stabilizationForce = -velocity * (1.0f - stabilizeMultiplier);
@@ -1151,7 +1232,7 @@ public class FirstPersonController : MonoBehaviour
             _rigidbody.linearVelocity = velocity.normalized * maxFlightSpeed;
         }
 
-        if (stabilizeActive && _rigidbody.linearVelocity.magnitude < 0.3f && _rigidbody.angularVelocity.magnitude < 0.3f)
+        if (stabilizeActive && _rigidbody.linearVelocity.magnitude < stabilizeSoundVelocityThreshold && _rigidbody.angularVelocity.magnitude < stabilizeSoundAngularThreshold)
         {
             if (!hasPlayedStabilizedSound)
             {

@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{C7157A94-3E3C-D44C-C301-BBF24AFD5C50}",
+    "Hash": "{7CD20301-D44D-1AFD-D751-DDCC026D627D}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -22,6 +22,38 @@
       "Location": "Memory",
       "ShortName": "breathing.wav",
       "CachePath": "EC/{EC5700C9-7164-036B-2B0F-01F710C72128}.wem"
+     },
+     {
+      "Id": "401349144",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "thrust_loop.wav",
+      "CachePath": "D7/{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem"
+     },
+     {
+      "Id": "641998116",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "thrust_loop.wav",
+      "CachePath": "D7/{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem"
+     },
+     {
+      "Id": "664015539",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "thrust_loop_end.wav",
+      "CachePath": "03/{032D85C2-F644-FD40-04B2-5FDB389006FD}.wem"
+     },
+     {
+      "Id": "679527475",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "thrust_loop_start.wav",
+      "CachePath": "59/{5980F175-7EA4-2698-43F4-9B1A497F9874}.wem"
      },
      {
       "Id": "686684793",
@@ -72,6 +104,18 @@
       "CachePath": "A4/{A473AE3A-C2BC-9EA3-FC55-8F14667FBE54}.wem"
      }
     ],
+    "Plugins": {
+     "ShareSets": [
+      {
+       "Id": "2755291687",
+       "Name": "Pumping_and_Breathing_2",
+       "ObjectPath": "\\Effects\\Factory Effects\\Compressor\\Pumping_and_Breathing_2",
+       "GUID": "{1E63EC43-20F0-4D27-A844-BD5F6AE9E3C9}",
+       "LibName": "Wwise Compressor",
+       "LibId": "7077891"
+      }
+     ]
+    },
     "Events": [
      {
       "Id": "3591904104",
@@ -171,10 +215,75 @@
       ]
      },
      {
+      "Id": "866766775",
+      "Name": "play_thrust_forward_loop",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_thrust_forward_loop",
+      "GUID": "{8F79927A-EB0E-4B59-B975-B285599BA727}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "401349144"
+       }
+      ],
+      "PluginRefs": {
+       "ShareSets": [
+        {
+         "Id": "2755291687"
+        }
+       ]
+      }
+     },
+     {
+      "Id": "1690998729",
+      "Name": "play_thrust_loop",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_thrust_loop",
+      "GUID": "{DB12CF76-0185-4BD5-90A8-9D145FA469FC}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "641998116"
+       },
+       {
+        "Id": "679527475"
+       }
+      ],
+      "PluginRefs": {
+       "ShareSets": [
+        {
+         "Id": "2755291687"
+        }
+       ]
+      }
+     },
+     {
+      "Id": "3972341671",
+      "Name": "play_thrust_stop",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_thrust_stop",
+      "GUID": "{FEA3D985-B3F5-47DB-9FCB-CD7FE628E9E5}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.21025",
+      "DurationMax": "0.21025",
+      "MediaRefs": [
+       {
+        "Id": "664015539"
+       }
+      ]
+     },
+     {
       "Id": "2817166606",
       "Name": "stop_blend_breathing",
       "ObjectPath": "\\Events\\Default Work Unit\\stop_blend_breathing",
       "GUID": "{963C0590-F3CE-47C0-9F7C-3BBD2F47FD43}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "1317991621",
+      "Name": "stop_thrust_forward_loop",
+      "ObjectPath": "\\Events\\Default Work Unit\\stop_thrust_forward_loop",
+      "GUID": "{E1D3327C-52D4-4A75-8F03-BD873D702027}",
       "MaxAttenuation": "0",
       "DurationType": "OneShot",
       "DurationMin": "0",
@@ -191,6 +300,6 @@
     ]
    }
   ],
-  "FileHash": "{5F5A87D3-6198-BD8D-7B06-B10EB9AF21C0}"
+  "FileHash": "{61974674-F0A0-FDB5-C1DD-59CB065E80AB}"
  }
 }

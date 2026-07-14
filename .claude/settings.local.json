@@ -10,7 +10,8 @@
       "Bash(awk ' *)",
       "Bash(awk '/^--- !u!1 &539619132$/{print; f=1; next} f{print; if\\(/m_Father/\\) exit}' Assets/Scenes/Testing/Prototype.unity)",
       "Bash(awk '/^--- !u!4 &539619132$/{f=1} f{print} f&&/m_Father/{exit}' Assets/Scenes/Testing/Prototype.unity)",
-      "Bash(awk '/^--- !u!1 &539619131$/{f=1} f{print; if\\(/m_Name/\\) exit}' Assets/Scenes/Testing/Prototype.unity)"
+      "Bash(awk '/^--- !u!1 &539619131$/{f=1} f{print; if\\(/m_Name/\\) exit}' Assets/Scenes/Testing/Prototype.unity)",
+      "Bash(git checkout *)"
     ]
   }
 }

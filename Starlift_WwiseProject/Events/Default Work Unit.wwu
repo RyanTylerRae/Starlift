@@ -102,6 +102,55 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="play_thrust_loop" ID="{DB12CF76-0185-4BD5-90A8-9D145FA469FC}">
+					<ChildrenList>
+						<Action Name="" ID="{7E50081C-0192-4CCB-A783-8A11F503E7BD}" ShortID="471267578">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="thrust_rotate" ID="{E56CE97D-8FB3-4334-979D-0EFCF3C4529F}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="play_thrust_stop" ID="{FEA3D985-B3F5-47DB-9FCB-CD7FE628E9E5}">
+					<ChildrenList>
+						<Action Name="" ID="{DB17085E-CF2C-45B1-8A97-798F8DADFEE9}" ShortID="316778633">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="thrust_stop" ID="{80F9D1B1-9064-475C-91E7-7D5E55E12EE9}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="play_thrust_forward_loop" ID="{8F79927A-EB0E-4B59-B975-B285599BA727}">
+					<ChildrenList>
+						<Action Name="" ID="{780EAE0D-B215-4C94-ABCA-55125A25E47F}" ShortID="271058767">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="thrust_forward_loop" ID="{82E1B102-118B-4AA4-BD4E-2EEBB794581C}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="stop_thrust_forward_loop" ID="{E1D3327C-52D4-4A75-8F03-BD873D702027}">
+					<ChildrenList>
+						<Action Name="" ID="{3799B689-CC18-4059-B915-FCFD3A1EF416}" ShortID="97704378">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+								<Property Name="FadeOutCurve" Type="int16" Value="7"/>
+								<Property Name="FadeTime" Type="Real64" Value="0.5"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="thrust_forward_loop" ID="{82E1B102-118B-4AA4-BD4E-2EEBB794581C}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
