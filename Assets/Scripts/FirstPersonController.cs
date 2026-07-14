@@ -189,8 +189,10 @@ public class FirstPersonController : MonoBehaviour
     [Header("Oxygen")]
     public float minOxygenBurnRate = 0.33f;
     public float jumpOxygenCost;
+    public float rotationOxygenBurnRate = 0.5f;
     private float oxygenBurnRate = 0.0f;
     public float OxygenBurnRate { get { return oxygenBurnRate; } }
+    private float rotationOxygenContribution = 0.0f;
     private OxygenSystem? oxygenSystem = null;
 
     public enum ControllerMovementMode
@@ -496,6 +498,7 @@ public class FirstPersonController : MonoBehaviour
         {
             // we don't burn extra oxygen when walking on a surface
             oxygenBurnRate = 0.0f;
+            rotationOxygenContribution = 0.0f;
             IsSprinting = false;
             IsMagnetizedWalking = false;
 
@@ -1073,6 +1076,7 @@ public class FirstPersonController : MonoBehaviour
         {
             _pendingRollTorque = Vector3.zero;
             _pendingAutoRollAcceleration = Vector3.zero;
+            rotationOxygenContribution = 0.0f;
             StopRotationThrustSound();
             return;
         }
@@ -1112,6 +1116,7 @@ public class FirstPersonController : MonoBehaviour
         {
             _pendingRollTorque = transform.forward * rollInput * rollSpeed;
             _pendingAutoRollAcceleration = Vector3.zero;
+            rotationOxygenContribution = rotationOxygenBurnRate;
             StartRotationThrustSound();
         }
         else
@@ -1122,10 +1127,12 @@ public class FirstPersonController : MonoBehaviour
             bool isStabilizingAngularVelocity = stabilizeActive && _rigidbody.angularVelocity.magnitude >= stabilizeSoundAngularThreshold;
             if (isStabilizingAngularVelocity)
             {
+                rotationOxygenContribution = rotationOxygenBurnRate;
                 StartRotationThrustSound();
             }
             else
             {
+                rotationOxygenContribution = 0.0f;
                 StopRotationThrustSound();
             }
 
@@ -1219,18 +1226,21 @@ public class FirstPersonController : MonoBehaviour
         thrustVector += -playerCamera.transform.up * downThrustInput;
 
         // burn less oxygen the closer the player gets to maximum velocity
+        float movementOxygenBurnRate;
         if (stabilizeActive && velocity.sqrMagnitude > 1.0f)
         {
-            oxygenBurnRate = 1.0f;
+            movementOxygenBurnRate = 1.0f;
         }
         else if (thrustVector.sqrMagnitude > 0.0f)
         {
-            oxygenBurnRate = Math.Max(1.0f - (_rigidbody.linearVelocity.magnitude / maxFlightSpeed), minOxygenBurnRate);
+            movementOxygenBurnRate = Math.Max(1.0f - (_rigidbody.linearVelocity.magnitude / maxFlightSpeed), minOxygenBurnRate);
         }
         else
         {
-            oxygenBurnRate = 0.0f;
+            movementOxygenBurnRate = 0.0f;
         }
+
+        oxygenBurnRate = Math.Max(movementOxygenBurnRate, rotationOxygenContribution);
 
         _rigidbody.AddForce(thrustVector.normalized * flightForce);
 

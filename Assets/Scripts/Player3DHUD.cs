@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.Splines.Interpolators;
@@ -16,6 +17,7 @@ public class PlayerHUD : MonoBehaviour
     [Header("Jump Target Widget")]
     public GameObject? jumpTargetWidget = null;
     public Vector3 jumpTargetRotationOffset = Vector3.zero;
+    public TMP_Text? jumpOkIndicatorText;
 
     [Header("Material Instances")]
     public MeshRenderer? oxygenProgressRendererForeground;
@@ -165,6 +167,22 @@ public class PlayerHUD : MonoBehaviour
             }
 
             prevCameraRotation = playerController.playerCamera?.transform.rotation ?? prevCameraRotation;
+        }
+
+        if (jumpOkIndicatorText != null && playerController.playerCamera != null)
+        {
+            Ray magnetizeRay = new Ray(playerController.playerCamera.transform.position, playerController.playerCamera.transform.forward);
+
+            if (Physics.Raycast(magnetizeRay, out RaycastHit magnetizeHit, playerController.jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
+            {
+                GravitySourceComponent? hitGravitySource = magnetizeHit.collider.GetComponentInParent<GravitySourceComponent>();
+                bool canMagnetizeToSurface = hitGravitySource != null && hitGravitySource.isMagnetized;
+                jumpOkIndicatorText.text = canMagnetizeToSurface ? "[ok]" : "[x]";
+            }
+            else
+            {
+                jumpOkIndicatorText.text = "";
+            }
         }
 
         // handle oxygen burn logic for the laggy progress bar

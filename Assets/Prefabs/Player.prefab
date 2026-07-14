@@ -916,7 +916,7 @@ MonoBehaviour:
   maxMagnetizedWalkSpeed: 2
   magnetizeRadius: 0.4
   gravityAlignmentSpeed: 3
-  jumpForceTier1: 360
+  jumpForceTier1: 320
   jumpForceTier2: 0
   jumpForceTier3: 0
   jumpTargetRaycastDistance: 200
@@ -941,9 +941,9 @@ MonoBehaviour:
   autoRollAngleThreshold: 45
   autoRollMinSpeed: 1
   autoRollLookAngleThreshold: 45
-  stabilizeMultiplier: 0.5
-  flightForce: 1.3
-  maxFlightSpeed: 8
+  stabilizeMultiplier: 0.6
+  flightForce: 1
+  maxFlightSpeed: 7
   zeroGIdleDamping: 0
   jumpTier1Time: 0.2
   jumpTier2Time: 0
@@ -953,8 +953,9 @@ MonoBehaviour:
   maxDepenetrationVelocity: 0.5
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
-  minOxygenBurnRate: 0.5
+  minOxygenBurnRate: 2
   jumpOxygenCost: 4
+  rotationOxygenBurnRate: 0.4
 --- !u!114 &4662095033839872499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1108,8 +1109,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 3
-  thrustMultiplier: 3
+  usagePerSecond: 2.5
+  thrustMultiplier: 2
   sprintMultiplier: 1.5
   magnetizedWalkMultiplier: 1
 --- !u!114 &3039922705185681957

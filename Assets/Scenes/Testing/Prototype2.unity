@@ -2000,6 +2000,10 @@ PrefabInstance:
       propertyPath: outsideLocalCorrectionForce
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 240997065399706691, guid: 25feb30eab771544dbcf98266978d619, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 709271642251538129, guid: 25feb30eab771544dbcf98266978d619, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5
@@ -2064,6 +2068,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3127441386696958924, guid: 25feb30eab771544dbcf98266978d619, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3740958237592137601, guid: 25feb30eab771544dbcf98266978d619, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2112,6 +2120,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 46e08e1fd2e76ec41a45a7967ee052ff, type: 2}
+    - target: {fileID: 5726087323801438372, guid: 25feb30eab771544dbcf98266978d619, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 10100, guid: 0000000000000000e000000000000000, type: 0}
     - target: {fileID: 7317887743039701709, guid: 25feb30eab771544dbcf98266978d619, type: 3}
       propertyPath: m_CastShadows
       value: 1
@@ -2147,6 +2159,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 978333244769671072, guid: 25feb30eab771544dbcf98266978d619, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1591475658}
+    - targetCorrespondingSourceObject: {fileID: 6887520664410621738, guid: 25feb30eab771544dbcf98266978d619, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 25feb30eab771544dbcf98266978d619, type: 3}
 --- !u!1 &1591475656 stripped
 GameObject:
