@@ -498,12 +498,26 @@ public class FirstPersonController : MonoBehaviour
                 HandleJump();
             }
 
-            // orient player to align with gravity
-            Vector3 upVector = -gravity.normalized;
-            if (upVector.sqrMagnitude > 0.01f)
+            // orient player to align with gravity, but only if we're looking at a surface we can magnetize to
+            bool isLookingAtMagnetizableSurface = false;
+            if (playerCamera != null)
             {
-                Quaternion targetRotation = Quaternion.FromToRotation(transform.up, upVector) * transform.rotation;
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * gravityAlignmentSpeed);
+                Ray lookRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+                if (Physics.Raycast(lookRay, out RaycastHit lookHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
+                {
+                    GravitySourceComponent? lookedAtGravitySource = lookHit.collider.GetComponentInParent<GravitySourceComponent>();
+                    isLookingAtMagnetizableSurface = lookedAtGravitySource != null && lookedAtGravitySource.isMagnetized;
+                }
+            }
+
+            if (isLookingAtMagnetizableSurface)
+            {
+                Vector3 upVector = -gravity.normalized;
+                if (upVector.sqrMagnitude > 0.01f)
+                {
+                    Quaternion targetRotation = Quaternion.FromToRotation(transform.up, upVector) * transform.rotation;
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * gravityAlignmentSpeed);
+                }
             }
         }
         else
@@ -885,10 +899,11 @@ public class FirstPersonController : MonoBehaviour
 
         float jumpForce = 0.0f;
         float jumpNorm = Math.Clamp(pressDuration / jumpChargeTime, 0.0f, 1.0f);
+        float jumpNormPow = (float)Math.Pow(jumpNorm, 3.0);
 
         if (pressDuration > 0.0f)
         {
-            jumpForce = maxJumpForce * jumpNorm;
+            jumpForce = maxJumpForce * jumpNormPow;
         }
 
         if (jumpForce > 0.0f && _rigidbody != null && gravityController != null && playerCamera != null)
@@ -910,11 +925,11 @@ public class FirstPersonController : MonoBehaviour
                     gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
                 }
             }
-            // jump straight upwards
-            // else
-            // {
-            //     jumpDirection = -1.0f * gravity.normalized;
-            // }
+            // otherwise jump straight upwards, away from the surface we're standing on
+            else
+            {
+                jumpDirection = -1.0f * gravity.normalized;
+            }
 
             if (jumpDirection.AlmostZero())
             {
@@ -939,7 +954,7 @@ public class FirstPersonController : MonoBehaviour
                 }
             }
 
-            _rigidbody?.AddForce(jumpDirection * jumpForce);
+            _rigidbody?.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
 
             if (activeSource != null)
             {

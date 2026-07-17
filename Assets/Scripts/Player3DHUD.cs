@@ -166,8 +166,13 @@ public class PlayerHUD : MonoBehaviour
 
             if (Physics.Raycast(magnetizeRay, out RaycastHit magnetizeHit, playerController.jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
             {
+                player.TryGetComponent(out GravityController magnetizeGravityController);
+                GravitySourceComponent? activeGravitySource = magnetizeGravityController?.GetActiveGravitySource();
+
                 GravitySourceComponent? hitGravitySource = magnetizeHit.collider.GetComponentInParent<GravitySourceComponent>();
-                bool canMagnetizeToSurface = hitGravitySource != null && hitGravitySource.isMagnetized;
+
+                // can't jump to the surface we're already standing on
+                bool canMagnetizeToSurface = hitGravitySource != null && hitGravitySource.isMagnetized && hitGravitySource != activeGravitySource;
                 jumpOkIndicatorText.text = canMagnetizeToSurface ? "[ok]" : "[x]";
             }
             else

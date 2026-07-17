@@ -915,11 +915,11 @@ MonoBehaviour:
   footstepImpactPhaseOffset: 0.3
   maxMagnetizedWalkSpeed: 2
   magnetizeRadius: 0.4
-  magnetizedSoundRange: 4
+  magnetizedSoundRange: 5
   gravityAlignmentSpeed: 3
-  maxJumpForce: 1800
-  jumpTargetRaycastDistance: 200
-  jumpDirectionalAngleThreshold: 90
+  maxJumpForce: 24
+  jumpTargetRaycastDistance: 100
+  jumpDirectionalAngleThreshold: 95
   approachDuration: 0.25
   edgeJumpSearchStep: 1
   edgeJumpMaxClearDistance: 6

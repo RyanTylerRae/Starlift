@@ -12,6 +12,7 @@ public class OxygenPocket : MonoBehaviour
     private Collider? volumeCollider;
     private GameObject? playerInPocket;
     private OxygenSystem? playerOxygenSystem;
+    private FirstPersonController? playerController;
 
     void Start()
     {
@@ -24,7 +25,7 @@ public class OxygenPocket : MonoBehaviour
 
     void Update()
     {
-        if (playerInPocket != null && playerOxygenSystem != null)
+        if (playerInPocket != null && playerOxygenSystem != null && (playerController == null || playerController.OxygenBurnRate <= 0.0f))
         {
             playerOxygenSystem.ReplenishOxygen(replenishRate);
         }
@@ -51,6 +52,7 @@ public class OxygenPocket : MonoBehaviour
     private void OnPlayerEnterPocket(GameObject player)
     {
         playerOxygenSystem = player.GetComponent<OxygenSystem>();
+        playerController = player.GetComponent<FirstPersonController>();
         if (playerOxygenSystem == null)
         {
             Debug.LogWarning("Player entered oxygen pocket but has no OxygenSystem component");
@@ -74,6 +76,7 @@ public class OxygenPocket : MonoBehaviour
     private void OnPlayerExitPocket(GameObject player)
     {
         playerOxygenSystem = null;
+        playerController = null;
         Debug.Log("Player exited oxygen pocket - stopping oxygen replenishment");
 
         AkUnitySoundEngine.SetRTPCValue("SpaceVacuum", 100.0f);
