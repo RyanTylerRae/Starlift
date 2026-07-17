@@ -30,4 +30,14 @@ public class GravitySourcePlane : GravitySourceComponent
 
         return transform.TransformDirection(direction.normalized) * defaultGravity * G_multiplier;
     }
+
+    public override float GetDistanceToSurface(Vector3 point)
+    {
+        if (triggerCollider == null)
+        {
+            return float.PositiveInfinity;
+        }
+
+        return Vector3.Distance(point, triggerCollider.ClosestPoint(point));
+    }
 }

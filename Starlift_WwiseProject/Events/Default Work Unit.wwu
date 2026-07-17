@@ -151,6 +151,35 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="play_magnetized" ID="{FCEE740D-DD59-4AB5-B87B-3A8EB03E9617}">
+					<ChildrenList>
+						<Action Name="" ID="{5A8453CE-01ED-401C-916A-5B5C81B96B3C}" ShortID="144730604">
+							<PropertyList>
+								<Property Name="FadeTime" Type="Real64" Value="0.5"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="magnetized" ID="{9899C78D-558B-4CA0-9D52-38A6921D2444}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="stop_magnetized" ID="{0E853B86-3428-42B1-BC9A-7042BBE35AF9}">
+					<ChildrenList>
+						<Action Name="" ID="{ED88E882-990D-4471-AB2F-95E6111FF994}" ShortID="383704962">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+								<Property Name="FadeTime" Type="Real64" Value="0.5"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="magnetized" ID="{9899C78D-558B-4CA0-9D52-38A6921D2444}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

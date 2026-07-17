@@ -915,10 +915,9 @@ MonoBehaviour:
   footstepImpactPhaseOffset: 0.3
   maxMagnetizedWalkSpeed: 2
   magnetizeRadius: 0.4
+  magnetizedSoundRange: 4
   gravityAlignmentSpeed: 3
-  jumpForceTier1: 320
-  jumpForceTier2: 0
-  jumpForceTier3: 0
+  maxJumpForce: 1800
   jumpTargetRaycastDistance: 200
   jumpDirectionalAngleThreshold: 90
   approachDuration: 0.25
@@ -945,9 +944,7 @@ MonoBehaviour:
   flightForce: 1
   maxFlightSpeed: 7
   zeroGIdleDamping: 0
-  jumpTier1Time: 0.2
-  jumpTier2Time: 0
-  jumpTier3Time: 0
+  jumpChargeTime: 0.5
   substepDistance: 0.01
   airCollisionDampening: 0.2
   maxDepenetrationVelocity: 0.5

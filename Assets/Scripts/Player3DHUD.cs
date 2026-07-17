@@ -27,14 +27,8 @@ public class PlayerHUD : MonoBehaviour
     public MeshRenderer? oxygenProgressRendererBackground;
     private Material? oxygenProgressBackgroundMaterialInstance = null;
 
-    public MeshRenderer? jumpTier1Renderer;
-    private Material? jumpTier1MaterialInstance = null;
-    public MeshRenderer? jumpTier2Renderer;
-    private Material? jumpTier2MaterialInstance = null;
-    public MeshRenderer? jumpTier3Renderer;
-    private Material? jumpTier3MaterialInstance = null;
-    public MeshRenderer? magneticChargeRenderer;
-    private Material? magneticChargeMaterialInstance = null;
+    public MeshRenderer? jumpChargeRenderer;
+    private Material? jumpChargeMaterialInstance = null;
 
     [Header("Mouse Look Impulse")]
     public GameObject? lookRoot;
@@ -66,10 +60,7 @@ public class PlayerHUD : MonoBehaviour
         oxygenProgressForegroundMaterialInstance = oxygenProgressRendererForeground?.material;
         oxygenProgressLaggyRendererMaterialInstance = oxygenProgressLaggyRenderer?.material;
         oxygenProgressBackgroundMaterialInstance = oxygenProgressRendererBackground?.material;
-        jumpTier1MaterialInstance = jumpTier1Renderer?.material;
-        jumpTier2MaterialInstance = jumpTier2Renderer?.material;
-        jumpTier3MaterialInstance = jumpTier3Renderer?.material;
-        magneticChargeMaterialInstance = magneticChargeRenderer?.material;
+        jumpChargeMaterialInstance = jumpChargeRenderer?.material;
     }
 
     // Reset orientation for the HUD itself to allow individual tracking
@@ -217,24 +208,9 @@ public class PlayerHUD : MonoBehaviour
         //     oxygenProgressBackgroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
         // }
 
-        if (jumpTier1MaterialInstance != null)
+        if (jumpChargeMaterialInstance != null)
         {
-            jumpTier1MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier1));
-        }
-
-        if (jumpTier2MaterialInstance != null)
-        {
-            jumpTier2MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier2));
-        }
-
-        if (jumpTier3MaterialInstance != null)
-        {
-            jumpTier3MaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge_Tier3));
-        }
-
-        if (magneticChargeMaterialInstance != null)
-        {
-            magneticChargeMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.MagneticCharge));
+            jumpChargeMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge));
         }
     }
 }

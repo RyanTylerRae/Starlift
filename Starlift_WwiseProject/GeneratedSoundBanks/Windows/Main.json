@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{AA2E8162-6D71-1F1E-A3EC-537385648E55}",
+    "Hash": "{6F0BD5F8-F7C1-EEAD-DB77-F982069A6E73}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -30,6 +30,14 @@
       "Location": "Memory",
       "ShortName": "thrust_loop.wav",
       "CachePath": "D7/{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem"
+     },
+     {
+      "Id": "488133720",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "magnetized.wav",
+      "CachePath": "26/{26BA5EF6-B11E-759E-8365-2AD852ED8646}.wem"
      },
      {
       "Id": "664015539",
@@ -167,6 +175,18 @@
       ]
      },
      {
+      "Id": "1840848318",
+      "Name": "play_magnetized",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_magnetized",
+      "GUID": "{FCEE740D-DD59-4AB5-B87B-3A8EB03E9617}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "488133720"
+       }
+      ]
+     },
+     {
       "Id": "2303161985",
       "Name": "play_oxygen_replenish",
       "ObjectPath": "\\Events\\Default Work Unit\\play_oxygen_replenish",
@@ -272,6 +292,16 @@
       "DurationMax": "0"
      },
      {
+      "Id": "505312832",
+      "Name": "stop_magnetized",
+      "ObjectPath": "\\Events\\Default Work Unit\\stop_magnetized",
+      "GUID": "{0E853B86-3428-42B1-BC9A-7042BBE35AF9}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
       "Id": "1317991621",
       "Name": "stop_thrust_forward_loop",
       "ObjectPath": "\\Events\\Default Work Unit\\stop_thrust_forward_loop",
@@ -288,10 +318,16 @@
       "Name": "PlayerOxygenAmount",
       "ObjectPath": "\\Game Parameters\\Default Work Unit\\PlayerOxygenAmount",
       "GUID": "{C5980316-CDA1-4E44-B0AA-E82ACF3E7FF1}"
+     },
+     {
+      "Id": "3353605848",
+      "Name": "DistanceToSurface",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\DistanceToSurface",
+      "GUID": "{C8FF2789-1011-434E-B70F-EAC6ED0CE949}"
      }
     ]
    }
   ],
-  "FileHash": "{3401A69C-43C1-AFCE-1D67-98685C9628EF}"
+  "FileHash": "{D3D728D1-7B5F-50F9-59AF-0662AD09A198}"
  }
 }

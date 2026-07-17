@@ -6,12 +6,14 @@
 				<SoundBank Name="Main" ID="{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}">
 					<ObjectInclusionList>
 						<ObjectRef Name="play_oxygen_replenish" ID="{66F627F8-1672-4108-9D49-E11AC79B333C}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="stop_magnetized" ID="{0E853B86-3428-42B1-BC9A-7042BBE35AF9}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_footstep_thud" ID="{0B3528EE-1AB4-42E9-B09D-ADAAA9DA4254}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_footstep_soft" ID="{C4C3DBDA-DD92-43F6-A396-51502FE819E1}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="dialogue" ID="{6523DB30-1AAB-470D-A210-25C87436D304}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="stop_blend_breathing" ID="{963C0590-F3CE-47C0-9F7C-3BBD2F47FD43}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_thrust_stop" ID="{FEA3D985-B3F5-47DB-9FCB-CD7FE628E9E5}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="stop_thrust_forward_loop" ID="{E1D3327C-52D4-4A75-8F03-BD873D702027}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="play_magnetized" ID="{FCEE740D-DD59-4AB5-B87B-3A8EB03E9617}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_thrust_forward_loop" ID="{8F79927A-EB0E-4B59-B975-B285599BA727}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_thrust_loop" ID="{DB12CF76-0185-4BD5-90A8-9D145FA469FC}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_breathing_death" ID="{98D1C7B2-BE69-4C93-A5C3-F02D02132A9C}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>

@@ -92,4 +92,14 @@ public class GravitySourceMesh : GravitySourceComponent
 
         return normal.normalized * defaultGravity * G_multiplier;
     }
+
+    public override float GetDistanceToSurface(Vector3 point)
+    {
+        if (meshCollider == null)
+        {
+            return float.PositiveInfinity;
+        }
+
+        return Vector3.Distance(point, meshCollider.ClosestPoint(point));
+    }
 }

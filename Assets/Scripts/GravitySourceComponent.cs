@@ -21,6 +21,14 @@ public abstract class GravitySourceComponent : MonoBehaviour
 
     public abstract void Update();
 
+    // raw geometric distance from a point to this source's surface; used by FirstPersonController
+    // to drive proximity-based audio generically across every source type. Defaults to "no surface"
+    // for sources that don't represent a physical surface to approach.
+    public virtual float GetDistanceToSurface(Vector3 point)
+    {
+        return float.PositiveInfinity;
+    }
+
     public void DisableForSeconds(float seconds)
     {
         if (disableCoroutine != null)

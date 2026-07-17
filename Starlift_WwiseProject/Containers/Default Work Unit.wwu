@@ -666,6 +666,174 @@
 								<ActiveSource Name="thrust_loop" ID="{08FD6EF9-210C-490B-90CE-FFC0D668A824}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
+						<Sound Name="magnetized" ID="{9899C78D-558B-4CA0-9D52-38A6921D2444}" ShortID="683499274">
+							<PropertyList>
+								<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+								<Property Name="Lowpass" Type="int16">
+									<ValueList>
+										<Value>20</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Pitch" Type="int32">
+									<ValueList>
+										<Value>-1000</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-4</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="magnetized" ID="{47BE9FF5-C7BF-46D7-AFAE-1F97F359C475}">
+									<Language>SFX</Language>
+									<AudioFile>magnetized.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="488133720"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ObjectLists>
+								<ObjectList Name="RTPC">
+									<RTPC Name="" ID="{BA312C0E-5245-4521-90F3-EE051DE8559E}" ShortID="1034756163">
+										<PropertyList>
+											<Property Name="PropertyName" Type="string" Value="Pitch"/>
+										</PropertyList>
+										<ReferenceList>
+											<Reference Name="ControlInput">
+												<ObjectRef Name="DistanceToSurface" ID="{C8FF2789-1011-434E-B70F-EAC6ED0CE949}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+											</Reference>
+											<Reference Name="Curve">
+												<Custom>
+													<Curve Name="" ID="{54B9FAA7-CCFB-4F55-A676-33E5DCA4E127}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="65537"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>-750</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>100</XPos>
+																<YPos>0</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</Custom>
+											</Reference>
+										</ReferenceList>
+									</RTPC>
+									<RTPC Name="" ID="{B5A75574-0148-458B-AEEE-F6842CC7B4D3}" ShortID="409321734">
+										<PropertyList>
+											<Property Name="PropertyName" Type="string" Value="Highpass"/>
+										</PropertyList>
+										<ReferenceList>
+											<Reference Name="ControlInput">
+												<ObjectRef Name="DistanceToSurface" ID="{C8FF2789-1011-434E-B70F-EAC6ED0CE949}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+											</Reference>
+											<Reference Name="Curve">
+												<Custom>
+													<Curve Name="" ID="{083F15B6-E762-4529-ACDA-E5DC2EA08354}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="65537"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>0</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>100</XPos>
+																<YPos>65</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</Custom>
+											</Reference>
+										</ReferenceList>
+									</RTPC>
+									<RTPC Name="" ID="{48838403-C973-4702-893B-384271068864}" ShortID="160419145">
+										<PropertyList>
+											<Property Name="PropertyName" Type="string" Value="Volume"/>
+										</PropertyList>
+										<ReferenceList>
+											<Reference Name="ControlInput">
+												<ObjectRef Name="DistanceToSurface" ID="{C8FF2789-1011-434E-B70F-EAC6ED0CE949}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+											</Reference>
+											<Reference Name="Curve">
+												<Custom>
+													<Curve Name="" ID="{7D94BCA5-C7B8-451D-ADCC-1A940B442B21}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="3"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>2</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>100</XPos>
+																<YPos>-8</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</Custom>
+											</Reference>
+										</ReferenceList>
+									</RTPC>
+									<RTPC Name="" ID="{10A865EC-B741-45F7-BB3B-C10DE9527318}" ShortID="116276240">
+										<PropertyList>
+											<Property Name="PropertyName" Type="string" Value="Lowpass"/>
+										</PropertyList>
+										<ReferenceList>
+											<Reference Name="ControlInput">
+												<ObjectRef Name="DistanceToSurface" ID="{C8FF2789-1011-434E-B70F-EAC6ED0CE949}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+											</Reference>
+											<Reference Name="Curve">
+												<Custom>
+													<Curve Name="" ID="{78F00313-04BD-4319-BD85-03E36931F16A}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="65537"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>2</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>100</XPos>
+																<YPos>0</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</Custom>
+											</Reference>
+										</ReferenceList>
+									</RTPC>
+								</ObjectList>
+							</ObjectLists>
+							<ActiveSourceList>
+								<ActiveSource Name="magnetized" ID="{47BE9FF5-C7BF-46D7-AFAE-1F97F359C475}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
 					</ChildrenList>
 				</Folder>
 			</ChildrenList>

@@ -42,10 +42,11 @@ public class FirstPersonController : MonoBehaviour
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
     public float magnetizeRadius = 0.5f;
+    public float magnetizedSoundRange = 5f;
+    private bool isMagnetizedSoundPlaying = false;
+    private GravitySourceComponent[] magnetizableSources = System.Array.Empty<GravitySourceComponent>();
     public float gravityAlignmentSpeed = 5f;
-    public float jumpForceTier1;
-    public float jumpForceTier2;
-    public float jumpForceTier3;
+    public float maxJumpForce = 0f;
     public float jumpTargetRaycastDistance = 200f;
     public float jumpDirectionalAngleThreshold = 135f;
     public float approachDuration = 0.5f;
@@ -101,9 +102,7 @@ public class FirstPersonController : MonoBehaviour
 
     // jump charge
     private float jumpPressStartTime = 0f;
-    public float jumpTier1Time = 0f;
-    public float jumpTier2Time = 0f;
-    public float jumpTier3Time = 0f;
+    public float jumpChargeTime = 0f;
 
     [Header("Physics Sub-stepping")]
     public float substepDistance = 0.01f;
@@ -227,6 +226,10 @@ public class FirstPersonController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         gravityController = GetComponent<GravityController>();
         bodyCollider = GetComponentInChildren<CapsuleCollider>();
+
+        magnetizableSources = FindObjectsByType<GravitySourceComponent>(FindObjectsSortMode.None)
+            .Where(source => source.isMagnetized)
+            .ToArray();
 
         if (gravityController != null)
         {
@@ -434,28 +437,8 @@ public class FirstPersonController : MonoBehaviour
                 pressDuration = Time.time - jumpPressStartTime;
             }
 
-            float tier1Norm = Math.Clamp(pressDuration / jumpTier1Time, 0.0f, 1.0f);
-            float tier2Norm = Math.Clamp((pressDuration - jumpTier1Time) / jumpTier2Time, 0.0f, 1.0f);
-            float tier3Norm = Math.Clamp((pressDuration - jumpTier1Time - jumpTier2Time) / jumpTier3Time, 0.0f, 1.0f);
-
-            modifiers.Set(ModifierType.JumpCharge_Tier1, tier1Norm);
-            modifiers.Set(ModifierType.JumpCharge_Tier2, tier2Norm);
-            modifiers.Set(ModifierType.JumpCharge_Tier3, tier3Norm);
-
-            if (MovementMode != ControllerMovementMode.Magnetized)
-            {
-                modifiers.Set(ModifierType.MagneticCharge, 0.0f);
-            }
-            else if (MovementMode == ControllerMovementMode.Magnetized)
-            {
-                float magneticCharge = Math.Clamp((jumpTier1Time - pressDuration) / jumpTier1Time, 0.0f, 1.0f);
-                if (magneticCharge <= 0.0f && modifiers.Get(ModifierType.MagneticCharge) > 0.0f)
-                {
-                    //TriggerCameraShake(0.05f, 0.1f, 8);
-                }
-
-                modifiers.Set(ModifierType.MagneticCharge, magneticCharge);
-            }
+            float jumpNorm = Math.Clamp(pressDuration / jumpChargeTime, 0.0f, 1.0f);
+            modifiers.Set(ModifierType.JumpCharge, jumpNorm);
         }
 
         Vector3 gravity = gravityController.GetGravityVector();
@@ -528,6 +511,8 @@ public class FirstPersonController : MonoBehaviour
             HandleZeroGLook();
             HandleZeroGMovement();
         }
+
+        HandleMagnetizedSound();
     }
 
     public void FixedUpdate()
@@ -899,21 +884,11 @@ public class FirstPersonController : MonoBehaviour
         jumpPressStartTime = 0.0f;
 
         float jumpForce = 0.0f;
-        // if (pressDuration > jumpTier3Time + jumpTier2Time + jumpTier1Time)
-        // {
-        //     jumpForce = jumpForceTier3;
-        // }
-        // else if (pressDuration > jumpTier2Time + jumpTier1Time)
-        // {
-        //     jumpForce = jumpForceTier2;
-        // }
-        // else if (pressDuration > jumpTier1Time)
-        // {
-        //     jumpForce = jumpForceTier1;
-        // }
-        if (pressDuration > jumpTier1Time)
+        float jumpNorm = Math.Clamp(pressDuration / jumpChargeTime, 0.0f, 1.0f);
+
+        if (pressDuration > 0.0f)
         {
-            jumpForce = jumpForceTier1;
+            jumpForce = maxJumpForce * jumpNorm;
         }
 
         if (jumpForce > 0.0f && _rigidbody != null && gravityController != null && playerCamera != null)
@@ -1063,6 +1038,73 @@ public class FirstPersonController : MonoBehaviour
 
         AkUnitySoundEngine.PostEvent("stop_thrust_forward_loop", gameObject);
         isThrustForwardPlaying = false;
+    }
+
+    void StartMagnetizedSound()
+    {
+        if (isMagnetizedSoundPlaying)
+        {
+            return;
+        }
+
+        AkUnitySoundEngine.PostEvent("play_magnetized", gameObject);
+        isMagnetizedSoundPlaying = true;
+    }
+
+    void StopMagnetizedSound()
+    {
+        if (!isMagnetizedSoundPlaying)
+        {
+            return;
+        }
+
+        AkUnitySoundEngine.PostEvent("stop_magnetized", gameObject);
+        isMagnetizedSoundPlaying = false;
+    }
+
+    // owns the magnetized-sound distance check generically across every magnetizable source in
+    // the scene (mesh, plane, point, ...), each of which just exposes a raw geometric distance
+    // via GetDistanceToSurface. Finds the closest one, applies magnetizeRadius, and drives the
+    // play/stop loop plus the DistanceToSurface RTPC (0 = at the surface, 100 = at magnetizedSoundRange)
+    void HandleMagnetizedSound()
+    {
+        // this is a pre-magnetization approach cue only - once the player is actually caught by
+        // a surface (MovementMode.Magnetized) or standing on one, it must stay silent
+        if (isGrounded || MovementMode == ControllerMovementMode.Magnetized)
+        {
+            StopMagnetizedSound();
+            return;
+        }
+
+        Vector3 position = transform.position;
+        float closestDistance = float.PositiveInfinity;
+
+        for (int i = 0; i < magnetizableSources.Length; i++)
+        {
+            GravitySourceComponent? source = magnetizableSources[i];
+            if (source == null || !source.isGravityEnabled)
+            {
+                continue;
+            }
+
+            float distance = source.GetDistanceToSurface(position) - magnetizeRadius;
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+            }
+        }
+
+        if (closestDistance <= magnetizedSoundRange)
+        {
+            StartMagnetizedSound();
+
+            float distanceRatio = Mathf.Clamp01(closestDistance / magnetizedSoundRange);
+            AkUnitySoundEngine.SetRTPCValue("DistanceToSurface", distanceRatio * 100f, gameObject);
+        }
+        else
+        {
+            StopMagnetizedSound();
+        }
     }
 
     void HandleZeroGLook()
