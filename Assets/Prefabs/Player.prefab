@@ -917,12 +917,12 @@ MonoBehaviour:
   magnetizeRadius: 0.4
   magnetizedSoundRange: 5
   gravityAlignmentSpeed: 3
-  maxJumpForce: 24
+  maxJumpForce: 12
   jumpTargetRaycastDistance: 100
-  jumpDirectionalAngleThreshold: 95
+  jumpDirectionalAngleThreshold: 90
   approachDuration: 0.25
-  edgeJumpSearchStep: 1
-  edgeJumpMaxClearDistance: 6
+  edgeJumpSearchStep: 5
+  edgeJumpMaxClearDistance: 5
   edgeJumpLerpDuration: 2
   ignoredSourceCollisionGrace: 0.5
   headBobSpeed: 2.5
@@ -936,9 +936,9 @@ MonoBehaviour:
   rollSpeed: 0.25
   rollDamping: 0.3
   autoRollRaycastDistance: 40
-  autoRollSettleTime: 1.5
-  autoRollAngleThreshold: 45
-  autoRollMinSpeed: 1
+  autoRollSettleTime: 2.5
+  autoRollAngleThreshold: 40
+  autoRollMinSpeed: 0.3
   autoRollLookAngleThreshold: 45
   stabilizeMultiplier: 0.6
   flightForce: 1

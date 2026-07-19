@@ -184,6 +184,7 @@ public class FirstPersonController : MonoBehaviour
     public bool ShouldDisplayJumpTarget { get { return (isGroundedOnEdge || CameraAngleFromGravity > jumpDirectionalAngleThreshold) && MovementMode == ControllerMovementMode.Magnetized; } }
 
     public bool IsGrounded { get { return isGrounded; } }
+    public bool IsGroundedOnEdge { get { return isGroundedOnEdge; } }
 
     [Header("Oxygen")]
     public float minOxygenBurnRate = 0.33f;
@@ -913,17 +914,21 @@ public class FirstPersonController : MonoBehaviour
             Vector3 gravity = gravityController.GetGravityVector();
             GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
 
+            Ray jumpRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+            if (isGroundedOnEdge)
+            {
+                // always jump off the edge in the direction we're facing, regardless of what's ahead
+                jumpDirection = playerCamera.transform.forward;
+                gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
+            }
             // If camera angle exceeds threshold and a surface is in range, jump toward it —
             // unless the hit surface is the one we're already standing on
-            Ray jumpRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            if (isGroundedOnEdge || cameraAngleFromGravity > jumpDirectionalAngleThreshold)
+            else if (cameraAngleFromGravity > jumpDirectionalAngleThreshold
+                && (!Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default"))
+                    || jumpHit.collider.GetComponentInParent<GravitySourceComponent>() != activeSource))
             {
-                if (!Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default"))
-                    || jumpHit.collider.GetComponentInParent<GravitySourceComponent>() != activeSource)
-                {
-                    jumpDirection = playerCamera.transform.forward;
-                    gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
-                }
+                jumpDirection = playerCamera.transform.forward;
+                gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
             }
             // otherwise jump straight upwards, away from the surface we're standing on
             else

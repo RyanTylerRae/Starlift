@@ -164,20 +164,25 @@ public class PlayerHUD : MonoBehaviour
         {
             Ray magnetizeRay = new Ray(playerController.playerCamera.transform.position, playerController.playerCamera.transform.forward);
 
-            if (Physics.Raycast(magnetizeRay, out RaycastHit magnetizeHit, playerController.jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
+            if (!Physics.Raycast(magnetizeRay, out RaycastHit magnetizeHit, playerController.jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
+            {
+                // nothing to jump towards
+                jumpOkIndicatorText.text = "";
+            }
+            else
             {
                 player.TryGetComponent(out GravityController magnetizeGravityController);
                 GravitySourceComponent? activeGravitySource = magnetizeGravityController?.GetActiveGravitySource();
 
                 GravitySourceComponent? hitGravitySource = magnetizeHit.collider.GetComponentInParent<GravitySourceComponent>();
+                bool isUnobstructedTarget = hitGravitySource != null && hitGravitySource.isMagnetized && hitGravitySource != activeGravitySource;
 
-                // can't jump to the surface we're already standing on
-                bool canMagnetizeToSurface = hitGravitySource != null && hitGravitySource.isMagnetized && hitGravitySource != activeGravitySource;
-                jumpOkIndicatorText.text = canMagnetizeToSurface ? "[ok]" : "[x]";
-            }
-            else
-            {
-                jumpOkIndicatorText.text = "";
+                // being on an edge, or airborne, lets us jump towards it regardless of angle
+                bool canAimDirectionalJump = !playerController.IsGrounded
+                    || playerController.IsGroundedOnEdge
+                    || playerController.CameraAngleFromGravity > playerController.jumpDirectionalAngleThreshold;
+
+                jumpOkIndicatorText.text = (isUnobstructedTarget && canAimDirectionalJump) ? "[ok]" : "[x]";
             }
         }
 

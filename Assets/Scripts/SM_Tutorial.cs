@@ -9,6 +9,7 @@ public class SM_Tutorial : MonoBehaviour
     public float rotationStopThreshold = 0.1f;
     public float lookAtAngleThreshold = 10f;
     public float initialRotationSpeed = 90f; // degrees/sec around camera forward
+    public GameObject? doorway;
 
     private FirstPersonController? playerController = null;
     private Rigidbody? playerRigidbody = null;
@@ -162,6 +163,10 @@ public class SM_Tutorial : MonoBehaviour
 
         stateMachine.GetState("Landed3").OnEnterState += () =>
         {
+            if (doorway != null)
+            {
+                GameObject.Destroy(doorway);
+            }
             SubtitleManager.Instance?.AdvanceSubtitle();
             waitStartTime = Time.time;
         };
