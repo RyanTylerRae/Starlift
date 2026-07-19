@@ -524,7 +524,6 @@ public class FirstPersonController : MonoBehaviour
         else
         {
             HandleZeroGLook();
-            HandleZeroGMovement();
         }
 
         HandleMagnetizedSound();
@@ -591,6 +590,7 @@ public class FirstPersonController : MonoBehaviour
             _rigidbody.AddTorque(_pendingRollTorque, ForceMode.Force);
             _rigidbody.AddTorque(_pendingAutoRollAcceleration, ForceMode.Acceleration);
             _rigidbody.AddTorque(-_rigidbody.angularVelocity * rollDamping, ForceMode.Acceleration);
+            HandleZeroGMovement();
             return;
         }
 
@@ -1269,10 +1269,10 @@ public class FirstPersonController : MonoBehaviour
             StopThrustForwardSound();
         }
 
+        Vector3 stabilizationAccelForce = Vector3.zero;
         if (stabilizeActive)
         {
-            Vector3 stabilizationForce = -velocity * (1.0f - stabilizeMultiplier);
-            _rigidbody.AddForce(stabilizationForce, ForceMode.Acceleration);
+            stabilizationAccelForce = -velocity * (1.0f - stabilizeMultiplier);
 
             Vector3 angularVelocity = _rigidbody.angularVelocity;
             Vector3 stabilizationTorque = -angularVelocity * (1.0f - stabilizeMultiplier);
@@ -1306,10 +1306,13 @@ public class FirstPersonController : MonoBehaviour
 
         _rigidbody.AddForce(thrustVector.normalized * flightForce);
 
+        Vector3 idleDampingAccelForce = Vector3.zero;
         if (!stabilizeActive && thrustVector.sqrMagnitude == 0f)
         {
-            _rigidbody.AddForce(-_rigidbody.linearVelocity * zeroGIdleDamping, ForceMode.Acceleration);
+            idleDampingAccelForce = -_rigidbody.linearVelocity * zeroGIdleDamping;
         }
+
+        _rigidbody.AddForce(stabilizationAccelForce + idleDampingAccelForce, ForceMode.Acceleration);
 
         velocity = _rigidbody.linearVelocity;
         if (velocity.sqrMagnitude > maxFlightSpeed * maxFlightSpeed)

@@ -940,8 +940,8 @@ MonoBehaviour:
   autoRollAngleThreshold: 40
   autoRollMinSpeed: 0.3
   autoRollLookAngleThreshold: 45
-  stabilizeMultiplier: 0.6
-  flightForce: 1
+  stabilizeMultiplier: -0.92
+  flightForce: 4.8
   maxFlightSpeed: 7
   zeroGIdleDamping: 0
   jumpChargeTime: 0.5
