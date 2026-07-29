@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{6F0BD5F8-F7C1-EEAD-DB77-F982069A6E73}",
+    "Hash": "{3B2194D2-07CC-31B1-49DF-C8CD0090D72D}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -30,6 +30,22 @@
       "Location": "Memory",
       "ShortName": "thrust_loop.wav",
       "CachePath": "D7/{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem"
+     },
+     {
+      "Id": "469141184",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "zapsplat_science_fiction_computer_tone_negative_critical_error_002_114867.wav",
+      "CachePath": "FA/{FA2CF5AA-7C9C-4CAD-2AB3-B4C31D5CCC22}.wem"
+     },
+     {
+      "Id": "477313710",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "zapsplat_science_fiction_computer_tone_negative_critical_error_001_114866.wav",
+      "CachePath": "88/{883C2449-2553-D41A-0744-58EC51E3ACAC}.wem"
      },
      {
       "Id": "488133720",
@@ -187,6 +203,36 @@
       ]
      },
      {
+      "Id": "4105009584",
+      "Name": "play_mine_beep_far",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_mine_beep_far",
+      "GUID": "{9F2BA2A0-7103-4A82-8FA4-A5CD37380FCD}",
+      "MaxAttenuation": "35",
+      "DurationType": "OneShot",
+      "DurationMin": "0.7484271",
+      "DurationMax": "0.7484271",
+      "MediaRefs": [
+       {
+        "Id": "477313710"
+       }
+      ]
+     },
+     {
+      "Id": "2130363503",
+      "Name": "play_mine_beep_near",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_mine_beep_near",
+      "GUID": "{93F1FEC1-E52A-4FD7-8E31-129721322A20}",
+      "MaxAttenuation": "35",
+      "DurationType": "OneShot",
+      "DurationMin": "0.8687292",
+      "DurationMax": "0.8687292",
+      "MediaRefs": [
+       {
+        "Id": "469141184"
+       }
+      ]
+     },
+     {
       "Id": "2303161985",
       "Name": "play_oxygen_replenish",
       "ObjectPath": "\\Events\\Default Work Unit\\play_oxygen_replenish",
@@ -328,6 +374,6 @@
     ]
    }
   ],
-  "FileHash": "{D3D728D1-7B5F-50F9-59AF-0662AD09A198}"
+  "FileHash": "{BFFE93A3-47C1-7ED7-53BF-1CD866A74427}"
  }
 }

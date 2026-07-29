@@ -6,6 +6,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	1317991621	stop_thrust_forward_loop			\Default Work Unit\stop_thrust_forward_loop	
 	1690998729	play_thrust_loop			\Default Work Unit\play_thrust_loop	
 	1840848318	play_magnetized			\Default Work Unit\play_magnetized	
+	2130363503	play_mine_beep_near			\Default Work Unit\play_mine_beep_near	
 	2277322074	play_proto_worldonfire			\Default Work Unit\dialogue\prototype\play_proto_worldonfire	
 	2303161985	play_oxygen_replenish			\Default Work Unit\play_oxygen_replenish	
 	2817166606	stop_blend_breathing			\Default Work Unit\stop_blend_breathing	
@@ -13,6 +14,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	3591904104	play_blend_breathing			\Default Work Unit\play_blend_breathing	
 	3696184339	play_footstep_soft			\Default Work Unit\play_footstep_soft	
 	3972341671	play_thrust_stop			\Default Work Unit\play_thrust_stop	
+	4105009584	play_mine_beep_far			\Default Work Unit\play_mine_beep_far	
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
 	2812181674	PlayerOxygenAmount			\Default Work Unit\PlayerOxygenAmount	
@@ -24,6 +26,8 @@ Effect plug-ins	ID	Name	Type				Notes
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	106386982	breathing	.cache\EC\{EC5700C9-7164-036B-2B0F-01F710C72128}.wem		\Containers\Default Work Unit\BlendContainers\Blend_Breathing\breathing		2222176
 	401349144	thrust_forward_loop	.cache\D7\{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem		\Containers\Default Work Unit\Audio\thrust_forward_loop		42290
+	469141184	mine_beep_near	.cache\FA\{FA2CF5AA-7C9C-4CAD-2AB3-B4C31D5CCC22}.wem		\Containers\Default Work Unit\Audio\mine_beep_near		166892
+	477313710	mine_beep_far	.cache\88\{883C2449-2553-D41A-0744-58EC51E3ACAC}.wem		\Containers\Default Work Unit\Audio\mine_beep_far		143792
 	488133720	magnetized	.cache\26\{26BA5EF6-B11E-759E-8365-2AD852ED8646}.wem		\Containers\Default Work Unit\Audio\magnetized		960240
 	664015539	thrust_stop	.cache\03\{032D85C2-F644-FD40-04B2-5FDB389006FD}.wem		\Containers\Default Work Unit\Audio\thrust_stop		20280
 	679527475	thrust_start	.cache\59\{5980F175-7EA4-2698-43F4-9B1A497F9874}.wem		\Containers\Default Work Unit\Audio\thrust_rotate\thrust_start		15950

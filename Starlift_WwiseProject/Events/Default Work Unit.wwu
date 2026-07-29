@@ -180,6 +180,28 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="play_mine_beep_far" ID="{9F2BA2A0-7103-4A82-8FA4-A5CD37380FCD}">
+					<ChildrenList>
+						<Action Name="" ID="{C933F59E-B764-450F-8DB3-B61A52E49954}" ShortID="726878148">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="mine_beep_far" ID="{A1910AC4-838F-4582-867F-12C06BFBE3E9}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="play_mine_beep_near" ID="{93F1FEC1-E52A-4FD7-8E31-129721322A20}">
+					<ChildrenList>
+						<Action Name="" ID="{CCB0BACE-D4BB-41BB-8329-C4F0CE843C97}" ShortID="53533505">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="mine_beep_near" ID="{8C143906-6DE5-4115-8718-0E279A1EC6CE}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

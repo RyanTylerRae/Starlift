@@ -5,7 +5,9 @@ using UnityEngine;
 public enum DamageType
 {
     None,
-    Suffocating
+    Suffocating,
+    Explosion,
+    Laser
 }
 
 public struct DamageEvent
