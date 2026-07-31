@@ -43,8 +43,8 @@ GameObject:
   - component: {fileID: 4899648171784123049}
   - component: {fileID: 3595618705773816776}
   - component: {fileID: 2504286774284512646}
-  - component: {fileID: 912198063339423416}
   - component: {fileID: 1176274145401551691}
+  - component: {fileID: 8951365203038358980}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -120,27 +120,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &912198063339423416
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5853693964409539119}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1176274145401551691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,5 +137,27 @@ MonoBehaviour:
   defaultGravity: -10
   isGravityEnabled: 1
   isMagnetized: 1
-  meshCollider: {fileID: 912198063339423416}
+  meshCollider: {fileID: 8951365203038358980}
   maxDistanceToSurface: 1.5
+--- !u!64 &8951365203038358980
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5853693964409539119}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5495902117074765545, guid: 11aea1aebb77c0646afa754aa0206286, type: 3}
