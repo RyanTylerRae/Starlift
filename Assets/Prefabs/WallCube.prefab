@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 9143769146580496859}
   - component: {fileID: 1337050572922034850}
   - component: {fileID: 3098182991799831593}
+  - component: {fileID: 5141929112316269126}
   m_Layer: 0
   m_Name: WallCube
   m_TagString: Untagged
@@ -29,10 +30,9 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 11.95}
-  m_LocalScale: {x: 50, y: 50, z: 5}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6967058282697030944}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &9143769146580496859
@@ -109,70 +109,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &4633189496922596077
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6967058282697030944}
-  - component: {fileID: 8528714722628940790}
-  - component: {fileID: 8643836255087038693}
-  m_Layer: 2
-  m_Name: Gravity
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6967058282697030944
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4633189496922596077}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.372}
-  m_LocalScale: {x: 1, y: 1, z: 0.5}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8477655108751546651}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &8528714722628940790
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4633189496922596077}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8643836255087038693
+--- !u!114 &5141929112316269126
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4633189496922596077}
+  m_GameObject: {fileID: 2346229215373718925}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43258a6a0361ed042b19ed927c843283, type: 3}
+  m_Script: {fileID: 11500000, guid: 66d134e8e88563842bda09e8f56048f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   G_multiplier: 1
@@ -180,5 +126,5 @@ MonoBehaviour:
   defaultGravity: -10
   isGravityEnabled: 1
   isMagnetized: 1
-  triggerCollider: {fileID: 8528714722628940790}
-  direction: {x: 0, y: 0, z: -1}
+  meshCollider: {fileID: 3098182991799831593}
+  maxDistanceToSurface: 1.5
