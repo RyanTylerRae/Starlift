@@ -89,6 +89,8 @@ public class FirstPersonController : MonoBehaviour
 
     public float flightForce;
     public float maxFlightSpeed;
+    public float boostedMaxFlightSpeed;
+    public float speedEaseBackRate = 6f;
     public float zeroGIdleDamping = 0.5f;
     private bool hasPlayedStabilizedSound = false;
     private bool isRotationThrustPlaying = false;
@@ -189,6 +191,7 @@ public class FirstPersonController : MonoBehaviour
     [Header("Oxygen")]
     public float minOxygenBurnRate = 0.33f;
     public float jumpOxygenCost;
+    public float magnetizedJumpOxygenCost;
     public float rotationOxygenBurnRate = 0.5f;
     private float oxygenBurnRate = 0.0f;
     public float OxygenBurnRate { get { return oxygenBurnRate; } }
@@ -960,6 +963,7 @@ public class FirstPersonController : MonoBehaviour
             }
 
             _rigidbody?.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
+            oxygenSystem?.DepleteOxygen(magnetizedJumpOxygenCost * jumpNorm);
 
             if (activeSource != null)
             {
@@ -1315,9 +1319,19 @@ public class FirstPersonController : MonoBehaviour
         _rigidbody.AddForce(stabilizationAccelForce + idleDampingAccelForce, ForceMode.Acceleration);
 
         velocity = _rigidbody.linearVelocity;
-        if (velocity.sqrMagnitude > maxFlightSpeed * maxFlightSpeed)
+        if (isManualThrusting)
         {
-            _rigidbody.linearVelocity = velocity.normalized * maxFlightSpeed;
+            // allow briefly exceeding maxFlightSpeed while actively thrusting, up to an overdrive cap
+            if (velocity.sqrMagnitude > boostedMaxFlightSpeed * boostedMaxFlightSpeed)
+            {
+                _rigidbody.linearVelocity = velocity.normalized * boostedMaxFlightSpeed;
+            }
+        }
+        else if (velocity.magnitude > maxFlightSpeed)
+        {
+            // ease back down to maxFlightSpeed instead of clamping instantly
+            float easedSpeed = Mathf.MoveTowards(velocity.magnitude, maxFlightSpeed, speedEaseBackRate * Time.deltaTime);
+            _rigidbody.linearVelocity = velocity.normalized * easedSpeed;
         }
 
         if (stabilizeActive && _rigidbody.linearVelocity.magnitude < stabilizeSoundVelocityThreshold && _rigidbody.angularVelocity.magnitude < stabilizeSoundAngularThreshold)

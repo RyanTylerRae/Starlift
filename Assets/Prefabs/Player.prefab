@@ -913,12 +913,12 @@ MonoBehaviour:
   groundStoppingFriction: 20
   footstepSpeed: 3
   footstepImpactPhaseOffset: 0.3
-  maxMagnetizedWalkSpeed: 2
+  maxMagnetizedWalkSpeed: 3
   magnetizeRadius: 0.4
-  magnetizedSoundRange: 5
-  gravityAlignmentSpeed: 3
-  maxJumpForce: 12
-  jumpTargetRaycastDistance: 100
+  magnetizedSoundRange: 4
+  gravityAlignmentSpeed: 5
+  maxJumpForce: 14
+  jumpTargetRaycastDistance: 200
   jumpDirectionalAngleThreshold: 90
   approachDuration: 0.25
   edgeJumpSearchStep: 5
@@ -943,6 +943,8 @@ MonoBehaviour:
   stabilizeMultiplier: -0.92
   flightForce: 4.8
   maxFlightSpeed: 7
+  boostedMaxFlightSpeed: 15
+  speedEaseBackRate: 5
   zeroGIdleDamping: 0
   jumpChargeTime: 0.5
   substepDistance: 0.01
@@ -952,6 +954,7 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   minOxygenBurnRate: 2
   jumpOxygenCost: 4
+  magnetizedJumpOxygenCost: 4
   rotationOxygenBurnRate: 0.4
 --- !u!114 &4662095033839872499
 MonoBehaviour:
