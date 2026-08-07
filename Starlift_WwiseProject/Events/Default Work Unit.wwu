@@ -202,6 +202,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="play_mine_explosion" ID="{F25D462A-1D31-4787-AD63-63FA2DA64B33}">
+					<ChildrenList>
+						<Action Name="" ID="{6EE94E36-6F43-49F5-96BF-FD7198F4FBA0}" ShortID="21244452">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="mine_explosion" ID="{8B7085ED-1530-449D-8639-B42AC524CB6E}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

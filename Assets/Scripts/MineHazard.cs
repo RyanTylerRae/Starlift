@@ -128,6 +128,8 @@ public class MineHazard : MonoBehaviour
 
         if (distance <= killRange)
         {
+            AkUnitySoundEngine.PostEvent("play_mine_explosion", gameObject);
+
             KillPlayer();
             return;
         }

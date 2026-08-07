@@ -837,6 +837,11 @@
 						<Sound Name="mine_beep_near" ID="{8C143906-6DE5-4115-8718-0E279A1EC6CE}" ShortID="800498735">
 							<PropertyList>
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>2</Value>
+									</ValueList>
+								</Property>
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Attenuation">
@@ -963,6 +968,11 @@
 						<Sound Name="mine_beep_far" ID="{A1910AC4-838F-4582-867F-12C06BFBE3E9}" ShortID="825420419">
 							<PropertyList>
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>2</Value>
+									</ValueList>
+								</Property>
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Attenuation">
@@ -1084,6 +1094,28 @@
 							</ChildrenList>
 							<ActiveSourceList>
 								<ActiveSource Name="zapsplat_science_fiction_computer_tone_negative_critical_error_001_114866" ID="{5E44D5F7-3627-4588-967D-A8BBDD3FF40B}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="mine_explosion" ID="{8B7085ED-1530-449D-8639-B42AC524CB6E}" ShortID="399640585">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="zapsplat_science_fiction_large_explosion_001_62585" ID="{B58200F3-345E-4428-BE17-493FF07A505F}">
+									<Language>SFX</Language>
+									<AudioFile>zapsplat_science_fiction_large_explosion_001_62585.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="80774218"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="zapsplat_science_fiction_large_explosion_001_62585" ID="{B58200F3-345E-4428-BE17-493FF07A505F}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>

@@ -10,11 +10,19 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{3B2194D2-07CC-31B1-49DF-C8CD0090D72D}",
+    "Hash": "{56592CD6-A357-EF01-94C0-C3B79ACBDF58}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
     "Media": [
+     {
+      "Id": "80774218",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "zapsplat_science_fiction_large_explosion_001_62585.wav",
+      "CachePath": "8C/{8CDA27EE-221E-0C7D-8132-C2E2AED6695C}.wem"
+     },
      {
       "Id": "106386982",
       "Language": "SFX",
@@ -233,6 +241,20 @@
       ]
      },
      {
+      "Id": "2109787835",
+      "Name": "play_mine_explosion",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_mine_explosion",
+      "GUID": "{F25D462A-1D31-4787-AD63-63FA2DA64B33}",
+      "DurationType": "OneShot",
+      "DurationMin": "4.1116457",
+      "DurationMax": "4.1116457",
+      "MediaRefs": [
+       {
+        "Id": "80774218"
+       }
+      ]
+     },
+     {
       "Id": "2303161985",
       "Name": "play_oxygen_replenish",
       "ObjectPath": "\\Events\\Default Work Unit\\play_oxygen_replenish",
@@ -374,6 +396,6 @@
     ]
    }
   ],
-  "FileHash": "{BFFE93A3-47C1-7ED7-53BF-1CD866A74427}"
+  "FileHash": "{3DF3F462-698B-9BA9-1D18-F228B627B5BD}"
  }
 }

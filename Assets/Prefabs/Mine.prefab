@@ -181,14 +181,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a60b075180d198438717dfd10672d0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRange: 20
+  detectionRange: 25
   killRange: 5
   thrustForce: 30
   thrustForceMode: 0
-  maxSpeed: 1.5
+  maxSpeed: 2
   decelerationRate: 1
-  beepFarRange: 50
-  beepNearRange: 20
+  beepFarRange: 60
+  beepNearRange: 30
   minBeepFrequency: 0.005
   maxBeepFrequency: 1
   detectionRangeColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

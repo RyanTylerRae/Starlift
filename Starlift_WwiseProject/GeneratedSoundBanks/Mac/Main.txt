@@ -6,6 +6,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	1317991621	stop_thrust_forward_loop			\Default Work Unit\stop_thrust_forward_loop	
 	1690998729	play_thrust_loop			\Default Work Unit\play_thrust_loop	
 	1840848318	play_magnetized			\Default Work Unit\play_magnetized	
+	2109787835	play_mine_explosion			\Default Work Unit\play_mine_explosion	
 	2130363503	play_mine_beep_near			\Default Work Unit\play_mine_beep_near	
 	2277322074	play_proto_worldonfire			\Default Work Unit\dialogue\prototype\play_proto_worldonfire	
 	2303161985	play_oxygen_replenish			\Default Work Unit\play_oxygen_replenish	
@@ -24,6 +25,7 @@ Effect plug-ins	ID	Name	Type				Notes
 	2755291687	Pumping_and_Breathing_2	Wwise Compressor			
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	80774218	mine_explosion	.cache\8C\{8CDA27EE-221E-0C7D-8132-C2E2AED6695C}.wem		\Containers\Default Work Unit\Audio\mine_explosion		789532
 	106386982	breathing	.cache\EC\{EC5700C9-7164-036B-2B0F-01F710C72128}.wem		\Containers\Default Work Unit\BlendContainers\Blend_Breathing\breathing		2222176
 	401349144	thrust_forward_loop	.cache\D7\{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem		\Containers\Default Work Unit\Audio\thrust_forward_loop		42290
 	469141184	mine_beep_near	.cache\FA\{FA2CF5AA-7C9C-4CAD-2AB3-B4C31D5CCC22}.wem		\Containers\Default Work Unit\Audio\mine_beep_near		166892
