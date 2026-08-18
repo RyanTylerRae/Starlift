@@ -52,10 +52,12 @@ public class OxygenPocket : MonoBehaviour
     private void OnPlayerEnterPocket(GameObject player)
     {
         playerOxygenSystem = player.GetComponent<OxygenSystem>();
-        playerController = player.GetComponent<FirstPersonController>();
-        if (playerOxygenSystem == null)
+        Entity playerEntity = player.GetComponent<Entity>();
+
+        if (playerOxygenSystem == null || (playerEntity != null && !playerEntity.IsAlive))
         {
-            Debug.LogWarning("Player entered oxygen pocket but has no OxygenSystem component");
+            Debug.LogWarning("Player entered oxygen pocket but is dead");
+            return;
         }
         else
         {

@@ -59,7 +59,10 @@ public abstract class GravitySourceComponent : MonoBehaviour
 
     protected void OnTriggerEnterInternal(GameObject gameObject)
     {
-        //Debug.Log($"GravityComponent on {gameObject.name}: {gameObject.name} entered trigger");
+        if (gameObject.TryGetComponent(out Entity entity) && !entity.IsAlive)
+        {
+            return;
+        }
 
         if (gameObject.TryGetComponent(out GravityController gravityController))
         {
@@ -69,7 +72,10 @@ public abstract class GravitySourceComponent : MonoBehaviour
 
     protected void OnTriggerExitInternal(GameObject gameObject)
     {
-        //Debug.Log($"GravityComponent on {gameObject.name}: {gameObject.name} exited trigger");
+        if (gameObject.TryGetComponent(out Entity entity) && !entity.IsAlive)
+        {
+            return;
+        }
 
         if (gameObject.TryGetComponent(out GravityController gravityController))
         {
