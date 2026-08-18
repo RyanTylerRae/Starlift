@@ -111,6 +111,37 @@
 									</Reference>
 								</ReferenceList>
 							</RTPC>
+							<RTPC Name="" ID="{3E16DE2C-BCA3-4972-905C-31EDCA669343}" ShortID="176401143">
+								<PropertyList>
+									<Property Name="PropertyName" Type="string" Value="BusVolume"/>
+								</PropertyList>
+								<ReferenceList>
+									<Reference Name="ControlInput">
+										<ObjectRef Name="SpaceVacuum" ID="{2027AD85-131A-42DB-88C2-091084BC0DE1}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+									</Reference>
+									<Reference Name="Curve">
+										<Custom>
+											<Curve Name="" ID="{435C93A6-DE0F-4DED-895C-E83252A14CE9}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="3"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>-3</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>0</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</Custom>
+									</Reference>
+								</ReferenceList>
+							</RTPC>
 						</ObjectList>
 					</ObjectLists>
 				</Bus>
