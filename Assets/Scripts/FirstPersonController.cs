@@ -502,26 +502,12 @@ public class FirstPersonController : MonoBehaviour
                 HandleJump();
             }
 
-            // orient player to align with gravity, but only if we're looking at a surface we can magnetize to
-            bool isLookingAtMagnetizableSurface = false;
-            if (playerCamera != null)
+            // gravity normal auto correction while attached
+            Vector3 upVector = -gravity.normalized;
+            if (upVector.sqrMagnitude > 0.01f)
             {
-                Ray lookRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-                if (Physics.Raycast(lookRay, out RaycastHit lookHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
-                {
-                    GravitySourceComponent? lookedAtGravitySource = lookHit.collider.GetComponentInParent<GravitySourceComponent>();
-                    isLookingAtMagnetizableSurface = lookedAtGravitySource != null && lookedAtGravitySource.isMagnetized;
-                }
-            }
-
-            if (isLookingAtMagnetizableSurface)
-            {
-                Vector3 upVector = -gravity.normalized;
-                if (upVector.sqrMagnitude > 0.01f)
-                {
-                    Quaternion targetRotation = Quaternion.FromToRotation(transform.up, upVector) * transform.rotation;
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * gravityAlignmentSpeed);
-                }
+                Quaternion targetRotation = Quaternion.FromToRotation(transform.up, upVector) * transform.rotation;
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * gravityAlignmentSpeed);
             }
         }
         else
@@ -1202,12 +1188,21 @@ public class FirstPersonController : MonoBehaviour
                 StopRotationThrustSound();
             }
 
+            // orient player to align with gravity, but only if we're looking at a surface we can magnetize to
+            bool isLookingAtMagnetizableSurface = false;
             Ray forwardRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+            if (Physics.Raycast(forwardRay, out RaycastHit lookHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
+            {
+                GravitySourceComponent? lookedAtGravitySource = lookHit.collider.GetComponentInParent<GravitySourceComponent>();
+                isLookingAtMagnetizableSurface = lookedAtGravitySource != null && lookedAtGravitySource.isMagnetized;
+            }
+
             if (_rigidbody.linearVelocity.magnitude >= autoRollMinSpeed
                 && Physics.Raycast(forwardRay, out RaycastHit surfaceHit, autoRollRaycastDistance)
                 // 0 = looking straight along the surface (grazing), 90 = looking straight into it (head-on)
                 && 90f - Vector3.Angle(transform.forward, -surfaceHit.normal) < autoRollAngleThreshold
-                && Vector3.Angle(transform.forward, forwardRay.direction) < autoRollLookAngleThreshold)
+                && Vector3.Angle(transform.forward, forwardRay.direction) < autoRollLookAngleThreshold
+                && isLookingAtMagnetizableSurface)
             {
                 Vector3 normalOnPlane = Vector3.ProjectOnPlane(surfaceHit.normal, transform.forward);
                 if (normalOnPlane.sqrMagnitude > 0.001f)
