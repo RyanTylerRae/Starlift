@@ -51,9 +51,6 @@ public class FirstPersonController : MonoBehaviour
     public float jumpTargetRaycastDistance = 200f;
     public float jumpDirectionalAngleThreshold = 135f;
     public float approachDuration = 0.5f;
-    public float edgeJumpSearchStep = 1f;
-    public float edgeJumpMaxClearDistance = 5f;
-    public float edgeJumpLerpDuration = 0.15f;
     public float ignoredSourceCollisionGrace = 0.3f;
     private GravitySourceComponent? ignoredGravitySource;
     private Vector3 ignoredGravityDirection;
@@ -137,7 +134,6 @@ public class FirstPersonController : MonoBehaviour
     [Header("Camera")]
     public GameObject? cameraArm;
     private Vector3 cameraArmRestLocalPos = Vector3.zero;
-    private Vector3 cameraArmLagOffset = Vector3.zero;
     private float cameraArmBobOffset = 0.0f;
     private float cameraArmDipOffset = 0.0f;
     private Coroutine? headBobDipCoroutine = null;
@@ -282,7 +278,7 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
-        Vector3 localPos = cameraArmRestLocalPos + cameraArmLagOffset;
+        Vector3 localPos = cameraArmRestLocalPos;
         localPos.y += cameraArmBobOffset + cameraArmDipOffset;
         cameraArm.transform.localPosition = localPos;
     }
@@ -935,24 +931,6 @@ public class FirstPersonController : MonoBehaviour
                 return;
             }
 
-            if (isGroundedOnEdge && bodyCollider != null && _rigidbody != null)
-            {
-                var clearPosition = TryFindEdgeJumpClearPosition(jumpDirection);
-                if (clearPosition.HasValue)
-                {
-                    Vector3 visualOffset = transform.position - clearPosition.Value;
-                    bodyCollider.enabled = false;
-                    transform.position = clearPosition.Value;
-                    _rigidbody.position = clearPosition.Value;
-                    bodyCollider.enabled = true;
-
-                    if (cameraArm != null)
-                    {
-                        StartCoroutine(LagCameraFromEdgeJump(visualOffset, edgeJumpLerpDuration));
-                    }
-                }
-            }
-
             _rigidbody?.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
             oxygenSystem?.DepleteOxygen(magnetizedJumpOxygenCost * jumpNorm);
 
@@ -1378,70 +1356,6 @@ public class FirstPersonController : MonoBehaviour
         playerCamera.transform.localPosition = originalPos;
     }
 
-    private Vector3? TryFindEdgeJumpClearPosition(Vector3 jumpDirection)
-    {
-        if (bodyCollider == null) { return null; }
-
-        float scaledHeight = bodyCollider.height * bodyCollider.transform.lossyScale.y;
-        float scaledRadius = bodyCollider.radius * bodyCollider.transform.lossyScale.x;
-        Vector3 worldCenter = transform.TransformPoint(bodyCollider.center);
-        Vector3 p1Base = worldCenter + transform.up * (scaledHeight / 2f - scaledRadius);
-        Vector3 p2Base = worldCenter - transform.up * (scaledHeight / 2f - scaledRadius);
-        int groundMask = LayerMask.GetMask("Default");
-
-        // Step forward until finding a position clear of ground geometry
-        float low = 0f;
-        float high = -1f;
-        for (float t = edgeJumpSearchStep; t <= edgeJumpMaxClearDistance; t += edgeJumpSearchStep)
-        {
-            if (!HasCapsuleOverlap(p1Base + jumpDirection * t, p2Base + jumpDirection * t, scaledRadius, groundMask))
-            {
-                high = t;
-                break;
-            }
-            low = t;
-        }
-
-        if (high < 0f)
-        {
-            return null;
-        }
-
-        // Binary search to narrow to the minimum clear distance
-        for (int i = 0; i < 5; i++)
-        {
-            float mid = (low + high) / 2f;
-            if (HasCapsuleOverlap(p1Base + jumpDirection * mid, p2Base + jumpDirection * mid, scaledRadius, groundMask))
-            {
-                low = mid;
-            }
-            else
-            {
-                high = mid;
-            }
-        }
-
-        // Check if the clear position introduces any other collisions
-        Vector3 clearP1 = p1Base + jumpDirection * high;
-        Vector3 clearP2 = p2Base + jumpDirection * high;
-        if (HasCapsuleOverlap(clearP1, clearP2, scaledRadius, ~0))
-        {
-            return null;
-        }
-
-        return transform.position + jumpDirection * high;
-    }
-
-    private bool HasCapsuleOverlap(Vector3 p1, Vector3 p2, float radius, int layerMask)
-    {
-        Collider[] overlaps = Physics.OverlapCapsule(p1, p2, radius, layerMask, QueryTriggerInteraction.Ignore);
-        foreach (Collider c in overlaps)
-        {
-            if (c != bodyCollider) { return true; }
-        }
-        return false;
-    }
-
     private bool TryGetObstacleHit(Vector3 startPosition, Vector3 movementDelta, GravitySourceComponent gravitySource, out float hitDistance, out Vector3 hitNormal)
     {
         hitDistance = 0f;
@@ -1501,35 +1415,6 @@ public class FirstPersonController : MonoBehaviour
         }
 
         return foundHit;
-    }
-
-    private IEnumerator LagCameraFromEdgeJump(Vector3 worldOffset, float duration)
-    {
-        if (cameraArm == null)
-        {
-            yield break;
-        }
-
-        Quaternion futureBodyRot = playerCamera != null ? playerCamera.transform.rotation : transform.rotation;
-        cameraArmLagOffset = Quaternion.Inverse(futureBodyRot) * worldOffset;
-        ApplyCameraArmLocalPos();
-
-        yield return null;
-
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            float tEased = t < 0.5f ? 2f * t * t : 1f - 2f * (1f - t) * (1f - t);
-            Vector3 localOffset = transform.InverseTransformVector(worldOffset);
-            cameraArmLagOffset = Vector3.Lerp(localOffset, Vector3.zero, tEased);
-            ApplyCameraArmLocalPos();
-            yield return null;
-        }
-
-        cameraArmLagOffset = Vector3.zero;
-        ApplyCameraArmLocalPos();
     }
 
     private void ClearIgnoredGravitySource()
