@@ -6,6 +6,7 @@ using System.Linq;
 using Steamworks;
 using Unity.Cinemachine;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
@@ -259,8 +260,12 @@ public class FirstPersonController : MonoBehaviour
             Camera mainCamera = cameraArm.AddComponent<Camera>();
             mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
             mainCamera.depth = -1.0f;
+
             var cameraData = cameraArm.AddComponent<UniversalAdditionalCameraData>();
             cameraData.renderPostProcessing = true;
+
+            mainCamera.farClipPlane = 1500.0f;
+
             cameraArm.AddComponent<AkAudioListener>();
             playerCamera = mainCamera;
         }
