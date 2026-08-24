@@ -7,6 +7,7 @@ using Steamworks;
 using Unity.Cinemachine;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
@@ -63,6 +64,16 @@ public class FirstPersonController : MonoBehaviour
     public float headBobImpactPhaseOffset = 0.3f;
     public float headBobDipDepth = 0.05f;
     public float headBobDipDuration = 0.08f;
+
+    [Header("Jump Thrust")]
+    public float minJumpThrust = 0f;
+    public float maxJumpThrust = 0f;
+    public float minJumpForwardThrust = 0f;
+    public float maxJumpForwardThrust = 0f;
+    private float jumpCounterThrust = 0f;
+    public float jumpThrustPhaseOneDuration = 0f;
+    public float jumpThrustPhaseTwoStartTime = 0f;
+    public float jumpThrustPhaseTwoDuration = 0f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -137,6 +148,7 @@ public class FirstPersonController : MonoBehaviour
     private float cameraArmBobOffset = 0.0f;
     private float cameraArmDipOffset = 0.0f;
     private Coroutine? headBobDipCoroutine = null;
+    private Coroutine? jumpThrustCoroutine = null;
     public Camera? playerCamera;
 
     // input actions
@@ -888,50 +900,47 @@ public class FirstPersonController : MonoBehaviour
         float pressDuration = Time.time - jumpPressStartTime;
         jumpPressStartTime = 0.0f;
 
-        float jumpForce = 0.0f;
         float jumpNorm = Math.Clamp(pressDuration / jumpChargeTime, 0.0f, 1.0f);
         float jumpNormPow = (float)Math.Pow(jumpNorm, 3.0);
 
+        float jumpForce = 0.0f;
+        float thrustForce = 0.0f;
+
         if (pressDuration > 0.0f)
         {
-            jumpForce = maxJumpForce * jumpNormPow;
+            jumpForce = minJumpThrust + ((maxJumpThrust - minJumpThrust) * jumpNormPow);
+            thrustForce = minJumpForwardThrust + ((maxJumpForwardThrust - minJumpForwardThrust) * jumpNormPow);
         }
 
-        if (jumpForce > 0.0f && _rigidbody != null && gravityController != null && playerCamera != null)
+        if (thrustForce > 0.0f && _rigidbody != null && gravityController != null && playerCamera != null)
         {
-            Vector3 jumpDirection = new();
-
             Vector3 gravity = gravityController.GetGravityVector();
             GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
+            Vector3 releasePosition = transform.position;
 
+            // Direction is captured entirely at release: raycast along the camera's forward; if
+            // it hits any surface, aim at that point, otherwise use camera-forward directly.
+            Vector3 launchDirection;
             Ray jumpRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            if (isGroundedOnEdge)
+            if (Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
             {
-                // always jump off the edge in the direction we're facing, regardless of what's ahead
-                jumpDirection = playerCamera.transform.forward;
-                gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
+                Vector3 toTarget = jumpHit.point - releasePosition;
+                launchDirection = toTarget.AlmostZero() ? playerCamera.transform.forward : toTarget.normalized;
             }
-            // If camera angle exceeds threshold and a surface is in range, jump toward it —
-            // unless the hit surface is the one we're already standing on
-            else if (cameraAngleFromGravity > jumpDirectionalAngleThreshold
-                && (!Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default"))
-                    || jumpHit.collider.GetComponentInParent<GravitySourceComponent>() != activeSource))
-            {
-                jumpDirection = playerCamera.transform.forward;
-                gravityController.SetNextTransitionTorqueAxis(playerCamera.transform.forward);
-            }
-            // otherwise jump straight upwards, away from the surface we're standing on
             else
             {
-                jumpDirection = -1.0f * gravity.normalized;
+                launchDirection = playerCamera.transform.forward;
             }
 
-            if (jumpDirection.AlmostZero())
+            Vector3 upDirection = -1.0f * gravity.normalized;
+
+            if (launchDirection.AlmostZero() || upDirection.AlmostZero())
             {
                 return;
             }
 
-            _rigidbody?.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
+            gravityController.SetNextTransitionTorqueAxis(launchDirection);
+
             oxygenSystem?.DepleteOxygen(magnetizedJumpOxygenCost * jumpNorm);
 
             if (activeSource != null)
@@ -941,6 +950,12 @@ public class FirstPersonController : MonoBehaviour
                 ignoredSourceSetTime = Time.time;
                 activeSource.isGravityEnabled = false;
             }
+
+            if (jumpThrustCoroutine != null)
+            {
+                StopCoroutine(jumpThrustCoroutine);
+            }
+            jumpThrustCoroutine = StartCoroutine(JumpThrust(upDirection, jumpForce, launchDirection, thrustForce));
         }
     }
 
@@ -1518,6 +1533,28 @@ public class FirstPersonController : MonoBehaviour
         ApplyCameraArmLocalPos();
     }
 
+    private IEnumerator JumpThrust(Vector3 upDirection, float jumpForce, Vector3 thrustDirection, float thrustForce)
+    {
+        if (_rigidbody != null && playerCamera != null)
+        {
+            float elapsed = 0f;
+            while (elapsed < jumpThrustPhaseTwoStartTime)
+            {
+                float ratio = (float)Math.Clamp(elapsed / jumpThrustPhaseOneDuration, 0.0, 1.0);
+
+                _rigidbody.AddForce(upDirection * jumpForce * (1.0f - ratio), ForceMode.Force);
+                _rigidbody.AddForce(-upDirection * jumpForce * ratio, ForceMode.Force);
+
+                yield return new WaitForFixedUpdate();
+                elapsed += Time.fixedDeltaTime;
+            }
+
+            _rigidbody.AddForce(playerCamera.transform.forward * thrustForce, ForceMode.Impulse);
+        }
+
+        jumpThrustCoroutine = null;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (ignoredGravitySource != null && Time.time > ignoredSourceSetTime + ignoredSourceCollisionGrace)
@@ -1543,6 +1580,11 @@ public class FirstPersonController : MonoBehaviour
         {
             jumpAction.started -= OnJumpStarted;
             jumpAction.canceled -= OnJumpCanceled;
+        }
+        if (jumpThrustCoroutine != null)
+        {
+            StopCoroutine(jumpThrustCoroutine);
+            jumpThrustCoroutine = null;
         }
         if (interactAction != null)
         {

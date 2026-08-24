@@ -921,15 +921,19 @@ MonoBehaviour:
   jumpTargetRaycastDistance: 200
   jumpDirectionalAngleThreshold: 90
   approachDuration: 0.25
-  edgeJumpSearchStep: 5
-  edgeJumpMaxClearDistance: 5
-  edgeJumpLerpDuration: 2
   ignoredSourceCollisionGrace: 0.5
   headBobSpeed: 2.5
   headBobHeight: 0.35
   headBobImpactPhaseOffset: 0.3
   headBobDipDepth: 0.11
   headBobDipDuration: 0.17
+  minJumpThrust: 10
+  maxJumpThrust: 40
+  minJumpForwardThrust: 10
+  maxJumpForwardThrust: 20
+  jumpThrustPhaseOneDuration: 1
+  jumpThrustPhaseTwoStartTime: 0
+  jumpThrustPhaseTwoDuration: 0
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
