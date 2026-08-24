@@ -213,6 +213,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="play_thrust_impulse" ID="{0D2F367A-8408-4DDE-B306-05DAA9F9B1BC}">
+					<ChildrenList>
+						<Action Name="" ID="{5A4AF825-E7D6-4AF5-8ED3-7227BB058E58}" ShortID="336637445">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="thrust_forward_loop_deep" ID="{8F6F0C73-329A-4DC6-84A2-80AD55B5D60F}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

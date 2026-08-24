@@ -20,6 +20,7 @@
 						<ObjectRef Name="play_thrust_loop" ID="{DB12CF76-0185-4BD5-90A8-9D145FA469FC}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_breathing_death" ID="{98D1C7B2-BE69-4C93-A5C3-F02D02132A9C}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_blend_breathing" ID="{32435D69-0F9F-4DCE-8C2C-BA25C5B9B93B}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="play_thrust_impulse" ID="{0D2F367A-8408-4DDE-B306-05DAA9F9B1BC}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_stabilized" ID="{C86EE62A-620B-4F94-8BD7-3535E7BA089D}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="play_mine_beep_near" ID="{93F1FEC1-E52A-4FD7-8E31-129721322A20}" WorkUnitID="{2C7C081E-1BAB-4D21-BFE0-5058D8E44919}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>

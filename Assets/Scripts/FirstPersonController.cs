@@ -72,8 +72,7 @@ public class FirstPersonController : MonoBehaviour
     public float maxJumpForwardThrust = 0f;
     private float jumpCounterThrust = 0f;
     public float jumpThrustPhaseOneDuration = 0f;
-    public float jumpThrustPhaseTwoStartTime = 0f;
-    public float jumpThrustPhaseTwoDuration = 0f;
+    public float jumpThrustImpulseDuration = 0f;
 
     [Header("Mouse Look")]
     public float lookSensitivity = 2f;
@@ -104,6 +103,8 @@ public class FirstPersonController : MonoBehaviour
     private bool hasPlayedStabilizedSound = false;
     private bool isRotationThrustPlaying = false;
     private bool isThrustForwardPlaying = false;
+    private bool isJumpThrustSoundPlaying = false;
+    private float jumpThrustOxygenContribution = 0.0f;
     private const float stabilizeSoundVelocityThreshold = 0.3f;
     private const float stabilizeSoundAngularThreshold = 0.3f;
 
@@ -496,8 +497,9 @@ public class FirstPersonController : MonoBehaviour
 
         if (MovementMode != ControllerMovementMode.ZeroG)
         {
-            // we don't burn extra oxygen when walking on a surface
-            oxygenBurnRate = 0.0f;
+            // we don't burn extra oxygen when walking on a surface, but a jump-thrust launched while
+            // still magnetized should keep burning until the coroutine finishes
+            oxygenBurnRate = jumpThrustOxygenContribution;
             rotationOxygenContribution = 0.0f;
             IsSprinting = false;
             IsMagnetizedWalking = false;
@@ -941,8 +943,6 @@ public class FirstPersonController : MonoBehaviour
 
             gravityController.SetNextTransitionTorqueAxis(launchDirection);
 
-            oxygenSystem?.DepleteOxygen(magnetizedJumpOxygenCost * jumpNorm);
-
             if (activeSource != null)
             {
                 ignoredGravitySource = activeSource;
@@ -954,8 +954,11 @@ public class FirstPersonController : MonoBehaviour
             if (jumpThrustCoroutine != null)
             {
                 StopCoroutine(jumpThrustCoroutine);
+                StopJumpThrustSound();
+                jumpThrustOxygenContribution = 0.0f;
             }
-            jumpThrustCoroutine = StartCoroutine(JumpThrust(upDirection, jumpForce, launchDirection, thrustForce));
+
+            jumpThrustCoroutine = StartCoroutine(JumpThrust(upDirection, jumpForce, launchDirection, thrustForce, magnetizedJumpOxygenCost * jumpNorm));
         }
     }
 
@@ -1024,6 +1027,29 @@ public class FirstPersonController : MonoBehaviour
         AkUnitySoundEngine.ExecuteActionOnEvent("play_thrust_loop", AkActionOnEventType.AkActionOnEventType_Stop, gameObject);
         AkUnitySoundEngine.PostEvent("play_thrust_stop", gameObject);
         isRotationThrustPlaying = false;
+    }
+
+    void StartJumpThrustSound()
+    {
+        if (isJumpThrustSoundPlaying)
+        {
+            return;
+        }
+
+        AkUnitySoundEngine.PostEvent("play_thrust_forward_loop", gameObject);
+        isJumpThrustSoundPlaying = true;
+    }
+
+    void StopJumpThrustSound()
+    {
+        if (!isJumpThrustSoundPlaying)
+        {
+            return;
+        }
+
+        AkUnitySoundEngine.ExecuteActionOnEvent("play_thrust_forward_loop", AkActionOnEventType.AkActionOnEventType_Stop, gameObject);
+        AkUnitySoundEngine.PostEvent("stop_thrust_forward_loop", gameObject);
+        isJumpThrustSoundPlaying = false;
     }
 
     void StartThrustForwardSound()
@@ -1299,7 +1325,7 @@ public class FirstPersonController : MonoBehaviour
             movementOxygenBurnRate = 0.0f;
         }
 
-        oxygenBurnRate = Math.Max(movementOxygenBurnRate, rotationOxygenContribution);
+        oxygenBurnRate = Math.Max(Math.Max(movementOxygenBurnRate, rotationOxygenContribution), jumpThrustOxygenContribution);
 
         _rigidbody.AddForce(thrustVector.normalized * flightForce);
 
@@ -1533,12 +1559,21 @@ public class FirstPersonController : MonoBehaviour
         ApplyCameraArmLocalPos();
     }
 
-    private IEnumerator JumpThrust(Vector3 upDirection, float jumpForce, Vector3 thrustDirection, float thrustForce)
+    private IEnumerator JumpThrust(Vector3 upDirection, float jumpForce, Vector3 thrustDirection, float thrustForce, float magnetizedJumpOxygenCostAmount)
     {
         if (_rigidbody != null && playerCamera != null)
         {
+            StartJumpThrustSound();
+            jumpThrustOxygenContribution = 1.0f;
+
+            // wait a frame before charging the flat jump cost so the HUD's laggy oxygen bar
+            // freezes at the pre-cost baseline first; otherwise the rising-edge snap reads the
+            // already-depleted value and the flat cost never shows as a visible drop
+            yield return null;
+            oxygenSystem?.DepleteOxygen(magnetizedJumpOxygenCostAmount);
+
             float elapsed = 0f;
-            while (elapsed < jumpThrustPhaseTwoStartTime)
+            while (elapsed < jumpThrustPhaseOneDuration)
             {
                 float ratio = (float)Math.Clamp(elapsed / jumpThrustPhaseOneDuration, 0.0, 1.0);
 
@@ -1549,7 +1584,19 @@ public class FirstPersonController : MonoBehaviour
                 elapsed += Time.fixedDeltaTime;
             }
 
+            StopJumpThrustSound();
+
             _rigidbody.AddForce(playerCamera.transform.forward * thrustForce, ForceMode.Impulse);
+            AkUnitySoundEngine.PostEvent("play_thrust_impulse", gameObject);
+
+            float impulseElapsed = 0f;
+            while (impulseElapsed < jumpThrustImpulseDuration)
+            {
+                yield return new WaitForFixedUpdate();
+                impulseElapsed += Time.fixedDeltaTime;
+            }
+
+            jumpThrustOxygenContribution = 0.0f;
         }
 
         jumpThrustCoroutine = null;
@@ -1585,6 +1632,8 @@ public class FirstPersonController : MonoBehaviour
         {
             StopCoroutine(jumpThrustCoroutine);
             jumpThrustCoroutine = null;
+            StopJumpThrustSound();
+            jumpThrustOxygenContribution = 0.0f;
         }
         if (interactAction != null)
         {

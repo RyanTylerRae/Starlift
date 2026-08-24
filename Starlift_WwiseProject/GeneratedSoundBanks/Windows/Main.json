@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{1E61117A-871B-6EA9-25C8-C066A73E0C1B}",
+    "Hash": "{81BE188F-FB11-1FDD-B8F2-582AB44AD842}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -314,6 +314,27 @@
       }
      },
      {
+      "Id": "1199850460",
+      "Name": "play_thrust_impulse",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_thrust_impulse",
+      "GUID": "{0D2F367A-8408-4DDE-B306-05DAA9F9B1BC}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.8540171",
+      "DurationMax": "0.9047996",
+      "MediaRefs": [
+       {
+        "Id": "401349144"
+       }
+      ],
+      "PluginRefs": {
+       "ShareSets": [
+        {
+         "Id": "2755291687"
+        }
+       ]
+      }
+     },
+     {
       "Id": "1690998729",
       "Name": "play_thrust_loop",
       "ObjectPath": "\\Events\\Default Work Unit\\play_thrust_loop",
@@ -396,6 +417,6 @@
     ]
    }
   ],
-  "FileHash": "{3533FDF5-868B-DD90-C568-A322A6C4F091}"
+  "FileHash": "{CA7145B1-63D9-8E6B-3FE1-A2A95FD4584F}"
  }
 }

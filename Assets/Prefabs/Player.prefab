@@ -927,13 +927,12 @@ MonoBehaviour:
   headBobImpactPhaseOffset: 0.3
   headBobDipDepth: 0.11
   headBobDipDuration: 0.17
-  minJumpThrust: 10
-  maxJumpThrust: 40
-  minJumpForwardThrust: 10
-  maxJumpForwardThrust: 20
-  jumpThrustPhaseOneDuration: 1
-  jumpThrustPhaseTwoStartTime: 0
-  jumpThrustPhaseTwoDuration: 0
+  minJumpThrust: 15
+  maxJumpThrust: 30
+  minJumpForwardThrust: 5
+  maxJumpForwardThrust: 15
+  jumpThrustPhaseOneDuration: 0.8
+  jumpThrustImpulseDuration: 1.5
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
@@ -957,9 +956,9 @@ MonoBehaviour:
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
   minOxygenBurnRate: 2
-  jumpOxygenCost: 4
-  magnetizedJumpOxygenCost: 4
-  rotationOxygenBurnRate: 0.4
+  jumpOxygenCost: 8
+  magnetizedJumpOxygenCost: 8
+  rotationOxygenBurnRate: 0.5
 --- !u!114 &4662095033839872499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1113,7 +1112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 2.5
+  usagePerSecond: 4
   thrustMultiplier: 2
   sprintMultiplier: 1.5
   magnetizedWalkMultiplier: 1

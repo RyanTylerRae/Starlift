@@ -3,6 +3,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	130567783	play_breathing_death			\Default Work Unit\play_breathing_death	
 	505312832	stop_magnetized			\Default Work Unit\stop_magnetized	
 	866766775	play_thrust_forward_loop			\Default Work Unit\play_thrust_forward_loop	
+	1199850460	play_thrust_impulse			\Default Work Unit\play_thrust_impulse	
 	1317991621	stop_thrust_forward_loop			\Default Work Unit\stop_thrust_forward_loop	
 	1690998729	play_thrust_loop			\Default Work Unit\play_thrust_loop	
 	1840848318	play_magnetized			\Default Work Unit\play_magnetized	
