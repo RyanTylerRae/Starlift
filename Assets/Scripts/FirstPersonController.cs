@@ -275,6 +275,11 @@ public class FirstPersonController : MonoBehaviour
 
             mainCamera.farClipPlane = 1500.0f;
 
+            FogCamera fogCamera = mainCamera.AddComponent<FogCamera>();
+            fogCamera.fogStartDistance = 75.0f;
+            fogCamera.fogColor = Color.black;
+            fogCamera.fogPower = 0.4f;
+
             cameraArm.AddComponent<AkAudioListener>();
             playerCamera = mainCamera;
         }
