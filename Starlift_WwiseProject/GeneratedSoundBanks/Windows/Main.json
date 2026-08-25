@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{81BE188F-FB11-1FDD-B8F2-582AB44AD842}",
+    "Hash": "{03A7F958-C135-3157-95D6-ABA29DC43391}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -62,6 +62,14 @@
       "Location": "Memory",
       "ShortName": "magnetized.wav",
       "CachePath": "26/{26BA5EF6-B11E-759E-8365-2AD852ED8646}.wem"
+     },
+     {
+      "Id": "641998116",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "thrust_loop.wav",
+      "CachePath": "75/{7509B7D6-7463-0705-C8FA-A7BD1A0EAF0A}.wem"
      },
      {
       "Id": "664015539",
@@ -323,7 +331,7 @@
       "DurationMax": "0.9047996",
       "MediaRefs": [
        {
-        "Id": "401349144"
+        "Id": "641998116"
        }
       ],
       "PluginRefs": {
@@ -417,6 +425,6 @@
     ]
    }
   ],
-  "FileHash": "{CA7145B1-63D9-8E6B-3FE1-A2A95FD4584F}"
+  "FileHash": "{C3EAE105-73A9-90DD-354D-22E4503F0254}"
  }
 }

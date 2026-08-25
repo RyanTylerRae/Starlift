@@ -946,7 +946,7 @@ MonoBehaviour:
   stabilizeMultiplier: -0.9
   flightForce: 4.5
   maxFlightSpeed: 9
-  boostedMaxFlightSpeed: 14
+  boostedMaxFlightSpeed: 18
   speedEaseBackRate: 4
   zeroGIdleDamping: 0
   jumpChargeTime: 0.5
