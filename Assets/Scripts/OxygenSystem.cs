@@ -40,7 +40,7 @@ public class OxygenSystem : MonoBehaviour
 
     void LateUpdate()
     {
-        if (modifiers == null || playerController == null || entity == null || !entity.IsAlive)
+        if (modifiers == null || playerController == null || entity == null || !entity.IsAlive || PlayerSettings.GodModeOxygenDisabled)
         {
             return;
         }

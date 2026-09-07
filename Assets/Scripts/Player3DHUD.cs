@@ -46,11 +46,23 @@ public class PlayerHUD : MonoBehaviour
     private float laggyOxygenProgress = 0f;
     public float laggyOxygenSpeed;
 
+    private bool wasGodModeOxygenDisabled = false;
+
     public void SetOxygenHudEnabled(bool enabled)
     {
         if (oxygenProgressRendererForeground != null)
         {
             oxygenProgressRendererForeground.gameObject.SetActive(enabled);
+        }
+
+        if (oxygenProgressLaggyRenderer != null)
+        {
+            oxygenProgressLaggyRenderer.gameObject.SetActive(enabled);
+        }
+
+        if (oxygenProgressRendererBackground != null)
+        {
+            oxygenProgressRendererBackground.gameObject.SetActive(enabled);
         }
     }
 
@@ -184,6 +196,13 @@ public class PlayerHUD : MonoBehaviour
 
                 jumpOkIndicatorText.text = (isUnobstructedTarget && canAimDirectionalJump) ? "[ok]" : "[x]";
             }
+        }
+
+        // hide/show the whole oxygen bar when God Mode is toggled
+        if (PlayerSettings.GodModeOxygenDisabled != wasGodModeOxygenDisabled)
+        {
+            SetOxygenHudEnabled(!PlayerSettings.GodModeOxygenDisabled);
+            wasGodModeOxygenDisabled = PlayerSettings.GodModeOxygenDisabled;
         }
 
         // handle oxygen burn logic for the laggy progress bar

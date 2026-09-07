@@ -281,7 +281,7 @@ public class FirstPersonController : MonoBehaviour
             fogCamera.fogPower = 0.4f;
 
             PixelateCamera pxCamera = mainCamera.AddComponent<PixelateCamera>();
-            pxCamera.pixelsPerScreenHeight = 360;
+            pxCamera.pixelsPerScreenHeight = 256;
 
             cameraArm.AddComponent<AkAudioListener>();
             playerCamera = mainCamera;
