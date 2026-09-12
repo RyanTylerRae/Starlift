@@ -955,9 +955,9 @@ MonoBehaviour:
   maxDepenetrationVelocity: 0.5
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
-  minOxygenBurnRate: 2
-  jumpOxygenCost: 8
-  magnetizedJumpOxygenCost: 8
+  minOxygenBurnRate: 1
+  jumpOxygenCost: 4
+  magnetizedJumpOxygenCost: 4
   rotationOxygenBurnRate: 0.5
 --- !u!114 &4662095033839872499
 MonoBehaviour:
@@ -1112,8 +1112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 4
-  thrustMultiplier: 2
+  usagePerSecond: 2
+  thrustMultiplier: 1
   sprintMultiplier: 1.5
   magnetizedWalkMultiplier: 1
 --- !u!114 &3039922705185681957

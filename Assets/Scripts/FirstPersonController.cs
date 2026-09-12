@@ -207,6 +207,7 @@ public class FirstPersonController : MonoBehaviour
     public float OxygenBurnRate { get { return oxygenBurnRate; } }
     private float rotationOxygenContribution = 0.0f;
     private OxygenSystem? oxygenSystem = null;
+    private Vector3 _previousZeroGVelocity = Vector3.zero;
 
     public enum ControllerMovementMode
     {
@@ -388,6 +389,11 @@ public class FirstPersonController : MonoBehaviour
         }
         else if (movementMode == ControllerMovementMode.ZeroG)
         {
+            if (_rigidbody != null)
+            {
+                _previousZeroGVelocity = _rigidbody.linearVelocity;
+            }
+
             playerInput.SwitchCurrentActionMap("MovementZeroG");
 
             lookAction = playerInput.currentActionMap.FindAction("Look");
@@ -1287,6 +1293,12 @@ public class FirstPersonController : MonoBehaviour
 
         Vector3 velocity = _rigidbody.linearVelocity;
 
+        // velocity as of last FixedUpdate already reflects last step's applied forces (AddForce isn't
+        // integrated until the physics engine steps after FixedUpdate returns, so we compare against
+        // the previous step's result rather than trying to read this step's change back immediately)
+        float velocityChangeLastStep = (velocity - _previousZeroGVelocity).magnitude;
+        _previousZeroGVelocity = velocity;
+
         bool isManualThrusting = forwardThrustInput > 0f || backwardThrustInput > 0f
             || leftThrustInput > 0f || rightThrustInput > 0f
             || upThrustInput > 0f || downThrustInput > 0f;
@@ -1318,7 +1330,9 @@ public class FirstPersonController : MonoBehaviour
         thrustVector += playerCamera.transform.up * upThrustInput;
         thrustVector += -playerCamera.transform.up * downThrustInput;
 
-        // burn less oxygen the closer the player gets to maximum velocity
+        // burn oxygen in proportion to the velocity change the thrust actually produced last step,
+        // so it drops to zero once the speed clamp fully absorbs further thrust in the same direction,
+        // and rises naturally when redirecting a fast-moving body (a bigger delta-v to turn a bigger vector)
         float movementOxygenBurnRate;
         if (stabilizeActive && velocity.sqrMagnitude > 1.0f)
         {
@@ -1326,7 +1340,10 @@ public class FirstPersonController : MonoBehaviour
         }
         else if (thrustVector.sqrMagnitude > 0.0f)
         {
-            movementOxygenBurnRate = Math.Max(1.0f - (_rigidbody.linearVelocity.magnitude / maxFlightSpeed), minOxygenBurnRate);
+            float maxPossibleVelocityChange = (flightForce / _rigidbody.mass) * Time.fixedDeltaTime;
+            movementOxygenBurnRate = maxPossibleVelocityChange > 0f
+                ? Mathf.Clamp01(velocityChangeLastStep / maxPossibleVelocityChange)
+                : 0f;
         }
         else
         {
