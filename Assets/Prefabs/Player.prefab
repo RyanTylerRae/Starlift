@@ -915,6 +915,7 @@ MonoBehaviour:
   footstepImpactPhaseOffset: 0.3
   maxMagnetizedWalkSpeed: 4
   magnetizedAcceleration: 10
+  magnetizedDeceleration: 3
   magnetizedLandingBoostMaxSpeed: 10
   magnetizedLandingMomentumCameraAlignment: 0.6
   magnetizedCornerAngleThreshold: 15
@@ -923,21 +924,18 @@ MonoBehaviour:
   magnetizeRadius: 0.4
   magnetizedSoundRange: 4
   gravityAlignmentSpeed: 5
-  maxJumpForce: 14
   jumpTargetRaycastDistance: 200
   jumpDirectionalAngleThreshold: 90
   approachDuration: 0.25
   ignoredSourceCollisionGrace: 0.5
-  headBobSpeed: 2.5
-  headBobHeight: 0.35
+  headBobSpeed: 2.3
+  headBobHeight: 0.3
   headBobImpactPhaseOffset: 0.3
-  headBobDipDepth: 0.11
-  headBobDipDuration: 0.17
-  minJumpThrust: 15
-  maxJumpThrust: 30
-  minJumpForwardThrust: 5
-  maxJumpForwardThrust: 15
-  jumpThrustPhaseOneDuration: 0.8
+  headBobDipDepth: 0.1
+  headBobDipDuration: 0.15
+  jumpThrustForce: 15
+  jumpForwardThrust: 20
+  jumpThrustPhaseOneDuration: 1.5
   jumpThrustImpulseDuration: 1.5
   lookSensitivity: 0.1
   maxLookAngle: 85
@@ -957,7 +955,8 @@ MonoBehaviour:
   boostedMaxFlightSpeed: 18
   speedEaseBackRate: 4
   zeroGIdleDamping: 0
-  jumpChargeTime: 0.5
+  jumpHoldDuration: 0.4
+  jumpCrouchHeightOffset: 1
   substepDistance: 0.01
   airCollisionDampening: 0.2
   maxDepenetrationVelocity: 0.5

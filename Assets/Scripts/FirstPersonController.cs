@@ -77,7 +77,6 @@ public class FirstPersonController : MonoBehaviour
     private bool isMagnetizedSoundPlaying = false;
     private GravitySourceComponent[] magnetizableSources = System.Array.Empty<GravitySourceComponent>();
     public float gravityAlignmentSpeed = 5f;
-    public float maxJumpForce = 0f;
     public float jumpTargetRaycastDistance = 200f;
     public float jumpDirectionalAngleThreshold = 135f;
     public float approachDuration = 0.5f;
@@ -95,11 +94,8 @@ public class FirstPersonController : MonoBehaviour
     public float headBobDipDuration = 0.08f;
 
     [Header("Jump Thrust")]
-    public float minJumpThrust = 0f;
-    public float maxJumpThrust = 0f;
-    public float minJumpForwardThrust = 0f;
-    public float maxJumpForwardThrust = 0f;
-    private float jumpCounterThrust = 0f;
+    public float jumpThrustForce = 0f;
+    public float jumpForwardThrust = 0f;
     public float jumpThrustPhaseOneDuration = 0f;
     public float jumpThrustImpulseDuration = 0f;
 
@@ -148,9 +144,10 @@ public class FirstPersonController : MonoBehaviour
     private float cameraAngleFromGravity = 0f;
     public float CameraAngleFromGravity { get { return cameraAngleFromGravity; } }
 
-    // jump charge
-    private float jumpPressStartTime = 0f;
-    public float jumpChargeTime = 0f;
+    // jump hold / crouch
+    private float jumpHoldStartTime = 0f;
+    public float jumpHoldDuration = 0.5f;
+    public float jumpCrouchHeightOffset = 0.25f;
 
     [Header("Physics Sub-stepping")]
     public float substepDistance = 0.01f;
@@ -207,6 +204,7 @@ public class FirstPersonController : MonoBehaviour
     private Vector3 cameraArmRestLocalPos = Vector3.zero;
     private float cameraArmBobOffset = 0.0f;
     private float cameraArmDipOffset = 0.0f;
+    private float cameraArmCrouchOffset = 0.0f;
     private Coroutine? headBobDipCoroutine = null;
     private Coroutine? jumpThrustCoroutine = null;
     public Camera? playerCamera;
@@ -374,7 +372,7 @@ public class FirstPersonController : MonoBehaviour
         }
 
         Vector3 localPos = cameraArmRestLocalPos;
-        localPos.y += cameraArmBobOffset + cameraArmDipOffset;
+        localPos.y += cameraArmBobOffset + cameraArmDipOffset - cameraArmCrouchOffset;
         cameraArm.transform.localPosition = localPos;
     }
 
@@ -539,16 +537,12 @@ public class FirstPersonController : MonoBehaviour
             }
         }
 
-        if (modifiers != null)
+        if (jumpHoldStartTime > 0.0f && MovementMode == ControllerMovementMode.Magnetized)
         {
-            float pressDuration = 0.0f;
-            if (jumpPressStartTime > 0.0f && MovementMode == ControllerMovementMode.Magnetized)
-            {
-                pressDuration = Time.time - jumpPressStartTime;
-            }
-
-            float jumpNorm = Math.Clamp(pressDuration / jumpChargeTime, 0.0f, 1.0f);
-            modifiers.Set(ModifierType.JumpCharge, jumpNorm);
+            float pressDuration = Time.time - jumpHoldStartTime;
+            float holdProgress = Math.Clamp(pressDuration / jumpHoldDuration, 0.0f, 1.0f);
+            cameraArmCrouchOffset = isGrounded ? jumpCrouchHeightOffset * holdProgress : 0.0f;
+            ApplyCameraArmLocalPos();
         }
 
         Vector3 gravity = gravityController.GetGravityVector();
@@ -603,7 +597,7 @@ public class FirstPersonController : MonoBehaviour
             {
                 HandleMovementSubStepped();
             }
-            else if (MovementMode == ControllerMovementMode.Gravity && jumpPressStartTime == 0.0f)
+            else if (MovementMode == ControllerMovementMode.Gravity && jumpHoldStartTime == 0.0f)
             {
                 HandleMovement();
                 HandleJump();
@@ -1274,7 +1268,7 @@ public class FirstPersonController : MonoBehaviour
     {
         if (movementMode == ControllerMovementMode.Magnetized)
         {
-            jumpPressStartTime = 0f;
+            jumpHoldStartTime = 0f;
             SetMovementMode(ControllerMovementMode.Gravity);
         }
     }
@@ -1286,27 +1280,24 @@ public class FirstPersonController : MonoBehaviour
 
     private void OnJumpStarted(InputAction.CallbackContext context)
     {
-        jumpPressStartTime = Time.time;
+        jumpHoldStartTime = Time.time;
     }
 
     private void OnJumpCanceled(InputAction.CallbackContext context)
     {
-        float pressDuration = Time.time - jumpPressStartTime;
-        jumpPressStartTime = 0.0f;
+        float pressDuration = Time.time - jumpHoldStartTime;
+        jumpHoldStartTime = 0.0f;
+        cameraArmCrouchOffset = 0.0f;
+        ApplyCameraArmLocalPos();
 
-        float jumpNorm = Math.Clamp(pressDuration / jumpChargeTime, 0.0f, 1.0f);
-        float jumpNormPow = (float)Math.Pow(jumpNorm, 3.0);
-
-        float jumpForce = 0.0f;
-        float thrustForce = 0.0f;
-
-        if (pressDuration > 0.0f)
+        if (pressDuration < jumpHoldDuration)
         {
-            jumpForce = minJumpThrust + ((maxJumpThrust - minJumpThrust) * jumpNormPow);
-            thrustForce = minJumpForwardThrust + ((maxJumpForwardThrust - minJumpForwardThrust) * jumpNormPow);
+            Debug.Log("Magnetized jump canceled: released before jumpHoldDuration threshold.");
+            // @trae TODO: play a canceled-jump sfx here
+            return;
         }
 
-        if (thrustForce > 0.0f && _rigidbody != null && gravityController != null && cameraArm != null)
+        if (_rigidbody != null && gravityController != null && cameraArm != null)
         {
             Vector3 gravity = gravityController.GetGravityVector();
             GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
@@ -1361,14 +1352,14 @@ public class FirstPersonController : MonoBehaviour
             // be treated as genuinely new, not a re-collision against a surface we never left
             attachedMagnetizedSource = null;
 
-            jumpThrustCoroutine = StartCoroutine(JumpThrust(upDirection, jumpForce, launchDirection, thrustForce, magnetizedJumpOxygenCost * jumpNorm));
+            jumpThrustCoroutine = StartCoroutine(JumpThrust(upDirection, jumpThrustForce, launchDirection, jumpForwardThrust, magnetizedJumpOxygenCost));
         }
     }
 
     private void HandleMovementSubStepped()
     {
         Vector2? moveInput = moveAction?.ReadValue<Vector2>();
-        if (moveInput == null || jumpPressStartTime > 0f)
+        if (moveInput == null || jumpHoldStartTime > 0f)
         {
             desiredMovementVelocity = Vector3.zero;
             return;
@@ -2015,6 +2006,10 @@ public class FirstPersonController : MonoBehaviour
             yield return null;
             oxygenSystem?.DepleteOxygen(magnetizedJumpOxygenCostAmount);
 
+            // up (hang) and out (forward thrust) start simultaneously at release
+            _rigidbody.AddForce(thrustDirection * thrustForce, ForceMode.Impulse);
+            AkUnitySoundEngine.PostEvent("play_thrust_impulse", gameObject);
+
             float elapsed = 0f;
             while (elapsed < jumpThrustPhaseOneDuration)
             {
@@ -2028,9 +2023,6 @@ public class FirstPersonController : MonoBehaviour
             }
 
             StopJumpThrustSound();
-
-            _rigidbody.AddForce(cameraArm.transform.forward * thrustForce, ForceMode.Impulse);
-            AkUnitySoundEngine.PostEvent("play_thrust_impulse", gameObject);
 
             float impulseElapsed = 0f;
             while (impulseElapsed < jumpThrustImpulseDuration)

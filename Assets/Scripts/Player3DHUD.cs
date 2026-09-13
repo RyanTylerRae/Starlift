@@ -27,9 +27,6 @@ public class PlayerHUD : MonoBehaviour
     public MeshRenderer? oxygenProgressRendererBackground;
     private Material? oxygenProgressBackgroundMaterialInstance = null;
 
-    public MeshRenderer? jumpChargeRenderer;
-    private Material? jumpChargeMaterialInstance = null;
-
     [Header("Mouse Look Impulse")]
     public GameObject? lookRoot;
 
@@ -72,7 +69,6 @@ public class PlayerHUD : MonoBehaviour
         oxygenProgressForegroundMaterialInstance = oxygenProgressRendererForeground?.material;
         oxygenProgressLaggyRendererMaterialInstance = oxygenProgressLaggyRenderer?.material;
         oxygenProgressBackgroundMaterialInstance = oxygenProgressRendererBackground?.material;
-        jumpChargeMaterialInstance = jumpChargeRenderer?.material;
     }
 
     // Reset orientation for the HUD itself to allow individual tracking
@@ -236,10 +232,5 @@ public class PlayerHUD : MonoBehaviour
         // {
         //     oxygenProgressBackgroundMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.Oxygen) / modifiers.GetMax(ModifierType.Oxygen));
         // }
-
-        if (jumpChargeMaterialInstance != null)
-        {
-            jumpChargeMaterialInstance.SetFloat("_Progress", modifiers.Get(ModifierType.JumpCharge));
-        }
     }
 }
