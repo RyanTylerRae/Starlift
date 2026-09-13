@@ -25,10 +25,11 @@ public class FirstPersonController : MonoBehaviour
     // true from the moment a magnetized jump launches until HandleGrounded() confirms a real
     // landing while Magnetized - see the comment where it's set for why this can't just be isJumping
     private bool magnetizedJumpInProgress = false;
-    // consecutive HandleGrounded() calls where we were ungrounded - used to debounce single-frame
-    // ground-detection flicker so ApplyLandingMomentum() can't fire repeatedly for one real landing
-    private int ungroundedStreak = 0;
-    private const int minUngroundedStreakForLandingBoost = 2;
+    // the gravity source we're currently stuck to while Magnetized - lets HandleGrounded() tell a
+    // genuine new landing apart from a re-collision blip against the surface we're already attached
+    // to (e.g. from the body reorienting toward the new "up" and briefly clipping the geometry),
+    // which was re-triggering landing momentum/rotation-reset for no real landing
+    private GravitySourceComponent? attachedMagnetizedSource = null;
     private Vector3 surfaceNormal = Vector3.up;
     public float groundedDistance;
     public float edgeRaycastMultiplier = 2f;
@@ -831,15 +832,19 @@ public class FirstPersonController : MonoBehaviour
     private void HandleGrounded()
     {
         bool wasGrounded = isGrounded;
-        int priorUngroundedStreak = ungroundedStreak;
         isGrounded = false;
         isGroundedOnEdge = false;
-        ungroundedStreak++;
 
         if (gravityController == null)
         {
             return;
         }
+
+        // used below to tell a genuine new landing apart from a re-collision blip against a surface
+        // we're already attached to
+        GravitySourceComponent? activeMagnetizedSource = MovementMode == ControllerMovementMode.Magnetized
+            ? gravityController.GetActiveGravitySource()
+            : null;
 
         Vector3 gravity = gravityController.GetGravityVector();
         if (gravity.sqrMagnitude < 0.01)
@@ -880,20 +885,26 @@ public class FirstPersonController : MonoBehaviour
             magnetizedJumpInProgress = false;
             surfaceNormal = centerHit.normal;
 
+            // only a genuine new landing - not still attached to the same surface we already were -
+            // should reset landing-tracking state or reapply landing momentum. Without this, the
+            // body reorienting toward the new "up" can briefly clip the geometry it's already stuck
+            // to, and that re-collision was being treated as a brand new landing.
+            bool isGenuineLanding = !wasGrounded && activeMagnetizedSource != attachedMagnetizedSource;
             if (!wasGrounded)
+            {
+                Debug.Log($"TRAE landing event (CENTER raycast) at t={Time.time:F3}, isGenuineLanding={isGenuineLanding}, source={(activeMagnetizedSource != null ? activeMagnetizedSource.name : "null")}, prevSource={(attachedMagnetizedSource != null ? attachedMagnetizedSource.name : "null")}");
+            }
+            attachedMagnetizedSource = activeMagnetizedSource;
+
+            if (isGenuineLanding)
             {
                 // don't compare against whatever axis was tracked while airborne (an approximation
                 // based on gravity direction, not the actual surface) - that mismatch alone can look
                 // like a sharp corner on a steeply angled surface and wrongly trigger a detach right
                 // at the moment of landing
                 lastMagnetizedVerticalAxis = Vector3.zero;
-            }
-
-            if (!wasGrounded && priorUngroundedStreak >= minUngroundedStreakForLandingBoost)
-            {
                 ApplyLandingMomentum();
             }
-            ungroundedStreak = 0;
 
             if (isJumping)
             {
@@ -939,9 +950,16 @@ public class FirstPersonController : MonoBehaviour
         {
             magnetizedJumpInProgress = false;
 
+            // see comment at the other landing branch above
+            bool isGenuineLanding = !wasGrounded && activeMagnetizedSource != attachedMagnetizedSource;
             if (!wasGrounded)
             {
-                // see comment at the other landing branch above
+                Debug.Log($"TRAE landing event (CORNER raycasts, numHits={numHits}) at t={Time.time:F3}, isGenuineLanding={isGenuineLanding}, source={(activeMagnetizedSource != null ? activeMagnetizedSource.name : "null")}, prevSource={(attachedMagnetizedSource != null ? attachedMagnetizedSource.name : "null")}");
+            }
+            attachedMagnetizedSource = activeMagnetizedSource;
+
+            if (isGenuineLanding)
+            {
                 lastMagnetizedVerticalAxis = Vector3.zero;
             }
 
@@ -965,11 +983,10 @@ public class FirstPersonController : MonoBehaviour
                 surfaceNormal = -gravityDir;
             }
 
-            if (!wasGrounded && priorUngroundedStreak >= minUngroundedStreakForLandingBoost)
+            if (isGenuineLanding)
             {
                 ApplyLandingMomentum();
             }
-            ungroundedStreak = 0;
         }
 
         // Magnetized attachment isn't "resting on top of" a surface the way Gravity mode's ground
@@ -977,10 +994,15 @@ public class FirstPersonController : MonoBehaviour
         // integration noise) without the player having actually left the surface. The only
         // deliberate way to leave a magnetized surface is jumping, so treat every other case as
         // still grounded, keeping whatever surfaceNormal was last detected.
-        if (!isGrounded && MovementMode == ControllerMovementMode.Magnetized && !magnetizedJumpInProgress)
+        // Requires wasGrounded: this only protects an EXISTING attachment from raycast noise. It
+        // must not fabricate a first attachment out of nothing - MovementMode flips to Magnetized
+        // as soon as the gravity field is entered, often well before the player physically reaches
+        // the surface, and forcing isGrounded true during that approach fed a bogus/stale
+        // surfaceNormal into the rest of the grounded logic (corner-detection included), which was
+        // triggering spurious detaches before real contact and causing genuine PhysX bounces instead.
+        if (!isGrounded && wasGrounded && MovementMode == ControllerMovementMode.Magnetized && !magnetizedJumpInProgress)
         {
             isGrounded = true;
-            ungroundedStreak = 0;
         }
     }
 
@@ -994,6 +1016,8 @@ public class FirstPersonController : MonoBehaviour
         {
             return;
         }
+
+        Debug.Log($"TRAE ApplyLandingMomentum() called at t={Time.time:F3}, incoming magnetizedVelocity={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2})");
 
         Vector3 verticalAxis = surfaceNormal.sqrMagnitude > 0.01f ? surfaceNormal.normalized : magnetizedVelocity.normalized;
         Vector3 tangential = Vector3.ProjectOnPlane(magnetizedVelocity, verticalAxis);
@@ -1027,6 +1051,7 @@ public class FirstPersonController : MonoBehaviour
         }
 
         magnetizedVelocity = boostedTangential + vertical;
+        Debug.Log($"TRAE ApplyLandingMomentum() result magnetizedVelocity={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2})");
     }
 
     private void HandleJump()
@@ -1160,6 +1185,9 @@ public class FirstPersonController : MonoBehaviour
             // jump typically bounces through ZeroG while its gravity source is briefly disabled -
             // isJumping would get wiped out mid-flight, well before the player actually lands.
             magnetizedJumpInProgress = true;
+            // we're deliberately leaving - a later landing (even back on this same surface) should
+            // be treated as genuinely new, not a re-collision against a surface we never left
+            attachedMagnetizedSource = null;
 
             jumpThrustCoroutine = StartCoroutine(JumpThrust(upDirection, jumpForce, launchDirection, thrustForce, magnetizedJumpOxygenCost * jumpNorm));
         }
@@ -1694,6 +1722,9 @@ public class FirstPersonController : MonoBehaviour
         ignoredGravityDirection = gravityVector.normalized;
         ignoredSourceSetTime = Time.time;
         gravitySource.isGravityEnabled = false;
+        // we're deliberately leaving - a later landing (even back on this same surface) should be
+        // treated as genuinely new, not a re-collision against a surface we never left
+        attachedMagnetizedSource = null;
 
         if (_rigidbody != null)
         {
@@ -1712,6 +1743,7 @@ public class FirstPersonController : MonoBehaviour
         float impactPhase = Mathf.PI - headBobImpactPhaseOffset;
         if (previousBobPhase < impactPhase && distanceTraveled >= impactPhase)
         {
+            Debug.Log($"TRAE DoMagnetizedHeadBob step sound at t={Time.time:F3}");
             TriggerHeadBobDip();
 
             AkUnitySoundEngine.PostEvent("play_footstep_thud", gameObject);
@@ -1727,11 +1759,13 @@ public class FirstPersonController : MonoBehaviour
 
     private void TriggerLandingSound()
     {
+        Debug.Log($"TRAE TriggerLandingSound() at t={Time.time:F3}, mode={MovementMode}");
         StartCoroutine(DoDelayedDoubleSound("play_footstep_soft"));
     }
 
     private void TriggerMagnetizeSound()
     {
+        Debug.Log($"TRAE TriggerMagnetizeSound() at t={Time.time:F3}, mode={MovementMode}");
         StartCoroutine(DoDelayedDoubleSound("play_footstep_thud"));
     }
 
@@ -1761,6 +1795,7 @@ public class FirstPersonController : MonoBehaviour
         float impactPhase = Mathf.PI - footstepImpactPhaseOffset;
         if (gravityFootstepPreviousPhase < impactPhase && gravityFootstepPhase >= impactPhase)
         {
+            Debug.Log($"TRAE DoGravityFootsteps step sound at t={Time.time:F3}");
             AkUnitySoundEngine.PostEvent("play_footstep_soft", gameObject);
         }
         gravityFootstepPreviousPhase = gravityFootstepPhase;
@@ -1837,11 +1872,14 @@ public class FirstPersonController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log($"TRAE OnCollisionEnter with '{collision.collider.name}' at t={Time.time:F3}, mode={MovementMode}, isGrounded={isGrounded}, relativeVelocity={collision.relativeVelocity.magnitude:F2}");
+
         if (ignoredGravitySource != null && Time.time > ignoredSourceSetTime + ignoredSourceCollisionGrace)
         {
             var source = collision.collider.GetComponentInParent<GravitySourceComponent>();
             if (source == ignoredGravitySource)
             {
+                Debug.Log($"TRAE OnCollisionEnter clearing ignoredGravitySource ('{source.name}') at t={Time.time:F3}");
                 ClearIgnoredGravitySource();
             }
         }
@@ -1851,6 +1889,7 @@ public class FirstPersonController : MonoBehaviour
         if (collision.rigidbody == null || collision.rigidbody.isKinematic) { return; }
         if (_rigidbody == null) { return; }
 
+        Debug.Log($"TRAE OnCollisionEnter applying airCollisionDampening at t={Time.time:F3}");
         _rigidbody.linearVelocity = Vector3.Lerp(_rigidbody.linearVelocity, _preCollisionVelocity, airCollisionDampening);
     }
 
