@@ -1295,6 +1295,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ExitGame"",
+                    ""type"": ""Button"",
+                    ""id"": ""84ba8b1e-2245-4f9f-9735-450006a9d41d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1317,6 +1326,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7c15ecd3-a7aa-488e-ab21-e67d9b51edb7"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse;Gamepad"",
+                    ""action"": ""ExitGame"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1427,6 +1447,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         // DiageticUI
         m_DiageticUI = asset.FindActionMap("DiageticUI", throwIfNotFound: true);
         m_DiageticUI_Interact = m_DiageticUI.FindAction("Interact", throwIfNotFound: true);
+        m_DiageticUI_ExitGame = m_DiageticUI.FindAction("ExitGame", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -1913,11 +1934,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_DiageticUI;
     private List<IDiageticUIActions> m_DiageticUIActionsCallbackInterfaces = new List<IDiageticUIActions>();
     private readonly InputAction m_DiageticUI_Interact;
+    private readonly InputAction m_DiageticUI_ExitGame;
     public struct DiageticUIActions
     {
         private @InputSystem_Actions m_Wrapper;
         public DiageticUIActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Interact => m_Wrapper.m_DiageticUI_Interact;
+        public InputAction @ExitGame => m_Wrapper.m_DiageticUI_ExitGame;
         public InputActionMap Get() { return m_Wrapper.m_DiageticUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1930,6 +1953,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @ExitGame.started += instance.OnExitGame;
+            @ExitGame.performed += instance.OnExitGame;
+            @ExitGame.canceled += instance.OnExitGame;
         }
 
         private void UnregisterCallbacks(IDiageticUIActions instance)
@@ -1937,6 +1963,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @ExitGame.started -= instance.OnExitGame;
+            @ExitGame.performed -= instance.OnExitGame;
+            @ExitGame.canceled -= instance.OnExitGame;
         }
 
         public void RemoveCallbacks(IDiageticUIActions instance)
@@ -2045,5 +2074,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     public interface IDiageticUIActions
     {
         void OnInteract(InputAction.CallbackContext context);
+        void OnExitGame(InputAction.CallbackContext context);
     }
 }

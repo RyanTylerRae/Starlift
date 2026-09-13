@@ -224,6 +224,7 @@ public class FirstPersonController : MonoBehaviour
     private InputAction? rotateLeftAction;
     private InputAction? rotateRightAction;
     private InputAction? interactAction;
+    private InputAction? exitGameAction;
     private InteractSystem? interactSystem = null;
 
     private Modifiers? modifiers = null;
@@ -318,6 +319,15 @@ public class FirstPersonController : MonoBehaviour
         if (interactAction != null)
         {
             interactAction.performed += OnInteractPerformed;
+        }
+
+        exitGameAction = diageticUI?.FindAction("ExitGame");
+        if (exitGameAction != null)
+        {
+            exitGameAction.performed += (InputAction.CallbackContext context) =>
+            {
+                Application.Quit();
+            };
         }
 
         if (cameraArm != null)
