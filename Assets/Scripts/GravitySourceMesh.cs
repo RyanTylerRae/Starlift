@@ -14,6 +14,12 @@ public class GravitySourceMesh : GravitySourceComponent
     private FirstPersonController? firstPersonController = null;
     private static float MIN_UPDATE_DISTANCE_SQRD = 100.0f * 100.0f;
 
+    // when a point sits within float precision of the surface (the normal resting state while
+    // magnetized), point - closestPoint is too short to normalize and Vector3.normalized silently
+    // returns zero - which reads as "gravity vanished" and thrashes the movement mode every frame.
+    // Falling back to the last real surface direction keeps gravity continuous through that case.
+    private Vector3 lastSurfaceDirection = Vector3.down;
+
     public override void Update()
     {
         if (!isInitialized)
@@ -90,7 +96,18 @@ public class GravitySourceMesh : GravitySourceComponent
         Vector3 closestPoint = meshCollider.ClosestPoint(point);
         Vector3 normal = point - closestPoint;
 
-        return normal.normalized * defaultGravity * G_multiplier;
+        Vector3 direction;
+        if (normal.sqrMagnitude > 0.0001f)
+        {
+            direction = normal.normalized;
+            lastSurfaceDirection = direction;
+        }
+        else
+        {
+            direction = lastSurfaceDirection;
+        }
+
+        return direction * defaultGravity * G_multiplier;
     }
 
     public override float GetDistanceToSurface(Vector3 point)

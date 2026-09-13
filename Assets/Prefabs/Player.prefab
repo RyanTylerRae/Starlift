@@ -916,6 +916,10 @@ MonoBehaviour:
   maxMagnetizedWalkSpeed: 3
   magnetizedAcceleration: 6
   magnetizedLandingMomentumMultiplier: 2
+  magnetizedLandingMomentumCameraAlignment: 0.6
+  magnetizedCornerAngleThreshold: 15
+  magnetizedCornerDetachSpeed: 20
+  magnetizedCornerSpeed: 3
   magnetizeRadius: 0.4
   magnetizedSoundRange: 4
   gravityAlignmentSpeed: 5

@@ -59,8 +59,13 @@ public class FirstPersonController : MonoBehaviour
     // corner/edge rather than gradual curvature or a slowly spinning platform
     public float magnetizedCornerAngleThreshold = 15f;
     // tangential speed above which hitting a sharp corner detaches the player from the surface
-    // instead of trying to carry their momentum around it
-    public float magnetizedCornerDetachSpeed = 5f;
+    // instead of trying to carry their momentum around it - kept well above ordinary walking
+    // speed so normal traversal always rotates smoothly around corners instead of detaching
+    public float magnetizedCornerDetachSpeed = 20f;
+    // fixed speed used while actively crossing a discrete corner/edge (input direction, not
+    // whatever momentum was carried into it) - consistent regardless of how fast the player
+    // happened to be moving beforehand, rather than a momentum carry that read as sluggish
+    public float magnetizedCornerSpeed = 5f;
     public float magnetizeRadius = 0.5f;
     public float magnetizedSoundRange = 5f;
     private bool isMagnetizedSoundPlaying = false;
@@ -105,6 +110,13 @@ public class FirstPersonController : MonoBehaviour
     public float autoRollLookAngleThreshold = 90f;
 
     private float xRotation = 0f;
+
+    // extra local rotation applied on top of the camera's normal pitch to visually compensate for
+    // the body snapping instantly to a new gravity "up" (see the gravity normal auto correction in
+    // Update()) - eases back to identity over time so the capsule/collider is always immediately
+    // correct while the view still smooths in, instead of slowly rotating the whole body (and
+    // collider) into place, which was producing real collision weirdness mid-rotation
+    private Quaternion cameraLagRotation = Quaternion.identity;
 
     // Cached look values for external use (e.g., HUD)
     public float LastLookX { get; private set; }
@@ -159,6 +171,15 @@ public class FirstPersonController : MonoBehaviour
     // terrain) and rotate the stored velocity to match, instead of it bleeding into "into surface"
     // and getting dropped every frame the normal moves. Vector3.zero means "not yet tracked".
     private Vector3 lastMagnetizedVerticalAxis = Vector3.zero;
+
+    // the gravity normal auto correction (body rotation snap + depenetration + camera lag, see
+    // Update()) should only run once when something actually changes the surface we're on - a
+    // genuine landing, or a corner crossing - not every single frame regardless of whether the
+    // surface changed at all. Running it unconditionally every frame was still a no-op in the
+    // common case (already aligned), but repeatedly re-deriving and reapplying the same
+    // correction (including a real, if tiny, depenetration raycast + push every tick) is
+    // needless work and a needless source of drift; this flag makes it fire only when needed.
+    private bool pendingGravityAlignment = true;
 
     // Gravity mode: force direction and speed cap stored in Update, applied in FixedUpdate
     private Vector3 desiredGravityForce = Vector3.zero;
@@ -459,6 +480,7 @@ public class FirstPersonController : MonoBehaviour
                 transform.rotation = playerCamera.transform.rotation;
                 cameraArm.transform.localRotation = Quaternion.identity;
                 xRotation = 0f;
+                cameraLagRotation = Quaternion.identity;
             }
         }
     }
@@ -568,12 +590,88 @@ public class FirstPersonController : MonoBehaviour
                 HandleJump();
             }
 
-            // gravity normal auto correction while attached
+            // gravity normal auto correction while attached. Two distinct cases share this block:
+            // gradual curvature (a curved or slightly uneven surface) needs the capsule to keep
+            // tracking the normal every frame, just eased in smoothly so it's never a big enough
+            // single-frame jump to need depenetration or a camera-lag hide; a genuine landing or
+            // corner crossing (see pendingGravityAlignment) is a large, discrete jump instead, so
+            // it gets snapped instantly for physical correctness plus the depenetration/camera-lag
+            // treatment. Previously the instant snap was the ONLY path, gated on
+            // pendingGravityAlignment alone - which meant the capsule never re-aligned at all
+            // between events, so walking any distance across a surface with gradual curvature left
+            // the camera pointing further and further from the true normal ("stuck" at a stale angle).
             Vector3 upVector = -gravity.normalized;
-            if (upVector.sqrMagnitude > 0.01f)
+            if (upVector.sqrMagnitude > 0.01f && !pendingGravityAlignment)
             {
                 Quaternion targetRotation = Quaternion.FromToRotation(transform.up, upVector) * transform.rotation;
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * gravityAlignmentSpeed);
+            }
+
+            if (upVector.sqrMagnitude > 0.01f && pendingGravityAlignment)
+            {
+                pendingGravityAlignment = false;
+                Quaternion previousBodyRotation = transform.rotation;
+                transform.rotation = Quaternion.FromToRotation(transform.up, upVector) * transform.rotation;
+
+                // an instant rotation isn't swept, so a large single-frame angle change (e.g.
+                // snapping onto a new face at a corner) can leave the capsule's lowest point
+                // embedded past the surface it just rotated onto. Find the exact penetration
+                // depth along the new normal (via a single raycast from the capsule's lowest
+                // point) and push straight back out by that amount - a direct, exact correction
+                // rather than letting PhysX's own depenetration resolve it, which can shove the
+                // capsule out through the far side of thin geometry instead of back the way it came.
+                if (bodyCollider != null)
+                {
+                    float scaledHeight = bodyCollider.height * bodyCollider.transform.lossyScale.y;
+                    Vector3 worldCenter = transform.position + transform.TransformVector(bodyCollider.center);
+                    Vector3 lowestPoint = worldCenter - upVector * (scaledHeight / 2f);
+
+                    // cast from above the lowest point so we still find the surface even if the
+                    // rotation already pushed that point below it
+                    float castLift = groundedDistance;
+                    int groundMask = LayerMask.GetMask("Default");
+                    if (Physics.Raycast(lowestPoint + upVector * castLift, -upVector, out RaycastHit penetrationHit, castLift * 2f, groundMask))
+                    {
+                        float penetrationDepth = Vector3.Dot(penetrationHit.point - lowestPoint, upVector);
+                        if (penetrationDepth > 0f)
+                        {
+                            Debug.Log($"TRAE rotation depenetration at t={Time.time:F3}, upVector={upVector}, lowestPoint={lowestPoint}, hit.point={penetrationHit.point}, hit.collider={penetrationHit.collider.name}, penetrationDepth={penetrationDepth:F3}, positionBefore={transform.position}");
+
+                            // push out a bit further than the exact measured depth - landing
+                            // exactly on the boundary leaves us one float-precision nudge away
+                            // from re-penetrating next frame - and cancel the velocity that
+                            // drove us in, otherwise the same speed just carries us straight
+                            // back through on the very next tick
+                            transform.position += upVector * (penetrationDepth * 1.1f);
+
+                            Debug.Log($"TRAE rotation depenetration result at t={Time.time:F3}, positionAfter={transform.position}");
+
+                            float intoSurfaceSpeed = Vector3.Dot(magnetizedVelocity, upVector);
+                            if (intoSurfaceSpeed < 0f)
+                            {
+                                magnetizedVelocity -= intoSurfaceSpeed * upVector;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log($"TRAE rotation depenetration raycast MISSED at t={Time.time:F3}, upVector={upVector}, lowestPoint={lowestPoint}, castLift={castLift:F3}");
+                    }
+                }
+
+                if (playerCamera != null)
+                {
+                    // preserve the camera's exact world-space look direction at the instant of the
+                    // snap, then ease that compensation back out over time
+                    cameraLagRotation = Quaternion.Inverse(transform.rotation) * previousBodyRotation * cameraLagRotation;
+                }
+            }
+
+            if (playerCamera != null)
+            {
+                cameraLagRotation = Quaternion.Slerp(cameraLagRotation, Quaternion.identity, Time.deltaTime * gravityAlignmentSpeed);
+                playerCamera.transform.localRotation = cameraLagRotation * Quaternion.Euler(xRotation, 0f, 0f);
+                ApplyCameraArmLocalPos();
             }
         }
         else
@@ -680,31 +778,78 @@ public class FirstPersonController : MonoBehaviour
         if (isGrounded && lastMagnetizedVerticalAxis.sqrMagnitude > 0.01f)
         {
             float normalAngleDelta = Vector3.Angle(lastMagnetizedVerticalAxis, verticalAxis);
-            if (normalAngleDelta > magnetizedCornerAngleThreshold)
+            bool isCorner = normalAngleDelta > magnetizedCornerAngleThreshold;
+
+            if (isCorner)
             {
-                // a discrete corner/edge, not gradual curvature or a slowly spinning platform -
-                // rotating the whole velocity vector to match treats it as if the surface rigidly
-                // carried it around the corner, which isn't what happened, and produced compounding
-                // oscillation with the obstacle-sliding logic that built up speed out of nowhere.
-                // If we're moving fast enough for that to matter, just let go of the surface instead
-                // of trying to carry momentum around an impossible turn - continue on the existing
-                // trajectory, like flying off an edge rather than being wrenched around it.
-                if (magnetizedVelocity.magnitude > magnetizedCornerDetachSpeed)
-                {
-                    DetachFromMagnetizedSurface(gravitySource, gravityVector, gravitySourceVelocity + magnetizedVelocity);
-                    return;
-                }
-                // otherwise, don't rotate - let the mismatched component fall out as "into surface"
-                // and get dropped below, same as before this rotation correction existed
+                pendingGravityAlignment = true;
+                Debug.Log($"TRAE corner detected at t={Time.time:F3}, angleDelta={normalAngleDelta:F2}, magnetizedVelocity={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2}), desiredMovementVelocity={desiredMovementVelocity} (magnitude={desiredMovementVelocity.magnitude:F2}), lastAxis={lastMagnetizedVerticalAxis}, newAxis={verticalAxis}");
             }
-            else
+
+            // a discrete corner/edge taken fast enough that rigidly carrying momentum around it
+            // would be physically wrong - and previously produced compounding oscillation with
+            // the obstacle-sliding logic - so let go of the surface instead of wrenching momentum
+            // around an impossible turn, continuing on the existing trajectory like flying off an
+            // edge. magnetizedCornerDetachSpeed is set well above ordinary walking speed, so this
+            // is reserved for genuinely fast corner-cutting, not normal traversal.
+            if (isCorner && magnetizedVelocity.magnitude > magnetizedCornerDetachSpeed)
             {
-                // the surface's local orientation changed gradually since last frame (a spinning
-                // platform, or just walking over curved/uneven terrain) - rotate our persistent
-                // velocity to match it, so momentum doesn't bleed away by getting misread as "into
-                // surface" and dropped every time the normal moves
-                Quaternion surfaceRotationDelta = Quaternion.FromToRotation(lastMagnetizedVerticalAxis, verticalAxis);
-                magnetizedVelocity = surfaceRotationDelta * magnetizedVelocity;
+                Debug.Log($"TRAE corner detach at t={Time.time:F3}, speed={magnetizedVelocity.magnitude:F2} > detachSpeed={magnetizedCornerDetachSpeed:F2}");
+                DetachFromMagnetizedSurface(gravitySource, gravityVector, gravitySourceVelocity + magnetizedVelocity);
+                return;
+            }
+
+            // "move the capsule to the other wall": at a discrete corner the position that was
+            // flush against the old face isn't flush against the new one - rather than letting
+            // that gap/overlap play out through normal collision response, snap position to rest
+            // exactly against the new wall instantly (identical technique to the rotation
+            // depenetration correction above: find the capsule's lowest point along the new
+            // normal, raycast once to find the real surface, translate by the exact gap). The
+            // camera has no independent position of its own - it's always just cameraArm's rest
+            // offset plus bob/dip (see ApplyCameraArmLocalPos) - so it moves with the capsule
+            // automatically here with no compensation or lag needed.
+            if (isCorner && bodyCollider != null)
+            {
+                float scaledHeight = bodyCollider.height * bodyCollider.transform.lossyScale.y;
+                Vector3 worldCenter = position + transform.TransformVector(bodyCollider.center);
+                Vector3 lowestPoint = worldCenter - verticalAxis * (scaledHeight / 2f);
+
+                float castLift = groundedDistance;
+                int groundMask = LayerMask.GetMask("Default");
+                if (Physics.Raycast(lowestPoint + verticalAxis * castLift, -verticalAxis, out RaycastHit wallHit, castLift * 2f, groundMask))
+                {
+                    Vector3 positionDelta = verticalAxis * Vector3.Dot(wallHit.point - lowestPoint, verticalAxis);
+                    position += positionDelta;
+
+                    Debug.Log($"TRAE corner position-snap at t={Time.time:F3}, verticalAxis={verticalAxis}, lowestPoint={lowestPoint}, wallHit.point={wallHit.point}, wallHit.collider={wallHit.collider.name}, positionDelta={positionDelta} (magnitude={positionDelta.magnitude:F3})");
+                }
+                else
+                {
+                    Debug.Log($"TRAE corner position-snap raycast MISSED at t={Time.time:F3}, verticalAxis={verticalAxis}, lowestPoint={lowestPoint}, castLift={castLift:F3}");
+                }
+            }
+
+            // otherwise - gradual curvature, a slowly spinning platform, or a sharp corner taken
+            // at normal walking speed - rotate our persistent velocity to match the surface's new
+            // local orientation, so momentum doesn't bleed away by getting misread as "into
+            // surface" and dropped every time the normal moves
+            Quaternion surfaceRotationDelta = Quaternion.FromToRotation(lastMagnetizedVerticalAxis, verticalAxis);
+            magnetizedVelocity = surfaceRotationDelta * magnetizedVelocity;
+
+            // crossing a discrete corner/edge while actively holding movement input snaps
+            // straight to a fixed traversal speed in the input direction instead of carrying
+            // over whatever momentum was present beforehand - that momentum carry is what read
+            // as sluggish/inconsistent. This re-triggers every physics tick the corner condition
+            // holds, so it stays at this speed for as long as the corner is actually being
+            // crossed and input is held, then falls back to normal acceleration afterward.
+            if (isCorner && desiredMovementVelocity.sqrMagnitude > 0.0001f)
+            {
+                magnetizedVelocity = desiredMovementVelocity.normalized * magnetizedCornerSpeed;
+                Debug.Log($"TRAE corner speed applied at t={Time.time:F3}, result magnetizedVelocity={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2})");
+            }
+            else if (isCorner)
+            {
+                Debug.Log($"TRAE corner speed NOT applied (no input) at t={Time.time:F3}, magnetizedVelocity after rotation={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2})");
             }
         }
         lastMagnetizedVerticalAxis = verticalAxis;
@@ -766,13 +911,6 @@ public class FirstPersonController : MonoBehaviour
             velocity = Vector3.ProjectOnPlane(velocity, obstacleNormal);
         }
 
-        // track distance for head bobbing. because it is a function of sine, we can just repeat the period over and over again
-        distanceTraveled += totalDistance * headBobSpeed;
-        while (distanceTraveled > 2.0f * Math.PI)
-        {
-            distanceTraveled -= 2.0f * (float)Math.PI;
-        }
-
         // persist our own authoritative velocity for next frame - never read back from
         // _rigidbody.linearVelocity (see field comment)
         magnetizedVelocity = velocity;
@@ -782,7 +920,20 @@ public class FirstPersonController : MonoBehaviour
         _rigidbody.linearVelocity = gravitySourceVelocity + velocity;
         _preCollisionVelocity = _rigidbody.linearVelocity;
 
-        DoMagnetizedHeadBob(totalDistance);
+        // footsteps are a walking-on-a-surface cue - drive them from grounded travel only, not
+        // raw speed, otherwise falling/flying past a surface at high speed plays footstep thuds
+        // the whole way down even though the player isn't touching anything
+        if (isGrounded)
+        {
+            // track distance for head bobbing. because it is a function of sine, we can just repeat the period over and over again
+            distanceTraveled += totalDistance * headBobSpeed;
+            while (distanceTraveled > 2.0f * Math.PI)
+            {
+                distanceTraveled -= 2.0f * (float)Math.PI;
+            }
+
+            DoMagnetizedHeadBob(totalDistance);
+        }
     }
 
     void HandleMouseLook()
@@ -821,7 +972,8 @@ public class FirstPersonController : MonoBehaviour
         xRotation -= lookY;
         xRotation = Mathf.Clamp(xRotation, -maxLookAngle, maxLookAngle);
 
-        playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        playerCamera.transform.localRotation = cameraLagRotation * Quaternion.Euler(xRotation, 0f, 0f);
+        ApplyCameraArmLocalPos();
         transform.Rotate(transform.up, lookX, Space.World);
 
         // Cache look values for external use
@@ -890,10 +1042,6 @@ public class FirstPersonController : MonoBehaviour
             // body reorienting toward the new "up" can briefly clip the geometry it's already stuck
             // to, and that re-collision was being treated as a brand new landing.
             bool isGenuineLanding = !wasGrounded && activeMagnetizedSource != attachedMagnetizedSource;
-            if (!wasGrounded)
-            {
-                Debug.Log($"TRAE landing event (CENTER raycast) at t={Time.time:F3}, isGenuineLanding={isGenuineLanding}, source={(activeMagnetizedSource != null ? activeMagnetizedSource.name : "null")}, prevSource={(attachedMagnetizedSource != null ? attachedMagnetizedSource.name : "null")}");
-            }
             attachedMagnetizedSource = activeMagnetizedSource;
 
             if (isGenuineLanding)
@@ -902,7 +1050,9 @@ public class FirstPersonController : MonoBehaviour
                 // based on gravity direction, not the actual surface) - that mismatch alone can look
                 // like a sharp corner on a steeply angled surface and wrongly trigger a detach right
                 // at the moment of landing
+                Debug.Log($"TRAE landing (CENTER raycast) resetting lastMagnetizedVerticalAxis at t={Time.time:F3}, surfaceNormal={surfaceNormal}");
                 lastMagnetizedVerticalAxis = Vector3.zero;
+                pendingGravityAlignment = true;
                 ApplyLandingMomentum();
             }
 
@@ -952,15 +1102,13 @@ public class FirstPersonController : MonoBehaviour
 
             // see comment at the other landing branch above
             bool isGenuineLanding = !wasGrounded && activeMagnetizedSource != attachedMagnetizedSource;
-            if (!wasGrounded)
-            {
-                Debug.Log($"TRAE landing event (CORNER raycasts, numHits={numHits}) at t={Time.time:F3}, isGenuineLanding={isGenuineLanding}, source={(activeMagnetizedSource != null ? activeMagnetizedSource.name : "null")}, prevSource={(attachedMagnetizedSource != null ? attachedMagnetizedSource.name : "null")}");
-            }
             attachedMagnetizedSource = activeMagnetizedSource;
 
             if (isGenuineLanding)
             {
+                Debug.Log($"TRAE landing (CORNER raycasts) resetting lastMagnetizedVerticalAxis at t={Time.time:F3}, surfaceNormal={surfaceNormal}");
                 lastMagnetizedVerticalAxis = Vector3.zero;
+                pendingGravityAlignment = true;
             }
 
             if (isJumping)
@@ -1017,8 +1165,6 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
-        Debug.Log($"TRAE ApplyLandingMomentum() called at t={Time.time:F3}, incoming magnetizedVelocity={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2})");
-
         Vector3 verticalAxis = surfaceNormal.sqrMagnitude > 0.01f ? surfaceNormal.normalized : magnetizedVelocity.normalized;
         Vector3 tangential = Vector3.ProjectOnPlane(magnetizedVelocity, verticalAxis);
         Vector3 vertical = magnetizedVelocity - tangential;
@@ -1051,7 +1197,6 @@ public class FirstPersonController : MonoBehaviour
         }
 
         magnetizedVelocity = boostedTangential + vertical;
-        Debug.Log($"TRAE ApplyLandingMomentum() result magnetizedVelocity={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2})");
     }
 
     private void HandleJump()
@@ -1678,10 +1823,15 @@ public class FirstPersonController : MonoBehaviour
                 continue;
             }
 
-            // the surface we are actively walking on is expected to overlap us; only halt for other geometry.
+            // the surface we are actively standing on is expected to overlap us and must be
+            // ignored so walking across it isn't treated as hitting a wall - but that exemption
+            // must not apply while still airborne/approaching it, or a fast fall/bounce has zero
+            // collision protection against the very surface it's heading for (HandleGrounded's
+            // raycasts are periodic and discrete, and can simply be outrun at speed, tunnelling
+            // straight through). Only skip it once we're actually attached.
             // gravity sources are nested under their own surface's collider (not a shared scene-graph root),
             // so walk up from the gravity source instead of comparing transform.root
-            if (gravitySource.transform.IsChildOf(hit.collider.transform))
+            if (isGrounded && gravitySource.transform.IsChildOf(hit.collider.transform))
             {
                 continue;
             }
@@ -1743,7 +1893,6 @@ public class FirstPersonController : MonoBehaviour
         float impactPhase = Mathf.PI - headBobImpactPhaseOffset;
         if (previousBobPhase < impactPhase && distanceTraveled >= impactPhase)
         {
-            Debug.Log($"TRAE DoMagnetizedHeadBob step sound at t={Time.time:F3}");
             TriggerHeadBobDip();
 
             AkUnitySoundEngine.PostEvent("play_footstep_thud", gameObject);
@@ -1759,13 +1908,11 @@ public class FirstPersonController : MonoBehaviour
 
     private void TriggerLandingSound()
     {
-        Debug.Log($"TRAE TriggerLandingSound() at t={Time.time:F3}, mode={MovementMode}");
         StartCoroutine(DoDelayedDoubleSound("play_footstep_soft"));
     }
 
     private void TriggerMagnetizeSound()
     {
-        Debug.Log($"TRAE TriggerMagnetizeSound() at t={Time.time:F3}, mode={MovementMode}");
         StartCoroutine(DoDelayedDoubleSound("play_footstep_thud"));
     }
 
@@ -1795,7 +1942,6 @@ public class FirstPersonController : MonoBehaviour
         float impactPhase = Mathf.PI - footstepImpactPhaseOffset;
         if (gravityFootstepPreviousPhase < impactPhase && gravityFootstepPhase >= impactPhase)
         {
-            Debug.Log($"TRAE DoGravityFootsteps step sound at t={Time.time:F3}");
             AkUnitySoundEngine.PostEvent("play_footstep_soft", gameObject);
         }
         gravityFootstepPreviousPhase = gravityFootstepPhase;
@@ -1872,14 +2018,11 @@ public class FirstPersonController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log($"TRAE OnCollisionEnter with '{collision.collider.name}' at t={Time.time:F3}, mode={MovementMode}, isGrounded={isGrounded}, relativeVelocity={collision.relativeVelocity.magnitude:F2}");
-
         if (ignoredGravitySource != null && Time.time > ignoredSourceSetTime + ignoredSourceCollisionGrace)
         {
             var source = collision.collider.GetComponentInParent<GravitySourceComponent>();
             if (source == ignoredGravitySource)
             {
-                Debug.Log($"TRAE OnCollisionEnter clearing ignoredGravitySource ('{source.name}') at t={Time.time:F3}");
                 ClearIgnoredGravitySource();
             }
         }
@@ -1889,7 +2032,6 @@ public class FirstPersonController : MonoBehaviour
         if (collision.rigidbody == null || collision.rigidbody.isKinematic) { return; }
         if (_rigidbody == null) { return; }
 
-        Debug.Log($"TRAE OnCollisionEnter applying airCollisionDampening at t={Time.time:F3}");
         _rigidbody.linearVelocity = Vector3.Lerp(_rigidbody.linearVelocity, _preCollisionVelocity, airCollisionDampening);
     }
 
