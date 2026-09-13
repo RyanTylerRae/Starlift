@@ -22,6 +22,13 @@ public class FirstPersonController : MonoBehaviour
     private bool isGrounded = false;
     private bool isGroundedOnEdge = false;
     private bool isJumping = false;
+    // true from the moment a magnetized jump launches until HandleGrounded() confirms a real
+    // landing while Magnetized - see the comment where it's set for why this can't just be isJumping
+    private bool magnetizedJumpInProgress = false;
+    // consecutive HandleGrounded() calls where we were ungrounded - used to debounce single-frame
+    // ground-detection flicker so ApplyLandingMomentum() can't fire repeatedly for one real landing
+    private int ungroundedStreak = 0;
+    private const int minUngroundedStreakForLandingBoost = 2;
     private Vector3 surfaceNormal = Vector3.up;
     public float groundedDistance;
     public float edgeRaycastMultiplier = 2f;
@@ -43,6 +50,16 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
+    public float magnetizedAcceleration = 6f;
+    public float magnetizedLandingMomentumMultiplier = 2f;
+    [Range(0f, 1f)]
+    public float magnetizedLandingMomentumCameraAlignment = 0.6f;
+    // surface-normal angle change (degrees) per FixedUpdate beyond which we treat it as a discrete
+    // corner/edge rather than gradual curvature or a slowly spinning platform
+    public float magnetizedCornerAngleThreshold = 15f;
+    // tangential speed above which hitting a sharp corner detaches the player from the surface
+    // instead of trying to carry their momentum around it
+    public float magnetizedCornerDetachSpeed = 5f;
     public float magnetizeRadius = 0.5f;
     public float magnetizedSoundRange = 5f;
     private bool isMagnetizedSoundPlaying = false;
@@ -127,6 +144,20 @@ public class FirstPersonController : MonoBehaviour
     // Desired movement velocity from input (used in FixedUpdate)
     private Vector3 desiredMovementVelocity = Vector3.zero;
     private Vector3 _preCollisionVelocity = Vector3.zero;
+
+    // Magnetized mode's own authoritative velocity (relative to the active gravity source),
+    // seeded once on entering Magnetized mode and otherwise never read back from
+    // _rigidbody.linearVelocity. The character's collider is in real contact with the surface, and
+    // PhysX's own contact/friction response resets components of the rigidbody's velocity between
+    // FixedUpdate calls - reading any part of it back as truth (tangential OR vertical) made that
+    // part collapse to zero every frame, so gravity/acceleration could never accumulate.
+    private Vector3 magnetizedVelocity = Vector3.zero;
+
+    // the verticalAxis used the last time magnetizedVelocity was decomposed while grounded - lets us
+    // detect the surface reorienting (a spinning platform, or just walking over curved/uneven
+    // terrain) and rotate the stored velocity to match, instead of it bleeding into "into surface"
+    // and getting dropped every frame the normal moves. Vector3.zero means "not yet tracked".
+    private Vector3 lastMagnetizedVerticalAxis = Vector3.zero;
 
     // Gravity mode: force direction and speed cap stored in Update, applied in FixedUpdate
     private Vector3 desiredGravityForce = Vector3.zero;
@@ -315,6 +346,11 @@ public class FirstPersonController : MonoBehaviour
         if (newMovementMode == ControllerMovementMode.Magnetized && movementMode != ControllerMovementMode.Magnetized)
         {
             TriggerMagnetizeSound();
+
+            // seed our own authoritative velocity once, from whatever real momentum the rigidbody
+            // currently has (e.g. carried in from ZeroG flight or a Gravity-mode jump) - after this,
+            // FixedUpdate never reads _rigidbody.linearVelocity back as truth again (see field comment)
+            magnetizedVelocity = _rigidbody != null ? _rigidbody.linearVelocity : Vector3.zero;
         }
 
         if (newMovementMode != ControllerMovementMode.ZeroG)
@@ -634,16 +670,68 @@ public class FirstPersonController : MonoBehaviour
             gravitySourceVelocity = rBody.GetPointVelocity(_rigidbody.position);
         }
 
-        Vector3 relativeVelocity = _rigidbody.linearVelocity - gravitySourceVelocity;
-
-        // separate into vertical and horizontal components along gravity
+        // separate into vertical and horizontal components along gravity. Uses our own persistent
+        // magnetizedVelocity, never _rigidbody.linearVelocity - see field comment.
         Vector3 position = _rigidbody.position;
         Vector3 gravityVector = gravitySource.GetGravityVector(position);
         Vector3 verticalAxis = (isGrounded && surfaceNormal.sqrMagnitude > 0.01f) ? surfaceNormal : -gravityVector.normalized;
-        float verticalSpeed = Vector3.Dot(relativeVelocity, verticalAxis);
-        float clampedVerticalSpeed = Mathf.Min(verticalSpeed, 0f);
-        Vector3 verticalVelocity = clampedVerticalSpeed * verticalAxis;
-        Vector3 velocity = desiredMovementVelocity + verticalVelocity;
+
+        if (isGrounded && lastMagnetizedVerticalAxis.sqrMagnitude > 0.01f)
+        {
+            float normalAngleDelta = Vector3.Angle(lastMagnetizedVerticalAxis, verticalAxis);
+            if (normalAngleDelta > magnetizedCornerAngleThreshold)
+            {
+                // a discrete corner/edge, not gradual curvature or a slowly spinning platform -
+                // rotating the whole velocity vector to match treats it as if the surface rigidly
+                // carried it around the corner, which isn't what happened, and produced compounding
+                // oscillation with the obstacle-sliding logic that built up speed out of nowhere.
+                // If we're moving fast enough for that to matter, just let go of the surface instead
+                // of trying to carry momentum around an impossible turn - continue on the existing
+                // trajectory, like flying off an edge rather than being wrenched around it.
+                if (magnetizedVelocity.magnitude > magnetizedCornerDetachSpeed)
+                {
+                    DetachFromMagnetizedSurface(gravitySource, gravityVector, gravitySourceVelocity + magnetizedVelocity);
+                    return;
+                }
+                // otherwise, don't rotate - let the mismatched component fall out as "into surface"
+                // and get dropped below, same as before this rotation correction existed
+            }
+            else
+            {
+                // the surface's local orientation changed gradually since last frame (a spinning
+                // platform, or just walking over curved/uneven terrain) - rotate our persistent
+                // velocity to match it, so momentum doesn't bleed away by getting misread as "into
+                // surface" and dropped every time the normal moves
+                Quaternion surfaceRotationDelta = Quaternion.FromToRotation(lastMagnetizedVerticalAxis, verticalAxis);
+                magnetizedVelocity = surfaceRotationDelta * magnetizedVelocity;
+            }
+        }
+        lastMagnetizedVerticalAxis = verticalAxis;
+
+        float verticalSpeed = Vector3.Dot(magnetizedVelocity, verticalAxis);
+        Vector3 tangentialVelocity = magnetizedVelocity - verticalSpeed * verticalAxis;
+        Vector3 verticalVelocity;
+
+        if (isGrounded)
+        {
+            // ease our own tracked tangential velocity towards the input-driven target instead of
+            // snapping to it instantly - this also naturally slows to a stop when
+            // desiredMovementVelocity is zero. A real surface would exert a normal force that
+            // exactly cancels gravity's pull into it, so the vertical component is dropped entirely
+            // rather than left to accumulate unbounded every frame with nothing to counter it.
+            tangentialVelocity = Vector3.MoveTowards(tangentialVelocity, desiredMovementVelocity, magnetizedAcceleration * Time.fixedDeltaTime);
+            verticalVelocity = Vector3.zero;
+        }
+        else
+        {
+            // airborne (e.g. still approaching a magnetized surface after leaving ZeroG, or having
+            // just jumped off one): pass real momentum through untouched instead of easing towards
+            // input, only clamping away any drift away from the surface (matching a real object in
+            // flight not being slowed by moving away from a surface it hasn't reached yet)
+            verticalVelocity = Mathf.Min(verticalSpeed, 0f) * verticalAxis;
+        }
+
+        Vector3 velocity = tangentialVelocity + verticalVelocity;
 
         float totalDistance = velocity.magnitude * Time.fixedDeltaTime;
 
@@ -683,6 +771,10 @@ public class FirstPersonController : MonoBehaviour
         {
             distanceTraveled -= 2.0f * (float)Math.PI;
         }
+
+        // persist our own authoritative velocity for next frame - never read back from
+        // _rigidbody.linearVelocity (see field comment)
+        magnetizedVelocity = velocity;
 
         // apply final state to rigidbody, included the new adjusted velocity
         _rigidbody.position = position;
@@ -738,8 +830,11 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleGrounded()
     {
+        bool wasGrounded = isGrounded;
+        int priorUngroundedStreak = ungroundedStreak;
         isGrounded = false;
         isGroundedOnEdge = false;
+        ungroundedStreak++;
 
         if (gravityController == null)
         {
@@ -782,7 +877,23 @@ public class FirstPersonController : MonoBehaviour
         if (Physics.Raycast(new Ray(footPosition, gravityDir), out RaycastHit centerHit, groundedDistance, groundMask))
         {
             isGrounded = true;
+            magnetizedJumpInProgress = false;
             surfaceNormal = centerHit.normal;
+
+            if (!wasGrounded)
+            {
+                // don't compare against whatever axis was tracked while airborne (an approximation
+                // based on gravity direction, not the actual surface) - that mismatch alone can look
+                // like a sharp corner on a steeply angled surface and wrongly trigger a detach right
+                // at the moment of landing
+                lastMagnetizedVerticalAxis = Vector3.zero;
+            }
+
+            if (!wasGrounded && priorUngroundedStreak >= minUngroundedStreakForLandingBoost)
+            {
+                ApplyLandingMomentum();
+            }
+            ungroundedStreak = 0;
 
             if (isJumping)
             {
@@ -826,6 +937,14 @@ public class FirstPersonController : MonoBehaviour
 
         if (isGrounded)
         {
+            magnetizedJumpInProgress = false;
+
+            if (!wasGrounded)
+            {
+                // see comment at the other landing branch above
+                lastMagnetizedVerticalAxis = Vector3.zero;
+            }
+
             if (isJumping)
             {
                 TriggerLandingSound();
@@ -845,7 +964,69 @@ public class FirstPersonController : MonoBehaviour
             {
                 surfaceNormal = -gravityDir;
             }
+
+            if (!wasGrounded && priorUngroundedStreak >= minUngroundedStreakForLandingBoost)
+            {
+                ApplyLandingMomentum();
+            }
+            ungroundedStreak = 0;
         }
+
+        // Magnetized attachment isn't "resting on top of" a surface the way Gravity mode's ground
+        // check assumes - the raycasts above can momentarily miss (seams, curvature, substep
+        // integration noise) without the player having actually left the surface. The only
+        // deliberate way to leave a magnetized surface is jumping, so treat every other case as
+        // still grounded, keeping whatever surfaceNormal was last detected.
+        if (!isGrounded && MovementMode == ControllerMovementMode.Magnetized && !magnetizedJumpInProgress)
+        {
+            isGrounded = true;
+            ungroundedStreak = 0;
+        }
+    }
+
+    private void ApplyLandingMomentum()
+    {
+        // magnetizedVelocity is kept accurate through the airborne approach (see the Magnetized
+        // FixedUpdate block), so it already holds the real incoming speed here - boost only the
+        // tangential (along-surface) part so the landing reads well, leaving the into-surface part
+        // alone (it gets dropped entirely next frame now that we're grounded, see FixedUpdate)
+        if (MovementMode != ControllerMovementMode.Magnetized)
+        {
+            return;
+        }
+
+        Vector3 verticalAxis = surfaceNormal.sqrMagnitude > 0.01f ? surfaceNormal.normalized : magnetizedVelocity.normalized;
+        Vector3 tangential = Vector3.ProjectOnPlane(magnetizedVelocity, verticalAxis);
+        Vector3 vertical = magnetizedVelocity - tangential;
+
+        // cap the momentum that's eligible for the boost at normal walking speed first. A long fall
+        // or approach has no speed limit (unlike ZeroG's maxFlightSpeed), so the raw tangential
+        // speed alone can already be many times maxMagnetizedWalkSpeed - multiplying that further
+        // produced landings far faster than the multiplier's name suggests. This keeps the result
+        // bounded to a predictable maxMagnetizedWalkSpeed * magnetizedLandingMomentumMultiplier ceiling.
+        if (tangential.magnitude > maxMagnetizedWalkSpeed)
+        {
+            tangential = tangential.normalized * maxMagnetizedWalkSpeed;
+        }
+
+        Vector3 boostedTangential = tangential * magnetizedLandingMomentumMultiplier;
+
+        // the literal incoming direction can feel arbitrary/wrong on landing (e.g. you were drifting
+        // sideways while looking straight ahead) - bias it towards where the camera is actually
+        // looking (projected onto the surface) so the boost reads as "launched where you're aiming"
+        // rather than a strict physics carry-over. Blend rather than replace so real momentum still
+        // has some say when it's already close to camera-forward.
+        if (playerCamera != null && boostedTangential.sqrMagnitude > 0.0001f)
+        {
+            Vector3 cameraForwardOnSurface = Vector3.ProjectOnPlane(playerCamera.transform.forward, verticalAxis);
+            if (cameraForwardOnSurface.sqrMagnitude > 0.0001f)
+            {
+                Vector3 blendedDirection = Vector3.Slerp(boostedTangential.normalized, cameraForwardOnSurface.normalized, magnetizedLandingMomentumCameraAlignment);
+                boostedTangential = blendedDirection.normalized * boostedTangential.magnitude;
+            }
+        }
+
+        magnetizedVelocity = boostedTangential + vertical;
     }
 
     private void HandleJump()
@@ -971,6 +1152,14 @@ public class FirstPersonController : MonoBehaviour
                 StopJumpThrustSound();
                 jumpThrustOxygenContribution = 0.0f;
             }
+
+            // mark the jump so HandleGrounded() knows this is the one deliberate way to leave a
+            // magnetized surface, rather than a ground-detection glitch. Deliberately a separate
+            // flag from isJumping: SetMovementMode() unconditionally resets isJumping on every
+            // transition (it only means "arm the Gravity-mode landing sound"), and a magnetized
+            // jump typically bounces through ZeroG while its gravity source is briefly disabled -
+            // isJumping would get wiped out mid-flight, well before the player actually lands.
+            magnetizedJumpInProgress = true;
 
             jumpThrustCoroutine = StartCoroutine(JumpThrust(upDirection, jumpForce, launchDirection, thrustForce, magnetizedJumpOxygenCost * jumpNorm));
         }
@@ -1340,10 +1529,13 @@ public class FirstPersonController : MonoBehaviour
         }
         else if (thrustVector.sqrMagnitude > 0.0f)
         {
+            // floor at minOxygenBurnRate while actively holding thrust, even once the speed clamp
+            // has absorbed all further acceleration - a real thruster still burns fuel while firing,
+            // it shouldn't go free just because you've reached max speed
             float maxPossibleVelocityChange = (flightForce / _rigidbody.mass) * Time.fixedDeltaTime;
             movementOxygenBurnRate = maxPossibleVelocityChange > 0f
-                ? Mathf.Clamp01(velocityChangeLastStep / maxPossibleVelocityChange)
-                : 0f;
+                ? Mathf.Max(minOxygenBurnRate, Mathf.Clamp01(velocityChangeLastStep / maxPossibleVelocityChange))
+                : minOxygenBurnRate;
         }
         else
         {
@@ -1491,6 +1683,22 @@ public class FirstPersonController : MonoBehaviour
             ignoredGravitySource = null;
         }
         approachTimer = 0f;
+    }
+
+    // Lets go of the current magnetized surface entirely, carrying the player onward on their
+    // existing trajectory (same "ignored gravity source" grace period the magnetized jump uses) -
+    // used when a sharp corner is taken too fast to plausibly walk around
+    private void DetachFromMagnetizedSurface(GravitySourceComponent gravitySource, Vector3 gravityVector, Vector3 worldVelocity)
+    {
+        ignoredGravitySource = gravitySource;
+        ignoredGravityDirection = gravityVector.normalized;
+        ignoredSourceSetTime = Time.time;
+        gravitySource.isGravityEnabled = false;
+
+        if (_rigidbody != null)
+        {
+            _rigidbody.linearVelocity = worldVelocity;
+        }
     }
 
     private void DoMagnetizedHeadBob(float distanceThisFrame)

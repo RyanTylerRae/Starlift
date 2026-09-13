@@ -914,6 +914,8 @@ MonoBehaviour:
   footstepSpeed: 3
   footstepImpactPhaseOffset: 0.3
   maxMagnetizedWalkSpeed: 3
+  magnetizedAcceleration: 6
+  magnetizedLandingMomentumMultiplier: 2
   magnetizeRadius: 0.4
   magnetizedSoundRange: 4
   gravityAlignmentSpeed: 5
