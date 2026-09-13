@@ -947,8 +947,8 @@ MonoBehaviour:
   autoRollAngleThreshold: 40
   autoRollMinSpeed: 0.3
   autoRollLookAngleThreshold: 45
-  cameraFollowPositionSpeed: 20
-  cameraFollowRotationSpeed: 20
+  cameraFollowPositionSpeed: 12
+  cameraFollowRotationSpeed: 12
   stabilizeMultiplier: -0.9
   flightForce: 4.5
   maxFlightSpeed: 9

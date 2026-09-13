@@ -72,6 +72,12 @@ public class FirstPersonController : MonoBehaviour
     // whatever momentum was carried into it) - consistent regardless of how fast the player
     // happened to be moving beforehand, rather than a momentum carry that read as sluggish
     public float magnetizedCornerSpeed = 5f;
+    // consecutive FixedUpdate ticks a disagreeing surface normal must repeat before it's accepted
+    // as a genuine corner crossing rather than single-ray noise from straddling a real edge - see
+    // pendingCornerAxisCandidate/pendingCornerAxisTicks in HandleMovementSubStepped
+    public int magnetizedCornerConfirmTicks = 3;
+    private Vector3 pendingCornerAxisCandidate = Vector3.zero;
+    private int pendingCornerAxisTicks = 0;
     public float magnetizeRadius = 0.5f;
     public float magnetizedSoundRange = 5f;
     private bool isMagnetizedSoundPlaying = false;
@@ -800,12 +806,54 @@ public class FirstPersonController : MonoBehaviour
         // magnetizedVelocity, never _rigidbody.linearVelocity - see field comment.
         Vector3 position = _rigidbody.position;
         Vector3 gravityVector = gravitySource.GetGravityVector(position);
-        Vector3 verticalAxis = (isGrounded && surfaceNormal.sqrMagnitude > 0.01f) ? surfaceNormal : -gravityVector.normalized;
+        Vector3 rawVerticalAxis = (isGrounded && surfaceNormal.sqrMagnitude > 0.01f) ? surfaceNormal : -gravityVector.normalized;
+
+        // debounce the raw per-tick surface normal before treating it as a corner candidate. A
+        // single center-foot raycast straddling a real 90-degree edge can alternate between both
+        // faces' normals tick to tick with the player's actual position barely moving - each flip
+        // reads as a fresh corner, and because lastMagnetizedVerticalAxis used to be overwritten
+        // unconditionally every tick, a single noisy sample became the new baseline the very next
+        // tick was compared against, guaranteeing another "corner" and repeating forever (visible
+        // as the player juddering in place instead of crossing the corner once). Require a
+        // disagreeing candidate to repeat for magnetizedCornerConfirmTicks consecutive ticks before
+        // it's accepted; until then, hold the last confirmed axis instead of the raw, noisy one.
+        Vector3 verticalAxis = rawVerticalAxis;
+        if (isGrounded && lastMagnetizedVerticalAxis.sqrMagnitude > 0.01f
+            && Vector3.Angle(lastMagnetizedVerticalAxis, rawVerticalAxis) > magnetizedCornerAngleThreshold)
+        {
+            const float sameCandidateTolerance = 10f;
+            if (pendingCornerAxisTicks > 0 && Vector3.Angle(pendingCornerAxisCandidate, rawVerticalAxis) <= sameCandidateTolerance)
+            {
+                pendingCornerAxisTicks++;
+            }
+            else
+            {
+                pendingCornerAxisCandidate = rawVerticalAxis;
+                pendingCornerAxisTicks = 1;
+            }
+
+            if (pendingCornerAxisTicks < magnetizedCornerConfirmTicks)
+            {
+                verticalAxis = lastMagnetizedVerticalAxis;
+            }
+            else
+            {
+                pendingCornerAxisTicks = 0;
+            }
+        }
+        else
+        {
+            pendingCornerAxisTicks = 0;
+        }
+
+        // hoisted out of the block below so the substep/obstacle-sweep code further down can also
+        // see it - a corner tick needs to skip the normal force-based movement application, see there
+        bool isCorner = false;
 
         if (isGrounded && lastMagnetizedVerticalAxis.sqrMagnitude > 0.01f)
         {
             float normalAngleDelta = Vector3.Angle(lastMagnetizedVerticalAxis, verticalAxis);
-            bool isCorner = normalAngleDelta > magnetizedCornerAngleThreshold;
+            isCorner = normalAngleDelta > magnetizedCornerAngleThreshold;
 
             if (isCorner)
             {
@@ -916,29 +964,50 @@ public class FirstPersonController : MonoBehaviour
 
         for (int i = 0; i < substeps; i++)
         {
-            // calculate the new velocity at this step
-            Vector3 gravityAtPosition = gravitySource.GetGravityVector(position);
-            velocity += gravityAtPosition * subDeltaTime;
+            if (!isCorner)
+            {
+                // calculate the new velocity at this step
+                Vector3 gravityAtPosition = gravitySource.GetGravityVector(position);
+                velocity += gravityAtPosition * subDeltaTime;
+            }
 
             // integrate the substep
             position += velocity * subDeltaTime;
         }
 
-        // sweep from the starting position to the projected position; if we would hit static geometry
-        // other than the surface we are walking on, clamp movement to just before the point of contact
-        // and slide along the obstacle's surface with whatever movement remains, instead of stopping dead
-        Vector3 startPosition = _rigidbody.position;
-        Vector3 movementDelta = position - startPosition;
-        if (TryGetObstacleHit(startPosition, movementDelta, gravitySource, out float obstacleDistance, out Vector3 obstacleNormal))
+        if (isCorner)
         {
-            const float skinWidth = 0.01f;
-            float clampedDistance = Mathf.Max(0f, obstacleDistance - skinWidth);
-            Vector3 blockedPosition = startPosition + movementDelta.normalized * clampedDistance;
-            Vector3 remainingDelta = movementDelta - movementDelta.normalized * clampedDistance;
-            Vector3 tangentDelta = Vector3.ProjectOnPlane(remainingDelta, obstacleNormal);
+            // a corner tick already resolved position discretely above (the wall-snap raycast) and
+            // rotated/fixed up magnetizedVelocity for the new face - running the normal force-based
+            // movement (gravity accumulation) and obstacle-sweep on top of that in the same tick is
+            // what produced the compounding oscillation: the sweep's "surface we're walking on"
+            // exclusion is keyed off the still-active OLD gravity source, so right after snapping
+            // onto the new face the sweep sees that new face as a blocking obstacle and shoves us
+            // back off it, re-triggering the corner next tick. On a moving platform this is worse -
+            // the sweep has no notion of the platform's own velocity, so it can read as blocked even
+            // when there's plenty of room. Skipping the sweep for this one tick lets the discrete
+            // corner resolution stand uncontested; normal sweeping resumes as soon as the corner
+            // condition clears.
+            Debug.Log($"TRAE corner transition: skipping gravity accumulation and obstacle sweep this tick, position={position}");
+        }
+        else
+        {
+            // sweep from the starting position to the projected position; if we would hit static geometry
+            // other than the surface we are walking on, clamp movement to just before the point of contact
+            // and slide along the obstacle's surface with whatever movement remains, instead of stopping dead
+            Vector3 startPosition = _rigidbody.position;
+            Vector3 movementDelta = position - startPosition;
+            if (TryGetObstacleHit(startPosition, movementDelta, gravitySource, out float obstacleDistance, out Vector3 obstacleNormal))
+            {
+                const float skinWidth = 0.01f;
+                float clampedDistance = Mathf.Max(0f, obstacleDistance - skinWidth);
+                Vector3 blockedPosition = startPosition + movementDelta.normalized * clampedDistance;
+                Vector3 remainingDelta = movementDelta - movementDelta.normalized * clampedDistance;
+                Vector3 tangentDelta = Vector3.ProjectOnPlane(remainingDelta, obstacleNormal);
 
-            position = blockedPosition + tangentDelta;
-            velocity = Vector3.ProjectOnPlane(velocity, obstacleNormal);
+                position = blockedPosition + tangentDelta;
+                velocity = Vector3.ProjectOnPlane(velocity, obstacleNormal);
+            }
         }
 
         // persist our own authoritative velocity for next frame - never read back from
