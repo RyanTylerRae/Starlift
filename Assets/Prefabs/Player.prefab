@@ -913,9 +913,9 @@ MonoBehaviour:
   groundStoppingFriction: 20
   footstepSpeed: 3
   footstepImpactPhaseOffset: 0.3
-  maxMagnetizedWalkSpeed: 3
-  magnetizedAcceleration: 6
-  magnetizedLandingMomentumMultiplier: 2
+  maxMagnetizedWalkSpeed: 4
+  magnetizedAcceleration: 10
+  magnetizedLandingBoostMaxSpeed: 10
   magnetizedLandingMomentumCameraAlignment: 0.6
   magnetizedCornerAngleThreshold: 15
   magnetizedCornerDetachSpeed: 20
@@ -949,6 +949,8 @@ MonoBehaviour:
   autoRollAngleThreshold: 40
   autoRollMinSpeed: 0.3
   autoRollLookAngleThreshold: 45
+  cameraFollowPositionSpeed: 20
+  cameraFollowRotationSpeed: 20
   stabilizeMultiplier: -0.9
   flightForce: 4.5
   maxFlightSpeed: 9

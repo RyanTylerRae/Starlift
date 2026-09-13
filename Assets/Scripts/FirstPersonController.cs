@@ -52,7 +52,13 @@ public class FirstPersonController : MonoBehaviour
     [Header("Magnetized Movement")]
     public float maxMagnetizedWalkSpeed;
     public float magnetizedAcceleration = 6f;
-    public float magnetizedLandingMomentumMultiplier = 2f;
+    // rate used instead of magnetizedAcceleration whenever the target speed is lower than the
+    // current speed (releasing input, or a corner/landing setting a lower desired speed) - see
+    // HandleMovementSubStepped
+    public float magnetizedDeceleration = 3f;
+    // the boosted landing speed at (or above) boostedMaxFlightSpeed - incoming landing speed maps
+    // linearly from 0 up to this ceiling, not a multiplier on the raw speed
+    public float magnetizedLandingBoostMaxSpeed = 6f;
     [Range(0f, 1f)]
     public float magnetizedLandingMomentumCameraAlignment = 0.6f;
     // surface-normal angle change (degrees) per FixedUpdate beyond which we treat it as a discrete
@@ -111,12 +117,12 @@ public class FirstPersonController : MonoBehaviour
 
     private float xRotation = 0f;
 
-    // extra local rotation applied on top of the camera's normal pitch to visually compensate for
-    // the body snapping instantly to a new gravity "up" (see the gravity normal auto correction in
-    // Update()) - eases back to identity over time so the capsule/collider is always immediately
-    // correct while the view still smooths in, instead of slowly rotating the whole body (and
-    // collider) into place, which was producing real collision weirdness mid-rotation
-    private Quaternion cameraLagRotation = Quaternion.identity;
+    // the actual rendered Camera lives on this child of cameraArm and chases cameraArm's world
+    // pose every LateUpdate instead of being locked to it - see the comment where it's created
+    // in Start() for why
+    private Transform? cameraFollowTransform;
+    public float cameraFollowPositionSpeed = 20f;
+    public float cameraFollowRotationSpeed = 20f;
 
     // Cached look values for external use (e.g., HUD)
     public float LastLookX { get; private set; }
@@ -320,11 +326,25 @@ public class FirstPersonController : MonoBehaviour
         {
             cameraArmRestLocalPos = cameraArm.transform.localPosition;
 
-            Camera mainCamera = cameraArm.AddComponent<Camera>();
+            // cameraArm is the authoritative pivot - all gameplay logic (movement direction,
+            // thrust, aiming, ZeroG rotation control) reads from cameraArm.transform directly and
+            // must stay perfectly instant with input. The actual rendered Camera instead lives on
+            // this separate, deliberately UNPARENTED object, which chases cameraArm's world pose
+            // every LateUpdate - that's what makes the capsule's instant rotation/position snaps
+            // (landing, corners) smooth on screen without adding any lag to controls. It must not
+            // be parented under cameraArm (or anything else that moves): a parented child's world
+            // position/rotation is re-derived from its fixed local offset against the PARENT'S
+            // current transform on every read, so it would still jump instantly the moment
+            // cameraArm snaps, no matter what we Lerp/Slerp it towards here.
+            GameObject cameraFollowObject = new GameObject("CameraFollow");
+            cameraFollowObject.transform.SetPositionAndRotation(cameraArm.transform.position, cameraArm.transform.rotation);
+            cameraFollowTransform = cameraFollowObject.transform;
+
+            Camera mainCamera = cameraFollowObject.AddComponent<Camera>();
             mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
             mainCamera.depth = -1.0f;
 
-            var cameraData = cameraArm.AddComponent<UniversalAdditionalCameraData>();
+            var cameraData = cameraFollowObject.AddComponent<UniversalAdditionalCameraData>();
             cameraData.renderPostProcessing = true;
 
             mainCamera.farClipPlane = 1500.0f;
@@ -337,7 +357,7 @@ public class FirstPersonController : MonoBehaviour
             PixelateCamera pxCamera = mainCamera.AddComponent<PixelateCamera>();
             pxCamera.pixelsPerScreenHeight = 256;
 
-            cameraArm.AddComponent<AkAudioListener>();
+            cameraFollowObject.AddComponent<AkAudioListener>();
             playerCamera = mainCamera;
         }
 
@@ -477,10 +497,9 @@ public class FirstPersonController : MonoBehaviour
 
             if (cameraArm != null && playerCamera != null)
             {
-                transform.rotation = playerCamera.transform.rotation;
+                transform.rotation = cameraArm.transform.rotation;
                 cameraArm.transform.localRotation = Quaternion.identity;
                 xRotation = 0f;
-                cameraLagRotation = Quaternion.identity;
             }
         }
     }
@@ -535,9 +554,9 @@ public class FirstPersonController : MonoBehaviour
         Vector3 gravity = gravityController.GetGravityVector();
 
         // Calculate camera angle from gravity direction
-        if (gravity.sqrMagnitude > 0.01f && playerCamera != null)
+        if (gravity.sqrMagnitude > 0.01f && cameraArm != null)
         {
-            cameraAngleFromGravity = Vector3.Angle(playerCamera.transform.forward, gravity);
+            cameraAngleFromGravity = Vector3.Angle(cameraArm.transform.forward, gravity);
         }
 
         bool isMagnetized = gravityController.GetActiveGravitySource()?.isMagnetized ?? false;
@@ -610,7 +629,6 @@ public class FirstPersonController : MonoBehaviour
             if (upVector.sqrMagnitude > 0.01f && pendingGravityAlignment)
             {
                 pendingGravityAlignment = false;
-                Quaternion previousBodyRotation = transform.rotation;
                 transform.rotation = Quaternion.FromToRotation(transform.up, upVector) * transform.rotation;
 
                 // an instant rotation isn't swept, so a large single-frame angle change (e.g.
@@ -658,19 +676,11 @@ public class FirstPersonController : MonoBehaviour
                         Debug.Log($"TRAE rotation depenetration raycast MISSED at t={Time.time:F3}, upVector={upVector}, lowestPoint={lowestPoint}, castLift={castLift:F3}");
                     }
                 }
-
-                if (playerCamera != null)
-                {
-                    // preserve the camera's exact world-space look direction at the instant of the
-                    // snap, then ease that compensation back out over time
-                    cameraLagRotation = Quaternion.Inverse(transform.rotation) * previousBodyRotation * cameraLagRotation;
-                }
             }
 
-            if (playerCamera != null)
+            if (cameraArm != null)
             {
-                cameraLagRotation = Quaternion.Slerp(cameraLagRotation, Quaternion.identity, Time.deltaTime * gravityAlignmentSpeed);
-                playerCamera.transform.localRotation = cameraLagRotation * Quaternion.Euler(xRotation, 0f, 0f);
+                cameraArm.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
                 ApplyCameraArmLocalPos();
             }
         }
@@ -680,6 +690,19 @@ public class FirstPersonController : MonoBehaviour
         }
 
         HandleMagnetizedSound();
+    }
+
+    // runs after every Update() (and any FixedUpdate ticks) this frame, once cameraArm's pose is
+    // fully finalized, so the rendered camera always chases the latest, correct target
+    void LateUpdate()
+    {
+        if (cameraArm == null || cameraFollowTransform == null)
+        {
+            return;
+        }
+
+        cameraFollowTransform.position = Vector3.Lerp(cameraFollowTransform.position, cameraArm.transform.position, Time.deltaTime * cameraFollowPositionSpeed);
+        cameraFollowTransform.rotation = Quaternion.Slerp(cameraFollowTransform.rotation, cameraArm.transform.rotation, Time.deltaTime * cameraFollowRotationSpeed);
     }
 
     public void FixedUpdate()
@@ -865,7 +888,10 @@ public class FirstPersonController : MonoBehaviour
             // desiredMovementVelocity is zero. A real surface would exert a normal force that
             // exactly cancels gravity's pull into it, so the vertical component is dropped entirely
             // rather than left to accumulate unbounded every frame with nothing to counter it.
-            tangentialVelocity = Vector3.MoveTowards(tangentialVelocity, desiredMovementVelocity, magnetizedAcceleration * Time.fixedDeltaTime);
+            // Speeding up and slowing down use separate rates so releasing input (or a corner/
+            // landing lowering the target) doesn't have to feel as snappy as accelerating does.
+            float easeRate = desiredMovementVelocity.magnitude > tangentialVelocity.magnitude ? magnetizedAcceleration : magnetizedDeceleration;
+            tangentialVelocity = Vector3.MoveTowards(tangentialVelocity, desiredMovementVelocity, easeRate * Time.fixedDeltaTime);
             verticalVelocity = Vector3.zero;
         }
         else
@@ -938,7 +964,7 @@ public class FirstPersonController : MonoBehaviour
 
     void HandleMouseLook()
     {
-        if (playerCamera == null)
+        if (playerCamera == null || cameraArm == null)
         {
             return;
         }
@@ -972,7 +998,7 @@ public class FirstPersonController : MonoBehaviour
         xRotation -= lookY;
         xRotation = Mathf.Clamp(xRotation, -maxLookAngle, maxLookAngle);
 
-        playerCamera.transform.localRotation = cameraLagRotation * Quaternion.Euler(xRotation, 0f, 0f);
+        cameraArm.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         ApplyCameraArmLocalPos();
         transform.Rotate(transform.up, lookX, Space.World);
 
@@ -1169,32 +1195,33 @@ public class FirstPersonController : MonoBehaviour
         Vector3 tangential = Vector3.ProjectOnPlane(magnetizedVelocity, verticalAxis);
         Vector3 vertical = magnetizedVelocity - tangential;
 
-        // cap the momentum that's eligible for the boost at normal walking speed first. A long fall
-        // or approach has no speed limit (unlike ZeroG's maxFlightSpeed), so the raw tangential
-        // speed alone can already be many times maxMagnetizedWalkSpeed - multiplying that further
-        // produced landings far faster than the multiplier's name suggests. This keeps the result
-        // bounded to a predictable maxMagnetizedWalkSpeed * magnetizedLandingMomentumMultiplier ceiling.
-        if (tangential.magnitude > maxMagnetizedWalkSpeed)
-        {
-            tangential = tangential.normalized * maxMagnetizedWalkSpeed;
-        }
-
-        Vector3 boostedTangential = tangential * magnetizedLandingMomentumMultiplier;
-
         // the literal incoming direction can feel arbitrary/wrong on landing (e.g. you were drifting
         // sideways while looking straight ahead) - bias it towards where the camera is actually
         // looking (projected onto the surface) so the boost reads as "launched where you're aiming"
-        // rather than a strict physics carry-over. Blend rather than replace so real momentum still
-        // has some say when it's already close to camera-forward.
-        if (playerCamera != null && boostedTangential.sqrMagnitude > 0.0001f)
+        // rather than a strict physics carry-over. This is resolved before the speed curve below
+        // and applied regardless of how much that curve ends up scaling the result, so even a
+        // near-standstill landing still nudges towards camera-forward instead of being left in
+        // whatever raw incoming direction it had (or skipped entirely once its magnitude is tiny).
+        Vector3 tangentialDirection = tangential.sqrMagnitude > 0.0001f ? tangential.normalized : Vector3.zero;
+        Vector3 boostedDirection = tangentialDirection;
+        if (cameraArm != null)
         {
-            Vector3 cameraForwardOnSurface = Vector3.ProjectOnPlane(playerCamera.transform.forward, verticalAxis);
+            Vector3 cameraForwardOnSurface = Vector3.ProjectOnPlane(cameraArm.transform.forward, verticalAxis);
             if (cameraForwardOnSurface.sqrMagnitude > 0.0001f)
             {
-                Vector3 blendedDirection = Vector3.Slerp(boostedTangential.normalized, cameraForwardOnSurface.normalized, magnetizedLandingMomentumCameraAlignment);
-                boostedTangential = blendedDirection.normalized * boostedTangential.magnitude;
+                Vector3 cameraDirection = cameraForwardOnSurface.normalized;
+                boostedDirection = tangentialDirection.sqrMagnitude > 0.0001f
+                    ? Vector3.Slerp(tangentialDirection, cameraDirection, magnetizedLandingMomentumCameraAlignment).normalized
+                    : cameraDirection;
             }
         }
+
+        // scale the boost linearly with landing speed - 0 at a standstill, 1 at/above
+        // boostedMaxFlightSpeed (the actual top speed a landing can arrive at) - then remapped
+        // from that 0-1 range onto a separate, much smaller ceiling (magnetizedLandingBoostMaxSpeed)
+        // rather than the raw flight speed itself.
+        float speedRatio = Mathf.Clamp01(tangential.magnitude / boostedMaxFlightSpeed);
+        Vector3 boostedTangential = boostedDirection * (speedRatio * magnetizedLandingBoostMaxSpeed);
 
         magnetizedVelocity = boostedTangential + vertical;
     }
@@ -1279,7 +1306,7 @@ public class FirstPersonController : MonoBehaviour
             thrustForce = minJumpForwardThrust + ((maxJumpForwardThrust - minJumpForwardThrust) * jumpNormPow);
         }
 
-        if (thrustForce > 0.0f && _rigidbody != null && gravityController != null && playerCamera != null)
+        if (thrustForce > 0.0f && _rigidbody != null && gravityController != null && cameraArm != null)
         {
             Vector3 gravity = gravityController.GetGravityVector();
             GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
@@ -1288,15 +1315,15 @@ public class FirstPersonController : MonoBehaviour
             // Direction is captured entirely at release: raycast along the camera's forward; if
             // it hits any surface, aim at that point, otherwise use camera-forward directly.
             Vector3 launchDirection;
-            Ray jumpRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+            Ray jumpRay = new Ray(cameraArm.transform.position, cameraArm.transform.forward);
             if (Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
             {
                 Vector3 toTarget = jumpHit.point - releasePosition;
-                launchDirection = toTarget.AlmostZero() ? playerCamera.transform.forward : toTarget.normalized;
+                launchDirection = toTarget.AlmostZero() ? cameraArm.transform.forward : toTarget.normalized;
             }
             else
             {
-                launchDirection = playerCamera.transform.forward;
+                launchDirection = cameraArm.transform.forward;
             }
 
             Vector3 upDirection = -1.0f * gravity.normalized;
@@ -1519,7 +1546,7 @@ public class FirstPersonController : MonoBehaviour
 
     void HandleZeroGLook()
     {
-        if (_rigidbody == null || playerCamera == null)
+        if (_rigidbody == null || playerCamera == null || cameraArm == null)
         {
             return;
         }
@@ -1551,9 +1578,11 @@ public class FirstPersonController : MonoBehaviour
                 lookY = lookInput.Value.y * lookSensitivity;
             }
 
-            // Apply pitch and yaw rotation to the rigidbody using camera's forward as reference
-            _rigidbody.transform.Rotate(playerCamera.transform.up, lookX, Space.World);
-            _rigidbody.transform.Rotate(playerCamera.transform.right, -lookY, Space.World);
+            // Apply pitch and yaw rotation to the rigidbody using the arm's forward as reference -
+            // cameraArm is the instant, authoritative pivot; playerCamera is a visually-smoothed
+            // follower and must never be read for control/gameplay purposes (see its declaration)
+            _rigidbody.transform.Rotate(cameraArm.transform.up, lookX, Space.World);
+            _rigidbody.transform.Rotate(cameraArm.transform.right, -lookY, Space.World);
 
             // Cache look values for external use
             LastLookX = lookX;
@@ -1590,7 +1619,7 @@ public class FirstPersonController : MonoBehaviour
 
             // orient player to align with gravity, but only if we're looking at a surface we can magnetize to
             bool isLookingAtMagnetizableSurface = false;
-            Ray forwardRay = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+            Ray forwardRay = new Ray(cameraArm.transform.position, cameraArm.transform.forward);
             if (Physics.Raycast(forwardRay, out RaycastHit lookHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
             {
                 GravitySourceComponent? lookedAtGravitySource = lookHit.collider.GetComponentInParent<GravitySourceComponent>();
@@ -1632,7 +1661,7 @@ public class FirstPersonController : MonoBehaviour
 
     void HandleZeroGMovement()
     {
-        if (_rigidbody == null || playerCamera == null)
+        if (_rigidbody == null || playerCamera == null || cameraArm == null)
         {
             return;
         }
@@ -1685,12 +1714,12 @@ public class FirstPersonController : MonoBehaviour
         }
 
         Vector3 thrustVector = Vector3.zero;
-        thrustVector += playerCamera.transform.forward * forwardThrustInput;
-        thrustVector += -playerCamera.transform.forward * backwardThrustInput;
-        thrustVector += -playerCamera.transform.right * leftThrustInput;
-        thrustVector += playerCamera.transform.right * rightThrustInput;
-        thrustVector += playerCamera.transform.up * upThrustInput;
-        thrustVector += -playerCamera.transform.up * downThrustInput;
+        thrustVector += cameraArm.transform.forward * forwardThrustInput;
+        thrustVector += -cameraArm.transform.forward * backwardThrustInput;
+        thrustVector += -cameraArm.transform.right * leftThrustInput;
+        thrustVector += cameraArm.transform.right * rightThrustInput;
+        thrustVector += cameraArm.transform.up * upThrustInput;
+        thrustVector += -cameraArm.transform.up * downThrustInput;
 
         // burn oxygen in proportion to the velocity change the thrust actually produced last step,
         // so it drops to zero once the speed clamp fully absorbs further thrust in the same direction,
@@ -2000,7 +2029,7 @@ public class FirstPersonController : MonoBehaviour
 
             StopJumpThrustSound();
 
-            _rigidbody.AddForce(playerCamera.transform.forward * thrustForce, ForceMode.Impulse);
+            _rigidbody.AddForce(cameraArm.transform.forward * thrustForce, ForceMode.Impulse);
             AkUnitySoundEngine.PostEvent("play_thrust_impulse", gameObject);
 
             float impulseElapsed = 0f;
@@ -2037,6 +2066,13 @@ public class FirstPersonController : MonoBehaviour
 
     private void OnDestroy()
     {
+        // deliberately unparented (see where it's created in Start()) so it doesn't get destroyed
+        // automatically along with the player hierarchy
+        if (cameraFollowTransform != null)
+        {
+            Destroy(cameraFollowTransform.gameObject);
+        }
+
         if (jumpAction != null)
         {
             jumpAction.started -= OnJumpStarted;
