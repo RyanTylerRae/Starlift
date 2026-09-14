@@ -1,7 +1,6 @@
 #nullable enable
 
 using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.Splines.Interpolators;
@@ -10,14 +9,6 @@ using UnityEngine.UI;
 public class PlayerHUD : MonoBehaviour
 {
     private GameObject? player = null;
-
-    [Header("Center Dot Widget")]
-    public GameObject? centerDotWidget = null;
-
-    [Header("Jump Target Widget")]
-    public GameObject? jumpTargetWidget = null;
-    public Vector3 jumpTargetRotationOffset = Vector3.zero;
-    public TMP_Text? jumpOkIndicatorText;
 
     [Header("Material Instances")]
     public MeshRenderer? oxygenProgressRendererForeground;
@@ -124,74 +115,8 @@ public class PlayerHUD : MonoBehaviour
 
             // slerp towards identity at a set speed
             lookRoot.transform.localRotation = Quaternion.Slerp(localRotation, Quaternion.identity, _lookCorrectionSpeed * Time.deltaTime);
-        }
-
-        if (jumpTargetWidget != null)
-        {
-            bool shouldDisplayJumpTarget = false;
-
-            if (playerController.ShouldDisplayJumpTarget && playerController.playerCamera != null)
-            {
-                // Raycast from player camera
-                Ray ray = new Ray(playerController.playerCamera.transform.position, playerController.playerCamera.transform.forward);
-                RaycastHit hit;
-
-                player.TryGetComponent(out GravityController gravityController);
-                GravitySourceComponent? activeGravitySource = gravityController?.GetActiveGravitySource();
-
-                if (Physics.Raycast(ray, out hit, playerController.jumpTargetRaycastDistance, LayerMask.GetMask("Default"))
-                    && hit.collider.GetComponentInParent<GravitySourceComponent>() != activeGravitySource)
-                {
-                    shouldDisplayJumpTarget = true;
-
-                    // Get hit point in player camera's local space
-                    Vector3 playerCameraLocalHit = playerController.playerCamera.transform.InverseTransformPoint(hit.point);
-                    // Use that same local offset for the widget relative to HUD camera
-                    jumpTargetWidget.transform.localPosition = playerCameraLocalHit;
-
-                    // Get normal in player camera's local space
-                    Vector3 playerCameraLocalNormal = playerController.playerCamera.transform.InverseTransformDirection(hit.normal);
-                    // Use that same local direction for the widget, with rotation offset applied
-                    Quaternion normalRotation = Quaternion.LookRotation(playerCameraLocalNormal);
-                    Quaternion offsetRotation = Quaternion.Euler(jumpTargetRotationOffset);
-                    jumpTargetWidget.transform.localRotation = normalRotation * offsetRotation;
-                }
-            }
-
-            jumpTargetWidget.SetActive(shouldDisplayJumpTarget);
-
-            if (centerDotWidget != null)
-            {
-                centerDotWidget.SetActive(!playerController.ShouldDisplayJumpTarget);
-            }
 
             prevCameraRotation = playerController.playerCamera?.transform.rotation ?? prevCameraRotation;
-        }
-
-        if (jumpOkIndicatorText != null && playerController.playerCamera != null)
-        {
-            Ray magnetizeRay = new Ray(playerController.playerCamera.transform.position, playerController.playerCamera.transform.forward);
-
-            if (!Physics.Raycast(magnetizeRay, out RaycastHit magnetizeHit, playerController.jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
-            {
-                // nothing to jump towards
-                jumpOkIndicatorText.text = "";
-            }
-            else
-            {
-                player.TryGetComponent(out GravityController magnetizeGravityController);
-                GravitySourceComponent? activeGravitySource = magnetizeGravityController?.GetActiveGravitySource();
-
-                GravitySourceComponent? hitGravitySource = magnetizeHit.collider.GetComponentInParent<GravitySourceComponent>();
-                bool isUnobstructedTarget = hitGravitySource != null && hitGravitySource.isMagnetized && hitGravitySource != activeGravitySource;
-
-                // being on an edge, or airborne, lets us jump towards it regardless of angle
-                bool canAimDirectionalJump = !playerController.IsGrounded
-                    || playerController.IsGroundedOnEdge
-                    || playerController.CameraAngleFromGravity > playerController.jumpDirectionalAngleThreshold;
-
-                jumpOkIndicatorText.text = (isUnobstructedTarget && canAimDirectionalJump) ? "[ok]" : "[x]";
-            }
         }
 
         // hide/show the whole oxygen bar when God Mode is toggled

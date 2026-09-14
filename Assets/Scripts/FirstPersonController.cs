@@ -84,7 +84,6 @@ public class FirstPersonController : MonoBehaviour
     private GravitySourceComponent[] magnetizableSources = System.Array.Empty<GravitySourceComponent>();
     public float gravityAlignmentSpeed = 5f;
     public float jumpTargetRaycastDistance = 200f;
-    public float jumpDirectionalAngleThreshold = 135f;
     public float approachDuration = 0.5f;
     public float ignoredSourceCollisionGrace = 0.3f;
     private GravitySourceComponent? ignoredGravitySource;
@@ -257,10 +256,7 @@ public class FirstPersonController : MonoBehaviour
 
     public bool IsUsingGamepad { get { return playerInput != null && playerInput.currentControlScheme == "Gamepad"; } }
 
-    public bool ShouldDisplayJumpTarget { get { return (isGroundedOnEdge || CameraAngleFromGravity > jumpDirectionalAngleThreshold) && MovementMode == ControllerMovementMode.Magnetized; } }
-
     public bool IsGrounded { get { return isGrounded; } }
-    public bool IsGroundedOnEdge { get { return isGroundedOnEdge; } }
 
     [Header("Oxygen")]
     public float minOxygenBurnRate = 0.33f;
@@ -663,8 +659,6 @@ public class FirstPersonController : MonoBehaviour
                         float penetrationDepth = Vector3.Dot(penetrationHit.point - lowestPoint, upVector);
                         if (penetrationDepth > 0f)
                         {
-                            Debug.Log($"TRAE rotation depenetration at t={Time.time:F3}, upVector={upVector}, lowestPoint={lowestPoint}, hit.point={penetrationHit.point}, hit.collider={penetrationHit.collider.name}, penetrationDepth={penetrationDepth:F3}, positionBefore={transform.position}");
-
                             // push out a bit further than the exact measured depth - landing
                             // exactly on the boundary leaves us one float-precision nudge away
                             // from re-penetrating next frame - and cancel the velocity that
@@ -672,18 +666,12 @@ public class FirstPersonController : MonoBehaviour
                             // back through on the very next tick
                             transform.position += upVector * (penetrationDepth * 1.1f);
 
-                            Debug.Log($"TRAE rotation depenetration result at t={Time.time:F3}, positionAfter={transform.position}");
-
                             float intoSurfaceSpeed = Vector3.Dot(magnetizedVelocity, upVector);
                             if (intoSurfaceSpeed < 0f)
                             {
                                 magnetizedVelocity -= intoSurfaceSpeed * upVector;
                             }
                         }
-                    }
-                    else
-                    {
-                        Debug.Log($"TRAE rotation depenetration raycast MISSED at t={Time.time:F3}, upVector={upVector}, lowestPoint={lowestPoint}, castLift={castLift:F3}");
                     }
                 }
             }
@@ -858,7 +846,6 @@ public class FirstPersonController : MonoBehaviour
             if (isCorner)
             {
                 pendingGravityAlignment = true;
-                Debug.Log($"TRAE corner detected at t={Time.time:F3}, angleDelta={normalAngleDelta:F2}, magnetizedVelocity={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2}), desiredMovementVelocity={desiredMovementVelocity} (magnitude={desiredMovementVelocity.magnitude:F2}), lastAxis={lastMagnetizedVerticalAxis}, newAxis={verticalAxis}");
             }
 
             // a discrete corner/edge taken fast enough that rigidly carrying momentum around it
@@ -869,7 +856,6 @@ public class FirstPersonController : MonoBehaviour
             // is reserved for genuinely fast corner-cutting, not normal traversal.
             if (isCorner && magnetizedVelocity.magnitude > magnetizedCornerDetachSpeed)
             {
-                Debug.Log($"TRAE corner detach at t={Time.time:F3}, speed={magnetizedVelocity.magnitude:F2} > detachSpeed={magnetizedCornerDetachSpeed:F2}");
                 DetachFromMagnetizedSurface(gravitySource, gravityVector, gravitySourceVelocity + magnetizedVelocity);
                 return;
             }
@@ -895,12 +881,6 @@ public class FirstPersonController : MonoBehaviour
                 {
                     Vector3 positionDelta = verticalAxis * Vector3.Dot(wallHit.point - lowestPoint, verticalAxis);
                     position += positionDelta;
-
-                    Debug.Log($"TRAE corner position-snap at t={Time.time:F3}, verticalAxis={verticalAxis}, lowestPoint={lowestPoint}, wallHit.point={wallHit.point}, wallHit.collider={wallHit.collider.name}, positionDelta={positionDelta} (magnitude={positionDelta.magnitude:F3})");
-                }
-                else
-                {
-                    Debug.Log($"TRAE corner position-snap raycast MISSED at t={Time.time:F3}, verticalAxis={verticalAxis}, lowestPoint={lowestPoint}, castLift={castLift:F3}");
                 }
             }
 
@@ -920,11 +900,6 @@ public class FirstPersonController : MonoBehaviour
             if (isCorner && desiredMovementVelocity.sqrMagnitude > 0.0001f)
             {
                 magnetizedVelocity = desiredMovementVelocity.normalized * magnetizedCornerSpeed;
-                Debug.Log($"TRAE corner speed applied at t={Time.time:F3}, result magnetizedVelocity={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2})");
-            }
-            else if (isCorner)
-            {
-                Debug.Log($"TRAE corner speed NOT applied (no input) at t={Time.time:F3}, magnetizedVelocity after rotation={magnetizedVelocity} (magnitude={magnetizedVelocity.magnitude:F2})");
             }
         }
         lastMagnetizedVerticalAxis = verticalAxis;
@@ -975,22 +950,18 @@ public class FirstPersonController : MonoBehaviour
             position += velocity * subDeltaTime;
         }
 
-        if (isCorner)
-        {
-            // a corner tick already resolved position discretely above (the wall-snap raycast) and
-            // rotated/fixed up magnetizedVelocity for the new face - running the normal force-based
-            // movement (gravity accumulation) and obstacle-sweep on top of that in the same tick is
-            // what produced the compounding oscillation: the sweep's "surface we're walking on"
-            // exclusion is keyed off the still-active OLD gravity source, so right after snapping
-            // onto the new face the sweep sees that new face as a blocking obstacle and shoves us
-            // back off it, re-triggering the corner next tick. On a moving platform this is worse -
-            // the sweep has no notion of the platform's own velocity, so it can read as blocked even
-            // when there's plenty of room. Skipping the sweep for this one tick lets the discrete
-            // corner resolution stand uncontested; normal sweeping resumes as soon as the corner
-            // condition clears.
-            Debug.Log($"TRAE corner transition: skipping gravity accumulation and obstacle sweep this tick, position={position}");
-        }
-        else
+        // a corner tick already resolved position discretely above (the wall-snap raycast) and
+        // rotated/fixed up magnetizedVelocity for the new face - running the normal force-based
+        // movement (gravity accumulation) and obstacle-sweep on top of that in the same tick is
+        // what produced the compounding oscillation: the sweep's "surface we're walking on"
+        // exclusion is keyed off the still-active OLD gravity source, so right after snapping
+        // onto the new face the sweep sees that new face as a blocking obstacle and shoves us
+        // back off it, re-triggering the corner next tick. On a moving platform this is worse -
+        // the sweep has no notion of the platform's own velocity, so it can read as blocked even
+        // when there's plenty of room. Skipping the sweep for this one tick lets the discrete
+        // corner resolution stand uncontested; normal sweeping resumes as soon as the corner
+        // condition clears.
+        if (!isCorner)
         {
             // sweep from the starting position to the projected position; if we would hit static geometry
             // other than the surface we are walking on, clamp movement to just before the point of contact
@@ -1149,7 +1120,6 @@ public class FirstPersonController : MonoBehaviour
                 // based on gravity direction, not the actual surface) - that mismatch alone can look
                 // like a sharp corner on a steeply angled surface and wrongly trigger a detach right
                 // at the moment of landing
-                Debug.Log($"TRAE landing (CENTER raycast) resetting lastMagnetizedVerticalAxis at t={Time.time:F3}, surfaceNormal={surfaceNormal}");
                 lastMagnetizedVerticalAxis = Vector3.zero;
                 pendingGravityAlignment = true;
                 ApplyLandingMomentum();
@@ -1205,7 +1175,6 @@ public class FirstPersonController : MonoBehaviour
 
             if (isGenuineLanding)
             {
-                Debug.Log($"TRAE landing (CORNER raycasts) resetting lastMagnetizedVerticalAxis at t={Time.time:F3}, surfaceNormal={surfaceNormal}");
                 lastMagnetizedVerticalAxis = Vector3.zero;
                 pendingGravityAlignment = true;
             }

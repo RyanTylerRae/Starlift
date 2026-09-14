@@ -925,7 +925,6 @@ MonoBehaviour:
   magnetizedSoundRange: 4
   gravityAlignmentSpeed: 5
   jumpTargetRaycastDistance: 200
-  jumpDirectionalAngleThreshold: 90
   approachDuration: 0.25
   ignoredSourceCollisionGrace: 0.5
   headBobSpeed: 2.3
