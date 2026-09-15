@@ -53,6 +53,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Button"",
+                    ""id"": ""e4f8ac65-4566-4467-b61b-b7de9cbdf0f3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -209,6 +218,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4dd59ea4-fc07-4eb5-9cdf-0e7d66d24d14"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f1257abe-87b3-45f0-a5da-69122fb901b3"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -247,6 +278,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Sprint"",
                     ""type"": ""Button"",
                     ""id"": ""c329981b-af96-43a9-80b6-a1bde8249d22"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Button"",
+                    ""id"": ""2932e133-98f1-4472-8f5a-530e1892b570"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -427,6 +467,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7baf2b4a-6143-4cae-b1e3-5bd8e209ad75"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fe223246-521f-49af-aaa8-73c75a2638b4"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -990,6 +1052,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Button"",
+                    ""id"": ""cbab616d-c8ed-46d4-a239-35750fa569f3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1212,6 +1283,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""ForwardThrust"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8472acba-e044-40b0-97c8-b1943d46680c"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""db298a81-a6bf-48f7-9170-4a44bd6584dc"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1411,12 +1504,14 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_MovementMagnetized_Move = m_MovementMagnetized.FindAction("Move", throwIfNotFound: true);
         m_MovementMagnetized_Look = m_MovementMagnetized.FindAction("Look", throwIfNotFound: true);
         m_MovementMagnetized_Jump = m_MovementMagnetized.FindAction("Jump", throwIfNotFound: true);
+        m_MovementMagnetized_Zoom = m_MovementMagnetized.FindAction("Zoom", throwIfNotFound: true);
         // MovementGravity
         m_MovementGravity = asset.FindActionMap("MovementGravity", throwIfNotFound: true);
         m_MovementGravity_Move = m_MovementGravity.FindAction("Move", throwIfNotFound: true);
         m_MovementGravity_Jump = m_MovementGravity.FindAction("Jump", throwIfNotFound: true);
         m_MovementGravity_Look = m_MovementGravity.FindAction("Look", throwIfNotFound: true);
         m_MovementGravity_Sprint = m_MovementGravity.FindAction("Sprint", throwIfNotFound: true);
+        m_MovementGravity_Zoom = m_MovementGravity.FindAction("Zoom", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1439,6 +1534,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_MovementZeroG_Look = m_MovementZeroG.FindAction("Look", throwIfNotFound: true);
         m_MovementZeroG_RotateLeft = m_MovementZeroG.FindAction("RotateLeft", throwIfNotFound: true);
         m_MovementZeroG_RotateRight = m_MovementZeroG.FindAction("RotateRight", throwIfNotFound: true);
+        m_MovementZeroG_Zoom = m_MovementZeroG.FindAction("Zoom", throwIfNotFound: true);
         // DEBUG
         m_DEBUG = asset.FindActionMap("DEBUG", throwIfNotFound: true);
         m_DEBUG_KillPlayer = m_DEBUG.FindAction("KillPlayer", throwIfNotFound: true);
@@ -1522,6 +1618,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_MovementMagnetized_Move;
     private readonly InputAction m_MovementMagnetized_Look;
     private readonly InputAction m_MovementMagnetized_Jump;
+    private readonly InputAction m_MovementMagnetized_Zoom;
     public struct MovementMagnetizedActions
     {
         private @InputSystem_Actions m_Wrapper;
@@ -1529,6 +1626,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_MovementMagnetized_Move;
         public InputAction @Look => m_Wrapper.m_MovementMagnetized_Look;
         public InputAction @Jump => m_Wrapper.m_MovementMagnetized_Jump;
+        public InputAction @Zoom => m_Wrapper.m_MovementMagnetized_Zoom;
         public InputActionMap Get() { return m_Wrapper.m_MovementMagnetized; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1547,6 +1645,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @Zoom.started += instance.OnZoom;
+            @Zoom.performed += instance.OnZoom;
+            @Zoom.canceled += instance.OnZoom;
         }
 
         private void UnregisterCallbacks(IMovementMagnetizedActions instance)
@@ -1560,6 +1661,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @Zoom.started -= instance.OnZoom;
+            @Zoom.performed -= instance.OnZoom;
+            @Zoom.canceled -= instance.OnZoom;
         }
 
         public void RemoveCallbacks(IMovementMagnetizedActions instance)
@@ -1585,6 +1689,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_MovementGravity_Jump;
     private readonly InputAction m_MovementGravity_Look;
     private readonly InputAction m_MovementGravity_Sprint;
+    private readonly InputAction m_MovementGravity_Zoom;
     public struct MovementGravityActions
     {
         private @InputSystem_Actions m_Wrapper;
@@ -1593,6 +1698,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_MovementGravity_Jump;
         public InputAction @Look => m_Wrapper.m_MovementGravity_Look;
         public InputAction @Sprint => m_Wrapper.m_MovementGravity_Sprint;
+        public InputAction @Zoom => m_Wrapper.m_MovementGravity_Zoom;
         public InputActionMap Get() { return m_Wrapper.m_MovementGravity; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1614,6 +1720,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
+            @Zoom.started += instance.OnZoom;
+            @Zoom.performed += instance.OnZoom;
+            @Zoom.canceled += instance.OnZoom;
         }
 
         private void UnregisterCallbacks(IMovementGravityActions instance)
@@ -1630,6 +1739,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
+            @Zoom.started -= instance.OnZoom;
+            @Zoom.performed -= instance.OnZoom;
+            @Zoom.canceled -= instance.OnZoom;
         }
 
         public void RemoveCallbacks(IMovementGravityActions instance)
@@ -1763,6 +1875,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_MovementZeroG_Look;
     private readonly InputAction m_MovementZeroG_RotateLeft;
     private readonly InputAction m_MovementZeroG_RotateRight;
+    private readonly InputAction m_MovementZeroG_Zoom;
     public struct MovementZeroGActions
     {
         private @InputSystem_Actions m_Wrapper;
@@ -1777,6 +1890,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_MovementZeroG_Look;
         public InputAction @RotateLeft => m_Wrapper.m_MovementZeroG_RotateLeft;
         public InputAction @RotateRight => m_Wrapper.m_MovementZeroG_RotateRight;
+        public InputAction @Zoom => m_Wrapper.m_MovementZeroG_Zoom;
         public InputActionMap Get() { return m_Wrapper.m_MovementZeroG; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1816,6 +1930,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @RotateRight.started += instance.OnRotateRight;
             @RotateRight.performed += instance.OnRotateRight;
             @RotateRight.canceled += instance.OnRotateRight;
+            @Zoom.started += instance.OnZoom;
+            @Zoom.performed += instance.OnZoom;
+            @Zoom.canceled += instance.OnZoom;
         }
 
         private void UnregisterCallbacks(IMovementZeroGActions instance)
@@ -1850,6 +1967,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @RotateRight.started -= instance.OnRotateRight;
             @RotateRight.performed -= instance.OnRotateRight;
             @RotateRight.canceled -= instance.OnRotateRight;
+            @Zoom.started -= instance.OnZoom;
+            @Zoom.performed -= instance.OnZoom;
+            @Zoom.canceled -= instance.OnZoom;
         }
 
         public void RemoveCallbacks(IMovementZeroGActions instance)
@@ -2033,6 +2153,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnZoom(InputAction.CallbackContext context);
     }
     public interface IMovementGravityActions
     {
@@ -2040,6 +2161,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnZoom(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -2064,6 +2186,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnRotateLeft(InputAction.CallbackContext context);
         void OnRotateRight(InputAction.CallbackContext context);
+        void OnZoom(InputAction.CallbackContext context);
     }
     public interface IDEBUGActions
     {

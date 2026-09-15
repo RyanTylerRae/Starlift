@@ -125,6 +125,15 @@ public class FirstPersonController : MonoBehaviour
     public float cameraFollowPositionSpeed = 20f;
     public float cameraFollowRotationSpeed = 20f;
 
+    // clean follow rotation, Slerp'd toward cameraArm every frame - wander is re-applied on top of
+    // THIS each frame rather than accumulated into it, so noise can't leak into the persistent
+    // follow-lag state and desync from cameraArm over time
+    private Quaternion cameraFollowBaseRotation = Quaternion.identity;
+
+    // clean follow position, Lerp'd toward cameraArm every frame - the zoom dolly offset is
+    // re-applied on top of THIS each frame rather than accumulated into it, for the same reason
+    private Vector3 cameraFollowBasePosition = Vector3.zero;
+
     // Cached look values for external use (e.g., HUD)
     public float LastLookX { get; private set; }
     public float LastLookY { get; private set; }
@@ -214,6 +223,30 @@ public class FirstPersonController : MonoBehaviour
     private Coroutine? jumpThrustCoroutine = null;
     public Camera? playerCamera;
 
+    [Header("Zoom")]
+    public float baseFieldOfView = 60f;
+    public float zoomFieldOfView = 45f;
+    public float zoomInSpeed = 8f;
+    public float zoomOutSpeed = 8f;
+    public float zoomDollyDistance = 0.5f;
+    private float currentFieldOfView = 60f;
+    private float targetFieldOfView = 60f;
+    private bool zoomHeld = false;
+    private float zoomFraction = 0f;
+
+    [Header("Camera Wander")]
+    // max angular wander in degrees, reached at full zoom (scaled by zoomFraction only - NOT by
+    // dolly distance). The resulting on-screen/positional wander still ends up proportional to
+    // dolly distance on its own, because the wander rotation is applied to the arm connecting the
+    // pivot to the camera (see ApplyCameraDollyAndWander) - the same angular change sweeps a
+    // longer arc at the end of a longer arm, exactly like a lever, so a short dolly distance
+    // naturally reads as barely any positional wander without needing a second multiplier here
+    public float wanderAmplitudeDegrees = 1.25f;
+    public float wanderFrequency = 0.15f;
+    private float wanderPitchSeed = 0f;
+    private float wanderYawSeed = 0f;
+    private float currentDollyDistance = 0f;
+
     // input actions
     private InputAction? moveAction;
     private InputAction? lookAction;
@@ -228,6 +261,7 @@ public class FirstPersonController : MonoBehaviour
     private InputAction? downThrustAction;
     private InputAction? rotateLeftAction;
     private InputAction? rotateRightAction;
+    private InputAction? zoomAction;
     private InputAction? interactAction;
     private InputAction? exitGameAction;
     private InteractSystem? interactSystem = null;
@@ -238,6 +272,7 @@ public class FirstPersonController : MonoBehaviour
     private bool canLook = true;
     private bool canStabilize = true;
     private bool canThrust = true;
+    private bool canZoom = true;
 
     public void SetLookEnabled(bool enabled)
     {
@@ -252,6 +287,11 @@ public class FirstPersonController : MonoBehaviour
     public void SetThrustEnabled(bool enabled)
     {
         canThrust = enabled;
+    }
+
+    public void SetZoomEnabled(bool enabled)
+    {
+        canZoom = enabled;
     }
 
     public bool IsUsingGamepad { get { return playerInput != null && playerInput.currentControlScheme == "Gamepad"; } }
@@ -349,6 +389,10 @@ public class FirstPersonController : MonoBehaviour
             GameObject cameraFollowObject = new GameObject("CameraFollow");
             cameraFollowObject.transform.SetPositionAndRotation(cameraArm.transform.position, cameraArm.transform.rotation);
             cameraFollowTransform = cameraFollowObject.transform;
+            cameraFollowBaseRotation = cameraArm.transform.rotation;
+            cameraFollowBasePosition = cameraArm.transform.position;
+            wanderPitchSeed = UnityEngine.Random.Range(0f, 1000f);
+            wanderYawSeed = UnityEngine.Random.Range(0f, 1000f) + 500f;
 
             Camera mainCamera = cameraFollowObject.AddComponent<Camera>();
             mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
@@ -369,6 +413,8 @@ public class FirstPersonController : MonoBehaviour
 
             cameraFollowObject.AddComponent<AkAudioListener>();
             playerCamera = mainCamera;
+            currentFieldOfView = baseFieldOfView;
+            mainCamera.fieldOfView = baseFieldOfView;
         }
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -425,6 +471,7 @@ public class FirstPersonController : MonoBehaviour
             lookAction = playerInput.currentActionMap.FindAction("Look");
             sprintAction = playerInput.currentActionMap.FindAction("Sprint");
             jumpAction = playerInput.currentActionMap.FindAction("Jump");
+            zoomAction = playerInput.currentActionMap.FindAction("Zoom");
 
             stabilizeAction = null;
             forwardThrustAction = null;
@@ -448,6 +495,7 @@ public class FirstPersonController : MonoBehaviour
             moveAction = playerInput.currentActionMap.FindAction("Move");
             lookAction = playerInput.currentActionMap.FindAction("Look");
             jumpAction = playerInput.currentActionMap.FindAction("Jump");
+            zoomAction = playerInput.currentActionMap.FindAction("Zoom");
 
             // Subscribe to jump action events
             if (jumpAction != null)
@@ -494,6 +542,7 @@ public class FirstPersonController : MonoBehaviour
             downThrustAction = playerInput.currentActionMap.FindAction("DownThrust");
             rotateLeftAction = playerInput.currentActionMap.FindAction("RotateLeft");
             rotateRightAction = playerInput.currentActionMap.FindAction("RotateRight");
+            zoomAction = playerInput.currentActionMap.FindAction("Zoom");
 
             moveAction = null;
             jumpAction = null;
@@ -687,7 +736,14 @@ public class FirstPersonController : MonoBehaviour
             HandleZeroGLook();
         }
 
+        HandleZoomInput();
         HandleMagnetizedSound();
+    }
+
+    private void HandleZoomInput()
+    {
+        bool? zoomIsPressed = zoomAction?.IsPressed();
+        zoomHeld = canZoom && (zoomIsPressed ?? false);
     }
 
     // runs after every Update() (and any FixedUpdate ticks) this frame, once cameraArm's pose is
@@ -699,8 +755,58 @@ public class FirstPersonController : MonoBehaviour
             return;
         }
 
-        cameraFollowTransform.position = Vector3.Lerp(cameraFollowTransform.position, cameraArm.transform.position, Time.deltaTime * cameraFollowPositionSpeed);
-        cameraFollowTransform.rotation = Quaternion.Slerp(cameraFollowTransform.rotation, cameraArm.transform.rotation, Time.deltaTime * cameraFollowRotationSpeed);
+        cameraFollowBasePosition = Vector3.Lerp(cameraFollowBasePosition, cameraArm.transform.position, Time.deltaTime * cameraFollowPositionSpeed);
+        cameraFollowTransform.position = cameraFollowBasePosition;
+
+        cameraFollowBaseRotation = Quaternion.Slerp(cameraFollowBaseRotation, cameraArm.transform.rotation, Time.deltaTime * cameraFollowRotationSpeed);
+        cameraFollowTransform.rotation = cameraFollowBaseRotation;
+
+        ApplyCameraZoom();
+        ApplyCameraDollyAndWander();
+    }
+
+    // smoothly lerps fieldOfView toward the zoom target; zoomFraction (0..1) tracks the lerped
+    // value itself so wander amplitude follows the visible zoom progress, not raw input state
+    private void ApplyCameraZoom()
+    {
+        if (playerCamera == null)
+        {
+            return;
+        }
+
+        targetFieldOfView = zoomHeld ? zoomFieldOfView : baseFieldOfView;
+        float lerpSpeed = zoomHeld ? zoomInSpeed : zoomOutSpeed;
+        currentFieldOfView = Mathf.Lerp(currentFieldOfView, targetFieldOfView, Time.deltaTime * lerpSpeed);
+        playerCamera.fieldOfView = currentFieldOfView;
+
+        zoomFraction = Mathf.InverseLerp(baseFieldOfView, zoomFieldOfView, currentFieldOfView);
+    }
+
+    // models the camera as sitting at the tip of an arm of length currentDollyDistance,
+    // extending forward from cameraFollowBasePosition/Rotation (the pivot). Wander rotates that
+    // whole arm by a small angle around the pivot - never accumulated into cameraFollowBaseRotation
+    // itself, and never touching cameraArm, so it can't leak into gameplay-facing state - which
+    // means the SAME angular wobble sweeps a longer arc at the end of a longer arm (basic lever
+    // geometry: arc length = angle * radius), so a short dolly distance naturally reads as barely
+    // any positional wander without any extra distance multiplier on the angle itself.
+    private void ApplyCameraDollyAndWander()
+    {
+        if (playerCamera == null || cameraFollowTransform == null)
+        {
+            return;
+        }
+
+        currentDollyDistance = zoomDollyDistance * zoomFraction;
+
+        float pitchNoise = Mathf.PerlinNoise(Time.time * wanderFrequency + wanderPitchSeed, 0f) * 2f - 1f;
+        float yawNoise = Mathf.PerlinNoise(Time.time * wanderFrequency + wanderYawSeed, 0f) * 2f - 1f;
+        float wanderPitchDeg = pitchNoise * wanderAmplitudeDegrees * zoomFraction;
+        float wanderYawDeg = yawNoise * wanderAmplitudeDegrees * zoomFraction;
+        Quaternion wanderOffset = Quaternion.Euler(wanderPitchDeg, wanderYawDeg, 0f);
+
+        Quaternion wanderedRotation = cameraFollowBaseRotation * wanderOffset;
+        cameraFollowTransform.rotation = wanderedRotation;
+        cameraFollowTransform.position = cameraFollowBasePosition + wanderedRotation * Vector3.forward * currentDollyDistance;
     }
 
     public void FixedUpdate()

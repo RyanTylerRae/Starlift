@@ -962,6 +962,13 @@ MonoBehaviour:
   maxDepenetrationVelocity: 0.5
   cameraArm: {fileID: 1406748691932753418}
   playerCamera: {fileID: 0}
+  baseFieldOfView: 60
+  zoomFieldOfView: 45
+  zoomInSpeed: 2
+  zoomOutSpeed: 8
+  zoomDollyDistance: 15
+  wanderAmplitudeDegrees: 5
+  wanderFrequency: 0.25
   minOxygenBurnRate: 1
   jumpOxygenCost: 4
   magnetizedJumpOxygenCost: 4

@@ -106,6 +106,7 @@ public class SM_Tutorial : MonoBehaviour
             playerController?.SetStabilizeEnabled(false);
             playerController?.SetLookEnabled(false);
             playerController?.SetThrustEnabled(false);
+            playerController?.SetZoomEnabled(false);
 
             // rigidbody rotation is frozen outside ZeroG mode, so the initial spin needs ZeroG active first
             playerController?.SetMovementMode(FirstPersonController.ControllerMovementMode.ZeroG);
@@ -138,6 +139,7 @@ public class SM_Tutorial : MonoBehaviour
             }
 
             playerController?.SetLookEnabled(true);
+            playerController?.SetZoomEnabled(true);
             SubtitleManager.Instance?.AdvanceSubtitle();
         };
 
