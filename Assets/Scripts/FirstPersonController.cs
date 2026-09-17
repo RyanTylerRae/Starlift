@@ -457,6 +457,12 @@ public class FirstPersonController : MonoBehaviour
             StopThrustForwardSound();
         }
 
+        if (movementMode == ControllerMovementMode.Magnetized && newMovementMode != ControllerMovementMode.Magnetized)
+        {
+            jumpHoldStartTime = 0f;
+            cameraArmCrouchOffset = 0f;
+        }
+
         // entering a gravity zone from ZeroG means we're falling in from open space, so arm the
         // landing sound the same way a jump does; any other transition (e.g. leaving a magnetized
         // surface while already standing on it) shouldn't retrigger a landing
