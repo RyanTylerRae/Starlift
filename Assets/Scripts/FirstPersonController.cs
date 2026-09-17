@@ -782,13 +782,6 @@ public class FirstPersonController : MonoBehaviour
         zoomFraction = Mathf.InverseLerp(baseFieldOfView, zoomFieldOfView, currentFieldOfView);
     }
 
-    // models the camera as sitting at the tip of an arm of length currentDollyDistance,
-    // extending forward from cameraFollowBasePosition/Rotation (the pivot). Wander rotates that
-    // whole arm by a small angle around the pivot - never accumulated into cameraFollowBaseRotation
-    // itself, and never touching cameraArm, so it can't leak into gameplay-facing state - which
-    // means the SAME angular wobble sweeps a longer arc at the end of a longer arm (basic lever
-    // geometry: arc length = angle * radius), so a short dolly distance naturally reads as barely
-    // any positional wander without any extra distance multiplier on the angle itself.
     private void ApplyCameraDollyAndWander()
     {
         if (playerCamera == null || cameraFollowTransform == null)
