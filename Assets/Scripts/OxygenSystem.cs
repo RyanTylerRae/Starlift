@@ -45,8 +45,6 @@ public class OxygenSystem : MonoBehaviour
 
     void LateUpdate()
     {
-        Debug.Log(currentTankCount);
-
         if (modifiers == null || playerController == null || entity == null || !entity.IsAlive || PlayerSettings.GodModeOxygenDisabled)
         {
             return;
@@ -125,8 +123,13 @@ public class OxygenSystem : MonoBehaviour
 
         float oxygenAmount = modifiers.Get(ModifierType.Oxygen);
         oxygenAmount += Time.deltaTime * replenishRate;
-        modifiers.Set(ModifierType.Oxygen, oxygenAmount);
 
-        currentTankCount = GameState.Instance.saveData.maxOxygenTankCount;
+        if (oxygenAmount > modifiers.GetMax(ModifierType.Oxygen) && currentTankCount < GameState.Instance.saveData.maxOxygenTankCount)
+        {
+            oxygenAmount -= modifiers.GetMax(ModifierType.Oxygen);
+            ++currentTankCount;
+        }
+
+        modifiers.Set(ModifierType.Oxygen, oxygenAmount);
     }
 }

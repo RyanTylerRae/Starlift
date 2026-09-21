@@ -13,7 +13,7 @@ public class SM_Tutorial : MonoBehaviour
 
     private FirstPersonController? playerController = null;
     private Rigidbody? playerRigidbody = null;
-    private PlayerHUD? playerHud = null;
+    private OxygenBarWidget? oxygenBarWidget = null;
     private StateMachine stateMachine = new();
     private float waitStartTime = 0f;
     private float defaultRollDamping = 0f;
@@ -28,7 +28,7 @@ public class SM_Tutorial : MonoBehaviour
     private void TryResolvePlayerReferences()
     {
         playerController = StarliftStatics.FindFirstPersonController();
-        playerHud = FindFirstObjectByType<PlayerHUD>();
+        oxygenBarWidget = FindFirstObjectByType<OxygenBarWidget>();
 
         GameObject? player = StarliftStatics.FindPlayer();
         if (player != null && player.TryGetComponent<Rigidbody>(out var rb))
@@ -102,7 +102,7 @@ public class SM_Tutorial : MonoBehaviour
         // disable player oxygen HUD, disable stabilize/look/thrust, disable roll damping, start the initial spin
         stateMachine.GetState("Wait").OnEnterState += () =>
         {
-            playerHud?.SetOxygenHudEnabled(false);
+            oxygenBarWidget?.SetOxygenHudEnabled(false);
             playerController?.SetStabilizeEnabled(false);
             playerController?.SetLookEnabled(false);
             playerController?.SetThrustEnabled(false);
@@ -152,7 +152,7 @@ public class SM_Tutorial : MonoBehaviour
 
         stateMachine.GetState("Landed").OnEnterState += () =>
         {
-            playerHud?.SetOxygenHudEnabled(true);
+            oxygenBarWidget?.SetOxygenHudEnabled(true);
             SubtitleManager.Instance?.AdvanceSubtitle();
             waitStartTime = Time.time;
         };
