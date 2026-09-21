@@ -969,7 +969,7 @@ MonoBehaviour:
   zoomDollyDistance: 15
   wanderAmplitudeDegrees: 5
   wanderFrequency: 0.25
-  minOxygenBurnRate: 1
+  minOxygenBurnRate: 10
   jumpOxygenCost: 4
   magnetizedJumpOxygenCost: 4
   rotationOxygenBurnRate: 0.5

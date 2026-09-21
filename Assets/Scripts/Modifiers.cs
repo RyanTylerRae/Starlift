@@ -8,7 +8,8 @@ using Newtonsoft.Json;
 
 public enum ModifierType
 {
-    Oxygen
+    Oxygen,
+    NumOxygenTanks,
 }
 
 [Serializable]
@@ -45,12 +46,14 @@ public class Modifiers : MonoBehaviour
 
     private static Dictionary<string, ModifierType> StringToModifierTypeMap = new()
     {
-        { "oxygen", ModifierType.Oxygen }
+        { "oxygen", ModifierType.Oxygen },
+        { "numOxygenTanks", ModifierType.NumOxygenTanks },
     };
 
     private static Dictionary<ModifierType, string> ModifierTypeToStringMap = new()
     {
-        { ModifierType.Oxygen, "oxygen" }
+        { ModifierType.Oxygen, "oxygen" },
+        { ModifierType.NumOxygenTanks, "numOxygenTanks" },
     };
 
     void Start()

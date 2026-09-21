@@ -490,7 +490,7 @@ GameObject:
   - component: {fileID: 3989399415175561061}
   - component: {fileID: 2800109065990380789}
   m_Layer: 6
-  m_Name: OxygenBarForeground
+  m_Name: OxygenBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

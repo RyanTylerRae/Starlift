@@ -14,13 +14,18 @@ public class OxygenSystem : MonoBehaviour
     private Entity? entity = null;
     private bool isAudioPlaying = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private int currentTankCount = 0;
+
+    public int CurrentTankCount => currentTankCount;
+
+    void Awake()
     {
         modifiers = GetComponent<Modifiers>();
         playerController = GetComponent<FirstPersonController>();
         entity = GetComponent<Entity>();
         isAudioPlaying = true;
+
+        currentTankCount = GameState.Instance.saveData.maxOxygenTankCount;
     }
 
     void OnDestroy()
@@ -40,6 +45,8 @@ public class OxygenSystem : MonoBehaviour
 
     void LateUpdate()
     {
+        Debug.Log(currentTankCount);
+
         if (modifiers == null || playerController == null || entity == null || !entity.IsAlive || PlayerSettings.GodModeOxygenDisabled)
         {
             return;
@@ -71,9 +78,13 @@ public class OxygenSystem : MonoBehaviour
                 AkUnitySoundEngine.PostEvent("play_blend_breathing", gameObject);
                 isAudioPlaying = true;
             }
+        }
+        else if (currentTankCount > 1)
+        {
+            --currentTankCount;
+            oxygenAmount = modifiers.GetMax(ModifierType.Oxygen);
 
-            modifiers.Set(ModifierType.Oxygen, oxygenAmount);
-            AkUnitySoundEngine.SetRTPCValue("PlayerOxygenAmount", oxygenAmount);
+            AkUnitySoundEngine.PostEvent("play_oxygen_replenish", gameObject);
         }
         else
         {
@@ -88,6 +99,9 @@ public class OxygenSystem : MonoBehaviour
                 isAudioPlaying = false;
             }
         }
+
+        modifiers.Set(ModifierType.Oxygen, oxygenAmount);
+        AkUnitySoundEngine.SetRTPCValue("PlayerOxygenAmount", oxygenAmount);
     }
 
     public void DepleteOxygen(float amount)
@@ -112,5 +126,7 @@ public class OxygenSystem : MonoBehaviour
         float oxygenAmount = modifiers.Get(ModifierType.Oxygen);
         oxygenAmount += Time.deltaTime * replenishRate;
         modifiers.Set(ModifierType.Oxygen, oxygenAmount);
+
+        currentTankCount = GameState.Instance.saveData.maxOxygenTankCount;
     }
 }

@@ -419,6 +419,8 @@ public class FirstPersonController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        SaveGame.Load();
     }
 
     // composes the arm's rest pose with the current lag/bob offsets so the two effects can be driven independently
