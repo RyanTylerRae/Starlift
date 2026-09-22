@@ -17,6 +17,14 @@ public class VelocitySphereWidget : MonoBehaviour
     public float arrowMotionSpeedScale = 0.2f;
     public float minSpeedToShowArrows = 0.1f;
 
+    [Header("Arrow Scale Fade")]
+    // distance (in local line units) from either end of the line over which an arrow scales from 0 up
+    // to its cached default scale, so wrapping around the ends fades rather than pops
+    public float arrowEdgeFadeDistance = 0.2f;
+    // how fast (in 0..1 units per second) the whole arrow set scales in/out as velocity crosses
+    // minSpeedToShowArrows, so arrows grow in from 0 rather than snapping on/off
+    public float arrowSpeedFadeSpeed = 2f;
+
     [Header("Camera-Facing Roll")]
     // degrees around the direction axis from the wide face's default reference to its actual normal,
     // to compensate for however the arrow mesh was authored/rotated
@@ -32,6 +40,15 @@ public class VelocitySphereWidget : MonoBehaviour
     private Quaternion[] arrowBaseRotations = System.Array.Empty<Quaternion>();
     private Vector3[] arrowLocalRollAxes = System.Array.Empty<Vector3>();
     private bool arrowRollStateInitialized = false;
+
+    // each arrow's authored localScale, cached once so we can scale from 0 up to it rather than
+    // baking an assumption about what "full size" looks like
+    private Vector3[] arrowDefaultScales = System.Array.Empty<Vector3>();
+    private bool arrowScaleStateInitialized = false;
+
+    // 0..1: fades in while speed is above minSpeedToShowArrows, fades out while below it, so the
+    // whole arrow set grows in/shrinks out instead of popping on/off
+    private float arrowVisibilityFade = 0f;
 
     private void Start()
     {
@@ -89,13 +106,18 @@ public class VelocitySphereWidget : MonoBehaviour
             arrowLine.localRotation = Quaternion.LookRotation(camRelative.normalized);
         }
 
-        if (speed < minSpeedToShowArrows)
+        bool speedAboveThreshold = speed >= minSpeedToShowArrows;
+        float fadeTarget = speedAboveThreshold ? 1f : 0f;
+        arrowVisibilityFade = Mathf.MoveTowards(arrowVisibilityFade, fadeTarget, arrowSpeedFadeSpeed * Time.deltaTime);
+
+        if (!speedAboveThreshold && arrowVisibilityFade <= 0f)
         {
             DisableAllArrows();
             return;
         }
 
         AnimateArrows(speed);
+        ApplyArrowScales(arrowVisibilityFade);
         AlignArrowsToCamera(camTransform);
     }
 
@@ -126,6 +148,59 @@ public class VelocitySphereWidget : MonoBehaviour
             arrow.transform.localPosition = new Vector3(0f, 0f, offset);
             arrow.SetActive(true);
         }
+    }
+
+    private void ApplyArrowScales(float visibilityFade)
+    {
+        EnsureArrowScaleStateInitialized();
+
+        for (int i = 0; i < arrowPool.Length; i++)
+        {
+            GameObject? arrow = arrowPool[i];
+            if (arrow == null || !arrow.activeSelf)
+            {
+                continue;
+            }
+
+            float edgeFade = ComputeEdgeFade(arrowOffsets[i]);
+            arrow.transform.localScale = arrowDefaultScales[i] * (edgeFade * visibilityFade);
+        }
+    }
+
+    // 1 in the middle of the line, fading to 0 as an arrow nears either end, so it shrinks away
+    // before it wraps around rather than popping to the opposite end at full size
+    private float ComputeEdgeFade(float offset)
+    {
+        if (arrowEdgeFadeDistance <= 0f)
+        {
+            return 1f;
+        }
+
+        float distanceFromNearEdge = arrowLineHalfLength - Mathf.Abs(offset);
+        return Mathf.Clamp01(distanceFromNearEdge / arrowEdgeFadeDistance);
+    }
+
+    private void EnsureArrowScaleStateInitialized()
+    {
+        if (arrowScaleStateInitialized && arrowDefaultScales.Length == arrowPool.Length)
+        {
+            return;
+        }
+
+        arrowDefaultScales = new Vector3[arrowPool.Length];
+
+        for (int i = 0; i < arrowPool.Length; i++)
+        {
+            GameObject? arrow = arrowPool[i];
+            if (arrow == null)
+            {
+                continue;
+            }
+
+            arrowDefaultScales[i] = arrow.transform.localScale;
+        }
+
+        arrowScaleStateInitialized = true;
     }
 
     private void AlignArrowsToCamera(Transform camTransform)
@@ -258,6 +333,7 @@ public class VelocitySphereWidget : MonoBehaviour
         if (!visible)
         {
             DisableAllArrows();
+            arrowVisibilityFade = 0f;
         }
     }
 }
