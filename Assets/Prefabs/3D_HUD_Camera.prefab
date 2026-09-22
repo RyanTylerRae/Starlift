@@ -613,9 +613,11 @@ MonoBehaviour:
   - {fileID: 1000000000000000301}
   - {fileID: 1000000000000000311}
   - {fileID: 1000000000000000321}
-  arrowLineHalfLength: 0.8
-  arrowMotionSpeedScale: 0.3
+  arrowLineHalfLength: 0.9
+  arrowMotionSpeedScale: 0.15
   minSpeedToShowArrows: 0.5
+  arrowEdgeFadeDistance: 0.2
+  arrowSpeedFadeSpeed: 2
   wideFaceAxisAngle: 0
   wideFaceRotationSpeed: 45
   logVelocity: 0

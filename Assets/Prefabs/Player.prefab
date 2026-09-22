@@ -969,7 +969,7 @@ MonoBehaviour:
   zoomDollyDistance: 15
   wanderAmplitudeDegrees: 5
   wanderFrequency: 0.25
-  minOxygenBurnRate: 10
+  minOxygenBurnRate: 3
   jumpOxygenCost: 4
   magnetizedJumpOxygenCost: 4
   rotationOxygenBurnRate: 0.5
@@ -1126,10 +1126,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 2
+  usagePerSecond: 2.5
   thrustMultiplier: 1
   sprintMultiplier: 1.5
   magnetizedWalkMultiplier: 1
+  usedTankPrefab: {fileID: 6082143147915795651, guid: 956be8cd75eb3eb4b8589293845bb55f, type: 3}
+  usedTankSpawnOffset: 1
+  usedTankVelocityPercent: 0.25
+  usedTankMinSpinSpeed: 0.05
+  usedTankMaxSpinSpeed: 0.1
 --- !u!114 &3039922705185681957
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,17 +12,28 @@ public class OxygenSystem : MonoBehaviour
     private Modifiers? modifiers = null;
     private FirstPersonController? playerController = null;
     private Entity? entity = null;
+    private Rigidbody? playerRigidbody = null;
     private bool isAudioPlaying = false;
 
     private int currentTankCount = 0;
 
     public int CurrentTankCount => currentTankCount;
 
+    [Header("Used Tank Ejection")]
+    public GameObject? usedTankPrefab;
+    // how far behind the player (opposite their view direction) the spent tank spawns
+    public float usedTankSpawnOffset = 1f;
+    // fraction of the player's current velocity the tank inherits, so it drifts along with them
+    public float usedTankVelocityPercent = 0.3f;
+    public float usedTankMinSpinSpeed = 0.05f;
+    public float usedTankMaxSpinSpeed = 0.15f;
+
     void Awake()
     {
         modifiers = GetComponent<Modifiers>();
         playerController = GetComponent<FirstPersonController>();
         entity = GetComponent<Entity>();
+        playerRigidbody = GetComponent<Rigidbody>();
         isAudioPlaying = true;
 
         currentTankCount = GameState.Instance.saveData.maxOxygenTankCount;
@@ -83,6 +94,8 @@ public class OxygenSystem : MonoBehaviour
             oxygenAmount = modifiers.GetMax(ModifierType.Oxygen);
 
             AkUnitySoundEngine.PostEvent("play_oxygen_replenish", gameObject);
+            AkUnitySoundEngine.PostEvent("play_tank_used", gameObject);
+            SpawnUsedTank();
         }
         else
         {
@@ -100,6 +113,30 @@ public class OxygenSystem : MonoBehaviour
 
         modifiers.Set(ModifierType.Oxygen, oxygenAmount);
         AkUnitySoundEngine.SetRTPCValue("PlayerOxygenAmount", oxygenAmount);
+    }
+
+    private void SpawnUsedTank()
+    {
+        if (usedTankPrefab == null || playerController == null)
+        {
+            return;
+        }
+
+        Camera? cam = playerController.playerCamera;
+        Vector3 viewDirection = cam != null ? cam.transform.forward : transform.forward;
+
+        Vector3 spawnPosition = transform.position - viewDirection * usedTankSpawnOffset;
+        GameObject tank = Instantiate(usedTankPrefab, spawnPosition, UnityEngine.Random.rotation);
+
+        Rigidbody? tankRigidbody = tank.GetComponent<Rigidbody>();
+        if (tankRigidbody != null && playerRigidbody != null)
+        {
+            tankRigidbody.linearVelocity = playerRigidbody.linearVelocity * usedTankVelocityPercent;
+        }
+
+        SlowlyRotate spin = tank.AddComponent<SlowlyRotate>();
+        spin.randomizeAxis = true;
+        spin.rotationsPerSecond = UnityEngine.Random.Range(usedTankMinSpinSpeed, usedTankMaxSpinSpeed);
     }
 
     public void DepleteOxygen(float amount)

@@ -10,11 +10,19 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{03A7F958-C135-3157-95D6-ABA29DC43391}",
+    "Hash": "{30EBD080-0A05-40B5-AEBA-37D0B5B15731}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
     "Media": [
+     {
+      "Id": "78625041",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "zapsplat_impacts_metal_door_hit_dull_light_114513.wav",
+      "CachePath": "92/{92AD8BEE-53FB-AEFA-3FC4-A63D468A2C10}.wem"
+     },
      {
       "Id": "80774218",
       "Language": "SFX",
@@ -22,14 +30,6 @@
       "Location": "Memory",
       "ShortName": "zapsplat_science_fiction_large_explosion_001_62585.wav",
       "CachePath": "8C/{8CDA27EE-221E-0C7D-8132-C2E2AED6695C}.wem"
-     },
-     {
-      "Id": "106386982",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "breathing.wav",
-      "CachePath": "EC/{EC5700C9-7164-036B-2B0F-01F710C72128}.wem"
      },
      {
       "Id": "401349144",
@@ -120,6 +120,14 @@
       "CachePath": "7A/{7AF23D0E-C694-2BAD-7599-5D0EB4B39C0E}.wem"
      },
      {
+      "Id": "918325609",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Blastwave_FX_FireOxygenMask_S08ER.174.wav",
+      "CachePath": "D0/{D03F23BB-7103-F268-7323-5F635C673B95}.wem"
+     },
+     {
       "Id": "987918517",
       "Language": "SFX",
       "Streaming": "false",
@@ -157,7 +165,7 @@
       "DurationType": "Infinite",
       "MediaRefs": [
        {
-        "Id": "106386982"
+        "Id": "918325609"
        },
        {
         "Id": "987918517"
@@ -303,6 +311,20 @@
       ]
      },
      {
+      "Id": "2814963958",
+      "Name": "play_tank_used",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_tank_used",
+      "GUID": "{EBE31FA0-FCBF-44FC-955E-789D3B2CC413}",
+      "DurationType": "OneShot",
+      "DurationMin": "4.524495",
+      "DurationMax": "4.524495",
+      "MediaRefs": [
+       {
+        "Id": "78625041"
+       }
+      ]
+     },
+     {
       "Id": "866766775",
       "Name": "play_thrust_forward_loop",
       "ObjectPath": "\\Events\\Default Work Unit\\play_thrust_forward_loop",
@@ -425,6 +447,6 @@
     ]
    }
   ],
-  "FileHash": "{C3EAE105-73A9-90DD-354D-22E4503F0254}"
+  "FileHash": "{D522429C-996D-876D-DB12-FFE98AC13740}"
  }
 }

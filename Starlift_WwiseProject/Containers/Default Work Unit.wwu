@@ -28,11 +28,11 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="breathing" ID="{CD5E7381-1893-4546-B668-45B45C7A53DE}">
+										<AudioFileSource Name="Blastwave_FX_FireOxygenMask_S08ER_174" ID="{0A211543-9353-4992-9512-89C260787D40}">
 											<Language>SFX</Language>
-											<AudioFile>breathing.wav</AudioFile>
+											<AudioFile>Blastwave_FX_FireOxygenMask_S08ER.174.wav</AudioFile>
 											<MediaIDList>
-												<MediaID ID="106386982"/>
+												<MediaID ID="918325609"/>
 											</MediaIDList>
 										</AudioFileSource>
 									</ChildrenList>
@@ -86,7 +86,7 @@
 										</ObjectList>
 									</ObjectLists>
 									<ActiveSourceList>
-										<ActiveSource Name="breathing" ID="{CD5E7381-1893-4546-B668-45B45C7A53DE}" Platform="Linked"/>
+										<ActiveSource Name="Blastwave_FX_FireOxygenMask_S08ER_174" ID="{0A211543-9353-4992-9512-89C260787D40}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
 								<Sound Name="breathing_hard" ID="{7E38DD5F-159E-4F6F-81CD-CAB500403300}" ShortID="410007398">
@@ -351,7 +351,7 @@
 								</Property>
 								<Property Name="Volume" Type="Real64">
 									<ValueList>
-										<Value>-4</Value>
+										<Value>-6</Value>
 									</ValueList>
 								</Property>
 							</PropertyList>
@@ -406,7 +406,7 @@
 								</Property>
 								<Property Name="Volume" Type="Real64">
 									<ValueList>
-										<Value>-10</Value>
+										<Value>-12</Value>
 									</ValueList>
 								</Property>
 							</PropertyList>
@@ -1166,7 +1166,7 @@
 									<Language>SFX</Language>
 									<AudioFile>thrust_loop.wav</AudioFile>
 									<MediaIDList>
-										<MediaID ID="401349144"/>
+										<MediaID ID="641998116"/>
 									</MediaIDList>
 								</AudioFileSource>
 							</ChildrenList>
@@ -1183,6 +1183,35 @@
 							</ObjectLists>
 							<ActiveSourceList>
 								<ActiveSource Name="thrust_loop" ID="{BEF51C0F-B180-4C1C-943C-040A6CD6960D}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="tank_used" ID="{3A519BF2-F83C-4BA6-A9F1-340FE8F0BAC6}" ShortID="413945401">
+							<PropertyList>
+								<Property Name="Pitch" Type="int32">
+									<ValueList>
+										<Value>-1700</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="External Audio Bus" ID="{C4067BA1-B5B8-4EAB-ACDC-C1A65B53D55B}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="zapsplat_impacts_metal_door_hit_dull_light_114513" ID="{C58DD975-11F8-4C42-893A-67D5415111D9}">
+									<Language>SFX</Language>
+									<AudioFile>zapsplat_impacts_metal_door_hit_dull_light_114513.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="78625041"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="zapsplat_impacts_metal_door_hit_dull_light_114513" ID="{C58DD975-11F8-4C42-893A-67D5415111D9}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>

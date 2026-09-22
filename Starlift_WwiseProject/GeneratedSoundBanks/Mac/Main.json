@@ -10,11 +10,19 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{81BE188F-FB11-1FDD-B8F2-582AB44AD842}",
+    "Hash": "{30EBD080-0A05-40B5-AEBA-37D0B5B15731}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
     "Media": [
+     {
+      "Id": "78625041",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "zapsplat_impacts_metal_door_hit_dull_light_114513.wav",
+      "CachePath": "92/{92AD8BEE-53FB-AEFA-3FC4-A63D468A2C10}.wem"
+     },
      {
       "Id": "80774218",
       "Language": "SFX",
@@ -22,14 +30,6 @@
       "Location": "Memory",
       "ShortName": "zapsplat_science_fiction_large_explosion_001_62585.wav",
       "CachePath": "8C/{8CDA27EE-221E-0C7D-8132-C2E2AED6695C}.wem"
-     },
-     {
-      "Id": "106386982",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "breathing.wav",
-      "CachePath": "EC/{EC5700C9-7164-036B-2B0F-01F710C72128}.wem"
      },
      {
       "Id": "401349144",
@@ -62,6 +62,14 @@
       "Location": "Memory",
       "ShortName": "magnetized.wav",
       "CachePath": "26/{26BA5EF6-B11E-759E-8365-2AD852ED8646}.wem"
+     },
+     {
+      "Id": "641998116",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "thrust_loop.wav",
+      "CachePath": "75/{7509B7D6-7463-0705-C8FA-A7BD1A0EAF0A}.wem"
      },
      {
       "Id": "664015539",
@@ -112,6 +120,14 @@
       "CachePath": "7A/{7AF23D0E-C694-2BAD-7599-5D0EB4B39C0E}.wem"
      },
      {
+      "Id": "918325609",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Blastwave_FX_FireOxygenMask_S08ER.174.wav",
+      "CachePath": "D0/{D03F23BB-7103-F268-7323-5F635C673B95}.wem"
+     },
+     {
       "Id": "987918517",
       "Language": "SFX",
       "Streaming": "false",
@@ -149,7 +165,7 @@
       "DurationType": "Infinite",
       "MediaRefs": [
        {
-        "Id": "106386982"
+        "Id": "918325609"
        },
        {
         "Id": "987918517"
@@ -295,6 +311,20 @@
       ]
      },
      {
+      "Id": "2814963958",
+      "Name": "play_tank_used",
+      "ObjectPath": "\\Events\\Default Work Unit\\play_tank_used",
+      "GUID": "{EBE31FA0-FCBF-44FC-955E-789D3B2CC413}",
+      "DurationType": "OneShot",
+      "DurationMin": "4.524495",
+      "DurationMax": "4.524495",
+      "MediaRefs": [
+       {
+        "Id": "78625041"
+       }
+      ]
+     },
+     {
       "Id": "866766775",
       "Name": "play_thrust_forward_loop",
       "ObjectPath": "\\Events\\Default Work Unit\\play_thrust_forward_loop",
@@ -323,7 +353,7 @@
       "DurationMax": "0.9047996",
       "MediaRefs": [
        {
-        "Id": "401349144"
+        "Id": "641998116"
        }
       ],
       "PluginRefs": {
@@ -417,6 +447,6 @@
     ]
    }
   ],
-  "FileHash": "{9E62290F-F94F-35D8-D66C-79D25917B818}"
+  "FileHash": "{5E504EED-C902-7C38-1683-E26CAD788C36}"
  }
 }

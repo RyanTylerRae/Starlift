@@ -224,10 +224,16 @@ public class OxygenBarWidget : MonoBehaviour
             }
             else
             {
-                foreach (OxygenTankSegment segment in segments)
+                // the segment(s) that were active and just topped off snap to full; the new
+                // active segment (liveTankCount - 1) is left alone - it gets its real progress
+                // from the general active-segment update below, since it's the tank now being
+                // filled and is very unlikely to already be full itself
+                int filledFrom = Mathf.Clamp(lastKnownLiveTankCount - 1, 0, segments.Count - 1);
+                int filledTo = Mathf.Clamp(liveTankCount - 2, 0, segments.Count - 1);
+                for (int i = filledFrom; i <= filledTo; ++i)
                 {
-                    segment.foreground.SetFloat("_Progress", 1f);
-                    segment.laggy?.SetFloat("_Progress", 1f);
+                    segments[i].foreground.SetFloat("_Progress", 1f);
+                    segments[i].laggy?.SetFloat("_Progress", 1f);
                 }
             }
 

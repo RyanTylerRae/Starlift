@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df60e4d8f4de7f7439748ec4ee7c40ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  replenishRate: 50
+  replenishRate: 200
   checkpointRoot: {fileID: 3322911042451756551}
 --- !u!64 &1188368722881603254
 MeshCollider:
