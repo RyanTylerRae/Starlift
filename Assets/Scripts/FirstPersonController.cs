@@ -56,9 +56,9 @@ public class FirstPersonController : MonoBehaviour
     // current speed (releasing input, or a corner/landing setting a lower desired speed) - see
     // HandleMovementSubStepped
     public float magnetizedDeceleration = 3f;
-    // the boosted landing speed at (or above) boostedMaxFlightSpeed - incoming landing speed maps
+    // the boosted landing speed at (or above) maxFlightSpeed - incoming landing speed maps
     // linearly from 0 up to this ceiling, not a multiplier on the raw speed
-    public float magnetizedLandingBoostMaxSpeed = 6f;
+    public float magnetizedLandingMaxSpeed = 6f;
     [Range(0f, 1f)]
     public float magnetizedLandingMomentumCameraAlignment = 0.6f;
     // surface-normal angle change (degrees) per FixedUpdate beyond which we treat it as a discrete
@@ -143,8 +143,6 @@ public class FirstPersonController : MonoBehaviour
 
     public float flightForce;
     public float maxFlightSpeed;
-    public float boostedMaxFlightSpeed;
-    public float speedEaseBackRate = 6f;
     public float zeroGIdleDamping = 0.5f;
     private bool hasPlayedStabilizedSound = false;
     private bool isRotationThrustPlaying = false;
@@ -1366,11 +1364,10 @@ public class FirstPersonController : MonoBehaviour
         }
 
         // scale the boost linearly with landing speed - 0 at a standstill, 1 at/above
-        // boostedMaxFlightSpeed (the actual top speed a landing can arrive at) - then remapped
-        // from that 0-1 range onto a separate, much smaller ceiling (magnetizedLandingBoostMaxSpeed)
+        // then remapped from that 0-1 range onto a separate, much smaller ceiling (magnetizedLandingMaxSpeed)
         // rather than the raw flight speed itself.
-        float speedRatio = Mathf.Clamp01(tangential.magnitude / boostedMaxFlightSpeed);
-        Vector3 boostedTangential = boostedDirection * (speedRatio * magnetizedLandingBoostMaxSpeed);
+        float speedRatio = Mathf.Clamp01(tangential.magnitude / maxFlightSpeed);
+        Vector3 boostedTangential = boostedDirection * (speedRatio * magnetizedLandingMaxSpeed);
 
         magnetizedVelocity = boostedTangential + vertical;
     }
@@ -1903,19 +1900,9 @@ public class FirstPersonController : MonoBehaviour
         _rigidbody.AddForce(stabilizationAccelForce + idleDampingAccelForce, ForceMode.Acceleration);
 
         velocity = _rigidbody.linearVelocity;
-        if (isManualThrusting)
+        if (velocity.magnitude > maxFlightSpeed)
         {
-            // allow briefly exceeding maxFlightSpeed while actively thrusting, up to an overdrive cap
-            if (velocity.sqrMagnitude > boostedMaxFlightSpeed * boostedMaxFlightSpeed)
-            {
-                _rigidbody.linearVelocity = velocity.normalized * boostedMaxFlightSpeed;
-            }
-        }
-        else if (velocity.magnitude > maxFlightSpeed)
-        {
-            // ease back down to maxFlightSpeed instead of clamping instantly
-            float easedSpeed = Mathf.MoveTowards(velocity.magnitude, maxFlightSpeed, speedEaseBackRate * Time.deltaTime);
-            _rigidbody.linearVelocity = velocity.normalized * easedSpeed;
+            _rigidbody.linearVelocity = velocity.normalized * maxFlightSpeed;
         }
 
         if (stabilizeActive && _rigidbody.linearVelocity.magnitude < stabilizeSoundVelocityThreshold && _rigidbody.angularVelocity.magnitude < stabilizeSoundAngularThreshold)

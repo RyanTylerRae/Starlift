@@ -916,7 +916,7 @@ MonoBehaviour:
   maxMagnetizedWalkSpeed: 4
   magnetizedAcceleration: 10
   magnetizedDeceleration: 4
-  magnetizedLandingBoostMaxSpeed: 10
+  magnetizedLandingMaxSpeed: 6
   magnetizedLandingMomentumCameraAlignment: 0.6
   magnetizedCornerAngleThreshold: 15
   magnetizedCornerDetachSpeed: 20
@@ -935,8 +935,8 @@ MonoBehaviour:
   headBobDipDuration: 0.15
   jumpThrustForce: 10
   jumpForwardThrust: 15
-  jumpThrustPhaseOneDuration: 1.2
-  jumpThrustImpulseDuration: 1.2
+  jumpThrustPhaseOneDuration: 1
+  jumpThrustImpulseDuration: 1
   lookSensitivity: 0.1
   maxLookAngle: 85
   controllerLookMultiplier: 1800
@@ -949,14 +949,12 @@ MonoBehaviour:
   autoRollLookAngleThreshold: 45
   cameraFollowPositionSpeed: 12
   cameraFollowRotationSpeed: 12
-  stabilizeMultiplier: -0.9
-  flightForce: 4.5
-  maxFlightSpeed: 9
-  boostedMaxFlightSpeed: 18
-  speedEaseBackRate: 4
+  stabilizeMultiplier: -0.8
+  flightForce: 5
+  maxFlightSpeed: 12
   zeroGIdleDamping: 0
-  jumpHoldDuration: 0.4
-  jumpCrouchHeightOffset: 1
+  jumpHoldDuration: 0.25
+  jumpCrouchHeightOffset: 0.8
   substepDistance: 0.01
   airCollisionDampening: 0.2
   maxDepenetrationVelocity: 0.5
@@ -969,10 +967,10 @@ MonoBehaviour:
   zoomDollyDistance: 15
   wanderAmplitudeDegrees: 5
   wanderFrequency: 0.25
-  minOxygenBurnRate: 3
+  minOxygenBurnRate: 1
   jumpOxygenCost: 4
   magnetizedJumpOxygenCost: 4
-  rotationOxygenBurnRate: 0.5
+  rotationOxygenBurnRate: 1
 --- !u!114 &4662095033839872499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1126,8 +1124,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9c7ef1ea5cc184291d182501ce60fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usagePerSecond: 2.5
-  thrustMultiplier: 1
+  usagePerSecond: 5
+  thrustMultiplier: 1.1
   sprintMultiplier: 1.5
   magnetizedWalkMultiplier: 1
   usedTankPrefab: {fileID: 6082143147915795651, guid: 956be8cd75eb3eb4b8589293845bb55f, type: 3}
