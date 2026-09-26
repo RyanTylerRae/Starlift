@@ -1128,6 +1128,7 @@ MonoBehaviour:
   thrustMultiplier: 1.1
   sprintMultiplier: 1.5
   magnetizedWalkMultiplier: 1
+  suffocationGracePeriod: 5
   usedTankPrefab: {fileID: 6082143147915795651, guid: 956be8cd75eb3eb4b8589293845bb55f, type: 3}
   usedTankSpawnOffset: 1
   usedTankVelocityPercent: 0.25

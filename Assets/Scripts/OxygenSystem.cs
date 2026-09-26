@@ -9,6 +9,9 @@ public class OxygenSystem : MonoBehaviour
     public float thrustMultiplier;
     public float sprintMultiplier;
     public float magnetizedWalkMultiplier;
+    // seconds the player can survive at 0 oxygen before suffocating
+    public float suffocationGracePeriod = 3f;
+    private float suffocationTimer = 0f;
     private Modifiers? modifiers = null;
     private FirstPersonController? playerController = null;
     private Entity? entity = null;
@@ -82,6 +85,8 @@ public class OxygenSystem : MonoBehaviour
 
         if (oxygenAmount > 0.0f)
         {
+            suffocationTimer = 0f;
+
             if (!isAudioPlaying)
             {
                 AkUnitySoundEngine.PostEvent("play_blend_breathing", gameObject);
@@ -91,6 +96,7 @@ public class OxygenSystem : MonoBehaviour
         else if (currentTankCount > 1)
         {
             --currentTankCount;
+            suffocationTimer = 0f;
             oxygenAmount = modifiers.GetMax(ModifierType.Oxygen);
 
             AkUnitySoundEngine.PostEvent("play_oxygen_replenish", gameObject);
@@ -100,14 +106,18 @@ public class OxygenSystem : MonoBehaviour
         else
         {
             oxygenAmount = 0.0f;
-            entity.SendDamageEvent(gameObject, 100, DamageType.Suffocating);
+            suffocationTimer += Time.deltaTime;
 
-            if (isAudioPlaying)
+            if (suffocationTimer >= suffocationGracePeriod)
             {
-                Debug.Log("TRAE death event!");
-                AkUnitySoundEngine.PostEvent("stop_blend_breathing", gameObject);
-                AkUnitySoundEngine.PostEvent("play_breathing_death", gameObject);
-                isAudioPlaying = false;
+                entity.SendDamageEvent(gameObject, 100, DamageType.Suffocating);
+
+                if (isAudioPlaying)
+                {
+                    AkUnitySoundEngine.PostEvent("stop_blend_breathing", gameObject);
+                    AkUnitySoundEngine.PostEvent("play_breathing_death", gameObject);
+                    isAudioPlaying = false;
+                }
             }
         }
 
@@ -161,7 +171,7 @@ public class OxygenSystem : MonoBehaviour
         float oxygenAmount = modifiers.Get(ModifierType.Oxygen);
         oxygenAmount += Time.deltaTime * replenishRate;
 
-        if (oxygenAmount > modifiers.GetMax(ModifierType.Oxygen) && currentTankCount < GameState.Instance.saveData.maxOxygenTankCount)
+        while (oxygenAmount > modifiers.GetMax(ModifierType.Oxygen) && currentTankCount < GameState.Instance.saveData.maxOxygenTankCount)
         {
             oxygenAmount -= modifiers.GetMax(ModifierType.Oxygen);
             ++currentTankCount;

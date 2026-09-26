@@ -74,9 +74,9 @@ public class PlayerSpawner : MonoBehaviour
             health.ResetHealth();
         }
 
-        if (player.TryGetComponent<Modifiers>(out Modifiers modifiers))
+        if (player.TryGetComponent<OxygenSystem>(out OxygenSystem oxygenSystem))
         {
-            modifiers.ResetModifier(ModifierType.Oxygen);
+            oxygenSystem.ReplenishOxygen(float.PositiveInfinity);
         }
 
         if (player.TryGetComponent<Entity>(out Entity entity))
