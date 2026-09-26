@@ -296,6 +296,8 @@ public class FirstPersonController : MonoBehaviour
 
     public bool IsGrounded { get { return isGrounded; } }
 
+    public bool IsZoomHeld { get { return zoomHeld; } }
+
     [Header("Oxygen")]
     public float minOxygenBurnRate = 0.33f;
     public float jumpOxygenCost;
