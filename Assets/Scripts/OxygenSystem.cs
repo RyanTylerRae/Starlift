@@ -21,6 +21,8 @@ public class OxygenSystem : MonoBehaviour
     private int currentTankCount = 0;
 
     public int CurrentTankCount => currentTankCount;
+    // 0 while breathing normally, ramping to 1 as the suffocation grace period runs out
+    public float SuffocationProgress => suffocationGracePeriod > 0f ? Mathf.Clamp01(suffocationTimer / suffocationGracePeriod) : 0f;
 
     [Header("Used Tank Ejection")]
     public GameObject? usedTankPrefab;
