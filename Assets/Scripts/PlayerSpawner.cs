@@ -7,6 +7,7 @@ public class PlayerSpawner : MonoBehaviour
 {
     public GameObject? playerPrefab;
     private GameObject? player;
+    private Entity? playerEntity = null;
     public Vector3 spawnOffset = new Vector3(0, 2, 0);
 
     private GameObject? checkpointRoot = null;
@@ -24,10 +25,10 @@ public class PlayerSpawner : MonoBehaviour
             player = Instantiate(playerPrefab, transform.position + spawnOffset, transform.rotation);
 
             // register for death
-            var entity = player.GetComponentInChildren<Entity>();
-            if (entity != null)
+            playerEntity = player.GetComponentInChildren<Entity>();
+            if (playerEntity != null)
             {
-                entity.OnKilled += OnPlayerKilled;
+                playerEntity.OnKilled += OnPlayerKilled;
             }
 
             FadeInFromDeath(player);
@@ -36,10 +37,9 @@ public class PlayerSpawner : MonoBehaviour
 
     private void OnDestroy()
     {
-        var entity = player?.GetComponentInChildren<Entity>();
-        if (entity != null)
+        if (playerEntity != null)
         {
-            entity.OnKilled -= OnPlayerKilled;
+            playerEntity.OnKilled -= OnPlayerKilled;
         }
     }
 
@@ -94,6 +94,12 @@ public class PlayerSpawner : MonoBehaviour
             // fades in from black, with an initial delay
             screenFader.SetOpacity(1.0f);
             await screenFader.FadeToOpacity(1.0f, 1.0f);
+
+            if (screenFader == null)
+            {
+                return;
+            }
+
             _ = screenFader.FadeToOpacity(0.0f, 8.0f);
         }
     }

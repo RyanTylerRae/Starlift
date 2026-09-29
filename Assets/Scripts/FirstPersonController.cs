@@ -20,7 +20,6 @@ public class FirstPersonController : MonoBehaviour
     public float maxWalkSpeed;
     public float maxRunSpeed;
     private bool isGrounded = false;
-    private bool isGroundedOnEdge = false;
     private bool isJumping = false;
     // true from the moment a magnetized jump launches until HandleGrounded() confirms a real
     // landing while Magnetized - see the comment where it's set for why this can't just be isJumping
@@ -1162,7 +1161,6 @@ public class FirstPersonController : MonoBehaviour
     {
         bool wasGrounded = isGrounded;
         isGrounded = false;
-        isGroundedOnEdge = false;
 
         if (gravityController == null)
         {
@@ -1236,13 +1234,6 @@ public class FirstPersonController : MonoBehaviour
             {
                 TriggerLandingSound();
                 isJumping = false;
-            }
-
-            // check to see if we are near an edge
-            Vector3 centerEdgeOrigin = footPosition + transform.forward * (halfRadius * edgeRaycastMultiplier);
-            if (!Physics.Raycast(new Ray(centerEdgeOrigin, gravityDir), groundedDistance, groundMask))
-            {
-                isGroundedOnEdge = true;
             }
 
             return;

@@ -49,6 +49,12 @@ public class ScreenFader : MonoBehaviour
                 fadeImage.color = newColor;
 
                 await Task.Yield();
+
+                // the image may be destroyed mid-fade (e.g. scene unload)
+                if (fadeImage == null)
+                {
+                    return;
+                }
             }
         }
 
