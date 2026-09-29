@@ -114,6 +114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayImage: {fileID: 6106469131078349966}
   maxOpacity: 1
+  fadeOutDuration: 1
 --- !u!1 &1406748691932753418
 GameObject:
   m_ObjectHideFlags: 0
@@ -908,7 +909,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8301887, g: 0.8301887, b: 0.8301887, a: 1}
+  m_Color: {r: 0.8867924, g: 0.35431033, b: 0.008365828, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
