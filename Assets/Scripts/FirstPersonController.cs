@@ -155,11 +155,6 @@ public class FirstPersonController : MonoBehaviour
     private float cameraAngleFromGravity = 0f;
     public float CameraAngleFromGravity { get { return cameraAngleFromGravity; } }
 
-    // jump hold / crouch
-    private float jumpHoldStartTime = 0f;
-    public float jumpHoldDuration = 0.5f;
-    public float jumpCrouchHeightOffset = 0.25f;
-
     [Header("Physics Sub-stepping")]
     public float substepDistance = 0.01f;
 
@@ -215,7 +210,6 @@ public class FirstPersonController : MonoBehaviour
     private Vector3 cameraArmRestLocalPos = Vector3.zero;
     private float cameraArmBobOffset = 0.0f;
     private float cameraArmDipOffset = 0.0f;
-    private float cameraArmCrouchOffset = 0.0f;
     private Coroutine? headBobDipCoroutine = null;
     private Coroutine? jumpThrustCoroutine = null;
     public Camera? playerCamera;
@@ -431,7 +425,7 @@ public class FirstPersonController : MonoBehaviour
         }
 
         Vector3 localPos = cameraArmRestLocalPos;
-        localPos.y += cameraArmBobOffset + cameraArmDipOffset - cameraArmCrouchOffset;
+        localPos.y += cameraArmBobOffset + cameraArmDipOffset;
         cameraArm.transform.localPosition = localPos;
     }
 
@@ -456,12 +450,6 @@ public class FirstPersonController : MonoBehaviour
         {
             StopRotationThrustSound();
             StopThrustForwardSound();
-        }
-
-        if (movementMode == ControllerMovementMode.Magnetized && newMovementMode != ControllerMovementMode.Magnetized)
-        {
-            jumpHoldStartTime = 0f;
-            cameraArmCrouchOffset = 0f;
         }
 
         // entering a gravity zone from ZeroG means we're falling in from open space, so arm the
@@ -507,11 +495,8 @@ public class FirstPersonController : MonoBehaviour
             // Subscribe to jump action events
             if (jumpAction != null)
             {
-                jumpAction.started -= OnJumpStarted;
-                jumpAction.started += OnJumpStarted;
-
-                jumpAction.canceled -= OnJumpCanceled;
-                jumpAction.canceled += OnJumpCanceled;
+                jumpAction.performed -= OnMagnetizedJump;
+                jumpAction.performed += OnMagnetizedJump;
             }
 
             sprintAction = null;
@@ -605,14 +590,6 @@ public class FirstPersonController : MonoBehaviour
             }
         }
 
-        if (jumpHoldStartTime > 0.0f && MovementMode == ControllerMovementMode.Magnetized)
-        {
-            float pressDuration = Time.time - jumpHoldStartTime;
-            float holdProgress = Math.Clamp(pressDuration / jumpHoldDuration, 0.0f, 1.0f);
-            cameraArmCrouchOffset = isGrounded ? jumpCrouchHeightOffset * holdProgress : 0.0f;
-            ApplyCameraArmLocalPos();
-        }
-
         Vector3 gravity = gravityController.GetGravityVector();
 
         // Calculate camera angle from gravity direction
@@ -665,7 +642,7 @@ public class FirstPersonController : MonoBehaviour
             {
                 HandleMovementSubStepped();
             }
-            else if (MovementMode == ControllerMovementMode.Gravity && jumpHoldStartTime == 0.0f)
+            else if (MovementMode == ControllerMovementMode.Gravity)
             {
                 HandleMovement();
                 HandleJump();
@@ -1413,7 +1390,6 @@ public class FirstPersonController : MonoBehaviour
     {
         if (movementMode == ControllerMovementMode.Magnetized)
         {
-            jumpHoldStartTime = 0f;
             SetMovementMode(ControllerMovementMode.Gravity);
         }
     }
@@ -1423,38 +1399,21 @@ public class FirstPersonController : MonoBehaviour
         interactSystem?.TryInteractFirst();
     }
 
-    private void OnJumpStarted(InputAction.CallbackContext context)
+    private void OnMagnetizedJump(InputAction.CallbackContext context)
     {
-        jumpHoldStartTime = Time.time;
-    }
-
-    private void OnJumpCanceled(InputAction.CallbackContext context)
-    {
-        float pressDuration = Time.time - jumpHoldStartTime;
-        jumpHoldStartTime = 0.0f;
-        cameraArmCrouchOffset = 0.0f;
-        ApplyCameraArmLocalPos();
-
-        if (pressDuration < jumpHoldDuration)
-        {
-            Debug.Log("Magnetized jump canceled: released before jumpHoldDuration threshold.");
-            // @trae TODO: play a canceled-jump sfx here
-            return;
-        }
-
         if (_rigidbody != null && gravityController != null && cameraArm != null)
         {
             Vector3 gravity = gravityController.GetGravityVector();
             GravitySourceComponent? activeSource = gravityController.GetActiveGravitySource();
-            Vector3 releasePosition = transform.position;
+            Vector3 launchPosition = transform.position;
 
-            // Direction is captured entirely at release: raycast along the camera's forward; if
+            // Direction is captured entirely at press: raycast along the camera's forward; if
             // it hits any surface, aim at that point, otherwise use camera-forward directly.
             Vector3 launchDirection;
             Ray jumpRay = new Ray(cameraArm.transform.position, cameraArm.transform.forward);
             if (Physics.Raycast(jumpRay, out RaycastHit jumpHit, jumpTargetRaycastDistance, LayerMask.GetMask("Default")))
             {
-                Vector3 toTarget = jumpHit.point - releasePosition;
+                Vector3 toTarget = jumpHit.point - launchPosition;
                 launchDirection = toTarget.AlmostZero() ? cameraArm.transform.forward : toTarget.normalized;
             }
             else
@@ -1504,7 +1463,7 @@ public class FirstPersonController : MonoBehaviour
     private void HandleMovementSubStepped()
     {
         Vector2? moveInput = moveAction?.ReadValue<Vector2>();
-        if (moveInput == null || jumpHoldStartTime > 0f)
+        if (moveInput == null)
         {
             desiredMovementVelocity = Vector3.zero;
             return;
@@ -2202,8 +2161,7 @@ public class FirstPersonController : MonoBehaviour
 
         if (jumpAction != null)
         {
-            jumpAction.started -= OnJumpStarted;
-            jumpAction.canceled -= OnJumpCanceled;
+            jumpAction.performed -= OnMagnetizedJump;
         }
         if (jumpThrustCoroutine != null)
         {
