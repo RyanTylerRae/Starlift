@@ -29,6 +29,9 @@ public class FirstPersonController : MonoBehaviour
     // to (e.g. from the body reorienting toward the new "up" and briefly clipping the geometry),
     // which was re-triggering landing momentum/rotation-reset for no real landing
     private GravitySourceComponent? attachedMagnetizedSource = null;
+    // true only while we're deliberately handing off to another magnetized source (see
+    // SwapToGravitySource) - OnActiveGravitySourceChanged otherwise drops us out of Magnetized mode
+    private bool isSwappingGravitySource = false;
     private Vector3 surfaceNormal = Vector3.up;
     public float groundedDistance;
     public float edgeRaycastMultiplier = 2f;
@@ -1051,16 +1054,31 @@ public class FirstPersonController : MonoBehaviour
             // and slide along the obstacle's surface with whatever movement remains, instead of stopping dead
             Vector3 startPosition = _rigidbody.position;
             Vector3 movementDelta = position - startPosition;
-            if (TryGetObstacleHit(startPosition, movementDelta, gravitySource, out float obstacleDistance, out Vector3 obstacleNormal))
+            if (TryGetObstacleHit(startPosition, movementDelta, gravitySource, out float obstacleDistance, out Vector3 obstacleNormal, out Collider? obstacleCollider))
             {
                 const float skinWidth = 0.01f;
                 float clampedDistance = Mathf.Max(0f, obstacleDistance - skinWidth);
                 Vector3 blockedPosition = startPosition + movementDelta.normalized * clampedDistance;
-                Vector3 remainingDelta = movementDelta - movementDelta.normalized * clampedDistance;
-                Vector3 tangentDelta = Vector3.ProjectOnPlane(remainingDelta, obstacleNormal);
 
-                position = blockedPosition + tangentDelta;
-                velocity = Vector3.ProjectOnPlane(velocity, obstacleNormal);
+                GravitySourceComponent? swapTarget = isGrounded && obstacleCollider != null
+                    ? FindSwapTargetSource(obstacleCollider, gravitySource)
+                    : null;
+
+                if (swapTarget != null)
+                {
+                    // walked into another magnetized surface we're inside the field of (e.g. two
+                    // intersecting planes) - stop at contact and hand off to it like an inside corner
+                    position = blockedPosition;
+                    velocity = SwapToGravitySource(swapTarget, verticalAxis, obstacleNormal, velocity);
+                }
+                else
+                {
+                    Vector3 remainingDelta = movementDelta - movementDelta.normalized * clampedDistance;
+                    Vector3 tangentDelta = Vector3.ProjectOnPlane(remainingDelta, obstacleNormal);
+
+                    position = blockedPosition + tangentDelta;
+                    velocity = Vector3.ProjectOnPlane(velocity, obstacleNormal);
+                }
             }
         }
 
@@ -1388,6 +1406,11 @@ public class FirstPersonController : MonoBehaviour
 
     private void OnActiveGravitySourceChanged(GravitySourceComponent? newSource)
     {
+        if (isSwappingGravitySource)
+        {
+            return;
+        }
+
         if (movementMode == ControllerMovementMode.Magnetized)
         {
             SetMovementMode(ControllerMovementMode.Gravity);
@@ -1901,10 +1924,11 @@ public class FirstPersonController : MonoBehaviour
         playerCamera.transform.localPosition = originalPos;
     }
 
-    private bool TryGetObstacleHit(Vector3 startPosition, Vector3 movementDelta, GravitySourceComponent gravitySource, out float hitDistance, out Vector3 hitNormal)
+    private bool TryGetObstacleHit(Vector3 startPosition, Vector3 movementDelta, GravitySourceComponent gravitySource, out float hitDistance, out Vector3 hitNormal, out Collider? hitCollider)
     {
         hitDistance = 0f;
         hitNormal = Vector3.zero;
+        hitCollider = null;
 
         if (bodyCollider == null)
         {
@@ -1929,6 +1953,7 @@ public class FirstPersonController : MonoBehaviour
         bool foundHit = false;
         float closestDistance = float.MaxValue;
         Vector3 closestNormal = Vector3.zero;
+        Collider? closestCollider = null;
 
         foreach (RaycastHit hit in hits)
         {
@@ -1954,6 +1979,7 @@ public class FirstPersonController : MonoBehaviour
             {
                 closestDistance = hit.distance;
                 closestNormal = hit.normal;
+                closestCollider = hit.collider;
                 foundHit = true;
             }
         }
@@ -1962,9 +1988,68 @@ public class FirstPersonController : MonoBehaviour
         {
             hitDistance = closestDistance;
             hitNormal = closestNormal;
+            hitCollider = closestCollider;
         }
 
         return foundHit;
+    }
+
+    // re-roots all Magnetized surface-tracking state onto newSource's surface and returns velocity
+    // carried over onto it - walking forward into the new surface continues as walking up it
+    private Vector3 SwapToGravitySource(GravitySourceComponent newSource, Vector3 oldUp, Vector3 newUp, Vector3 velocity)
+    {
+        Quaternion swapRotation = Quaternion.FromToRotation(oldUp, newUp);
+
+        // only the along-surface part carries over; anything into the old surface is dropped
+        Vector3 carriedVelocity = swapRotation * Vector3.ProjectOnPlane(velocity, oldUp);
+
+        // input direction is still expressed in the old frame until next Update() - rotate it too so
+        // a FixedUpdate tick before then doesn't push us straight back into the new surface
+        desiredMovementVelocity = swapRotation * desiredMovementVelocity;
+
+        // already on the new surface - neither a corner (debounce/isCorner) nor a genuine landing
+        surfaceNormal = newUp;
+        lastMagnetizedVerticalAxis = newUp;
+        pendingCornerAxisTicks = 0;
+        attachedMagnetizedSource = newSource;
+
+        // Update() snaps the body onto the new up and depenetrates, same as a corner crossing
+        pendingGravityAlignment = true;
+
+        if (gravityController != null)
+        {
+            isSwappingGravitySource = true;
+            gravityController.SetPreferredSource(newSource);
+            isSwappingGravitySource = false;
+        }
+
+        return carriedVelocity;
+    }
+
+    // another magnetized source we're already inside whose surface owns hitCollider - walking into
+    // it should hand us off to it rather than treat it as a wall
+    private GravitySourceComponent? FindSwapTargetSource(Collider hitCollider, GravitySourceComponent currentSource)
+    {
+        if (gravityController == null)
+        {
+            return null;
+        }
+
+        foreach (GravitySourceComponent source in gravityController.GetGravitySources())
+        {
+            if (source == currentSource || !source.isMagnetized || !source.isGravityEnabled)
+            {
+                continue;
+            }
+
+            // same nesting convention as TryGetObstacleHit's own-surface exclusion
+            if (source.transform.IsChildOf(hitCollider.transform))
+            {
+                return source;
+            }
+        }
+
+        return null;
     }
 
     private void ClearIgnoredGravitySource()

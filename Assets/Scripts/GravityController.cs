@@ -24,6 +24,11 @@ public class GravityController : MonoBehaviour
     private Vector3 lastGravityDirection = Vector3.down;
     private Vector3? _nextTransitionTorqueAxis = null;
 
+    // overrides priority ordering while it's still one of our sources - set when the player
+    // deliberately walks from one magnetized surface onto another (e.g. two intersecting planes),
+    // cleared once they leave its volume
+    private GravitySourceComponent? _preferredSource = null;
+
     public void SetNextTransitionTorqueAxis(Vector3 axis)
     {
         _nextTransitionTorqueAxis = axis.normalized;
@@ -149,6 +154,11 @@ public class GravityController : MonoBehaviour
     {
         gravitySources.Remove(gravityComponent);
 
+        if (_preferredSource == gravityComponent)
+        {
+            _preferredSource = null;
+        }
+
         if (_intermediateParents.TryGetValue(gravityComponent, out var ip))
         {
             if (transform.parent == ip.transform)
@@ -174,8 +184,19 @@ public class GravityController : MonoBehaviour
         }
     }
 
+    public void SetPreferredSource(GravitySourceComponent source)
+    {
+        _preferredSource = source;
+        RefreshActiveParenting();
+    }
+
     private GravitySourceComponent? GetHighestPrioritySource()
     {
+        if (_preferredSource != null && gravitySources.Contains(_preferredSource))
+        {
+            return _preferredSource;
+        }
+
         return gravitySources.Count > 0
             ? gravitySources.OrderByDescending(s => s.priority).First()
             : null;
