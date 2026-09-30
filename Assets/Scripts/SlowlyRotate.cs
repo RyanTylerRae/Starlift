@@ -18,9 +18,13 @@ public class SlowlyRotate : MonoBehaviour
         }
     }
 
-    void Update()
+    // rotated in step with physics rather than every rendered frame - with Auto Sync Transforms off,
+    // an Update-driven rotation leaves the collider (only synced on the next physics step) lagging
+    // several frames behind the rendered object and anything parented to it, so the player's ground
+    // raycasts were hitting a stale pose
+    void FixedUpdate()
     {
-        transform.Rotate(rotationAxis.normalized, 360.0f * rotationsPerSecond * Time.deltaTime);
+        transform.Rotate(rotationAxis.normalized, 360.0f * rotationsPerSecond * Time.fixedDeltaTime);
     }
 
 #if UNITY_EDITOR

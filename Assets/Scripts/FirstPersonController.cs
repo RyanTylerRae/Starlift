@@ -66,14 +66,6 @@ public class FirstPersonController : MonoBehaviour
     // surface-normal angle change (degrees) per FixedUpdate beyond which we treat it as a discrete
     // corner/edge rather than gradual curvature or a slowly spinning platform
     public float magnetizedCornerAngleThreshold = 15f;
-    // tangential speed above which hitting a sharp corner detaches the player from the surface
-    // instead of trying to carry their momentum around it - kept well above ordinary walking
-    // speed so normal traversal always rotates smoothly around corners instead of detaching
-    public float magnetizedCornerDetachSpeed = 20f;
-    // fixed speed used while actively crossing a discrete corner/edge (input direction, not
-    // whatever momentum was carried into it) - consistent regardless of how fast the player
-    // happened to be moving beforehand, rather than a momentum carry that read as sluggish
-    public float magnetizedCornerSpeed = 5f;
     // consecutive FixedUpdate ticks a disagreeing surface normal must repeat before it's accepted
     // as a genuine corner crossing rather than single-ray noise from straddling a real edge - see
     // pendingCornerAxisCandidate/pendingCornerAxisTicks in HandleMovementSubStepped
@@ -934,18 +926,6 @@ public class FirstPersonController : MonoBehaviour
                 pendingGravityAlignment = true;
             }
 
-            // a discrete corner/edge taken fast enough that rigidly carrying momentum around it
-            // would be physically wrong - and previously produced compounding oscillation with
-            // the obstacle-sliding logic - so let go of the surface instead of wrenching momentum
-            // around an impossible turn, continuing on the existing trajectory like flying off an
-            // edge. magnetizedCornerDetachSpeed is set well above ordinary walking speed, so this
-            // is reserved for genuinely fast corner-cutting, not normal traversal.
-            if (isCorner && magnetizedVelocity.magnitude > magnetizedCornerDetachSpeed)
-            {
-                DetachFromMagnetizedSurface(gravitySource, gravityVector, gravitySourceVelocity + magnetizedVelocity);
-                return;
-            }
-
             // "move the capsule to the other wall": at a discrete corner the position that was
             // flush against the old face isn't flush against the new one - rather than letting
             // that gap/overlap play out through normal collision response, snap position to rest
@@ -976,17 +956,6 @@ public class FirstPersonController : MonoBehaviour
             // surface" and dropped every time the normal moves
             Quaternion surfaceRotationDelta = Quaternion.FromToRotation(lastMagnetizedVerticalAxis, verticalAxis);
             magnetizedVelocity = surfaceRotationDelta * magnetizedVelocity;
-
-            // crossing a discrete corner/edge while actively holding movement input snaps
-            // straight to a fixed traversal speed in the input direction instead of carrying
-            // over whatever momentum was present beforehand - that momentum carry is what read
-            // as sluggish/inconsistent. This re-triggers every physics tick the corner condition
-            // holds, so it stays at this speed for as long as the corner is actually being
-            // crossed and input is held, then falls back to normal acceleration afterward.
-            if (isCorner && desiredMovementVelocity.sqrMagnitude > 0.0001f)
-            {
-                magnetizedVelocity = desiredMovementVelocity.normalized * magnetizedCornerSpeed;
-            }
         }
         lastMagnetizedVerticalAxis = verticalAxis;
 
@@ -1199,9 +1168,14 @@ public class FirstPersonController : MonoBehaviour
             ? transform.TransformPoint(bodyCollider.center) - transform.up * (bodyCollider.height * bodyCollider.transform.lossyScale.y / 2f)
             : transform.position;
 
+        // the feet rest exactly on (or, after gravity pushes them in, slightly inside) the surface, and
+        // a ray that starts inside a collider never reports it - so start every ground ray a little
+        // above the feet and extend it by the same amount, the same way the depenetration casts do
+        const float castLift = 0.1f;
+
         // perform the middle raycast, this can give us a hint to determine if we are over an edge or not,
         // and also allows us to early-out walking on magnetized surfaces with a steep angle
-        if (Physics.Raycast(new Ray(footPosition, gravityDir), out RaycastHit centerHit, groundedDistance, groundMask))
+        if (Physics.Raycast(new Ray(footPosition - gravityDir * castLift, gravityDir), out RaycastHit centerHit, groundedDistance + castLift, groundMask))
         {
             isGrounded = true;
             magnetizedJumpInProgress = false;
@@ -1218,8 +1192,8 @@ public class FirstPersonController : MonoBehaviour
             {
                 // don't compare against whatever axis was tracked while airborne (an approximation
                 // based on gravity direction, not the actual surface) - that mismatch alone can look
-                // like a sharp corner on a steeply angled surface and wrongly trigger a detach right
-                // at the moment of landing
+                // like a sharp corner on a steeply angled surface and wrongly trigger a corner crossing
+                // right at the moment of landing
                 lastMagnetizedVerticalAxis = Vector3.zero;
                 pendingGravityAlignment = true;
                 ApplyLandingMomentum();
@@ -1248,11 +1222,11 @@ public class FirstPersonController : MonoBehaviour
                     continue;
                 }
 
-                Vector3 origin = footPosition + transform.right * ((i - 1) * halfRadius) + transform.forward * ((j - 1) * halfRadius);
-                if (Physics.Raycast(new Ray(origin, gravityDir), groundedDistance, groundMask))
+                Vector3 offset = transform.right * ((i - 1) * halfRadius) + transform.forward * ((j - 1) * halfRadius);
+                if (Physics.Raycast(new Ray(footPosition + offset - gravityDir * castLift, gravityDir), groundedDistance + castLift, groundMask))
                 {
                     ++numHits;
-                    ray += origin - footPosition;
+                    ray += offset;
                     isGrounded = true;
                 }
             }
@@ -1283,7 +1257,10 @@ public class FirstPersonController : MonoBehaviour
             ray += gravityDir;
             ray.Normalize();
 
-            if (Physics.Raycast(new Ray(footPosition, ray), out RaycastHit edgeHit, groundedDistance * 2f, groundMask))
+            // long enough to keep finding the wall across several physics ticks while walking over the
+            // edge, so the corner debounce in FixedUpdate sees the same wall normal repeatedly
+            const float edgeRayDistance = 1.0f;
+            if (Physics.Raycast(new Ray(footPosition, ray), out RaycastHit edgeHit, edgeRayDistance, groundMask))
             {
                 surfaceNormal = edgeHit.normal;
             }
@@ -1308,7 +1285,7 @@ public class FirstPersonController : MonoBehaviour
         // as soon as the gravity field is entered, often well before the player physically reaches
         // the surface, and forcing isGrounded true during that approach fed a bogus/stale
         // surfaceNormal into the rest of the grounded logic (corner-detection included), which was
-        // triggering spurious detaches before real contact and causing genuine PhysX bounces instead.
+        // triggering spurious corner crossings before real contact and causing genuine PhysX bounces instead.
         if (!isGrounded && wasGrounded && MovementMode == ControllerMovementMode.Magnetized && !magnetizedJumpInProgress)
         {
             isGrounded = true;
@@ -2060,25 +2037,6 @@ public class FirstPersonController : MonoBehaviour
             ignoredGravitySource = null;
         }
         approachTimer = 0f;
-    }
-
-    // Lets go of the current magnetized surface entirely, carrying the player onward on their
-    // existing trajectory (same "ignored gravity source" grace period the magnetized jump uses) -
-    // used when a sharp corner is taken too fast to plausibly walk around
-    private void DetachFromMagnetizedSurface(GravitySourceComponent gravitySource, Vector3 gravityVector, Vector3 worldVelocity)
-    {
-        ignoredGravitySource = gravitySource;
-        ignoredGravityDirection = gravityVector.normalized;
-        ignoredSourceSetTime = Time.time;
-        gravitySource.isGravityEnabled = false;
-        // we're deliberately leaving - a later landing (even back on this same surface) should be
-        // treated as genuinely new, not a re-collision against a surface we never left
-        attachedMagnetizedSource = null;
-
-        if (_rigidbody != null)
-        {
-            _rigidbody.linearVelocity = worldVelocity;
-        }
     }
 
     private void DoMagnetizedHeadBob(float distanceThisFrame)
