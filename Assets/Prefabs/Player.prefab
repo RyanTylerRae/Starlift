@@ -1029,10 +1029,10 @@ MonoBehaviour:
   groundStoppingFriction: 20
   footstepSpeed: 3
   footstepImpactPhaseOffset: 0.3
-  maxMagnetizedWalkSpeed: 4
-  magnetizedAcceleration: 10
-  magnetizedDeceleration: 4
-  magnetizedLandingMaxSpeed: 6
+  maxMagnetizedWalkSpeed: 5
+  magnetizedAcceleration: 30
+  magnetizedDeceleration: 15
+  magnetizedLandingMaxSpeed: 8
   magnetizedLandingMomentumCameraAlignment: 0.6
   magnetizedCornerAngleThreshold: 15
   magnetizedCornerDetachSpeed: 20
@@ -1044,10 +1044,10 @@ MonoBehaviour:
   jumpTargetRaycastDistance: 200
   approachDuration: 0.25
   ignoredSourceCollisionGrace: 0.5
-  headBobSpeed: 2.3
-  headBobHeight: 0.3
+  headBobSpeed: 2
+  headBobHeight: 0.25
   headBobImpactPhaseOffset: 0.3
-  headBobDipDepth: 0.1
+  headBobDipDepth: 0.05
   headBobDipDuration: 0.15
   jumpThrustForce: 10
   jumpForwardThrust: 15
@@ -1069,8 +1069,6 @@ MonoBehaviour:
   flightForce: 5
   maxFlightSpeed: 12
   zeroGIdleDamping: 0
-  jumpHoldDuration: 0.25
-  jumpCrouchHeightOffset: 0.8
   substepDistance: 0.01
   airCollisionDampening: 0.2
   maxDepenetrationVelocity: 0.5
