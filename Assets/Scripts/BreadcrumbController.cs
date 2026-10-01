@@ -19,6 +19,15 @@ public class BreadcrumbController : MonoBehaviour
 
     public void Update()
     {
+        // no trail while walking on a magnetized surface - keep the spawn point following us so the
+        // trail resumes a full delayDistance after leaving it, rather than dropping one at launch
+        GravitySourceComponent? activeSource = gravityController?.GetActiveGravitySource();
+        if (activeSource != null && activeSource.isMagnetized)
+        {
+            lastSpawnPos = gameObject.transform.position;
+            return;
+        }
+
         Vector3 vec = gameObject.transform.position - lastSpawnPos;
         if (vec.sqrMagnitude < delayDistance * delayDistance)
         {
@@ -30,13 +39,7 @@ public class BreadcrumbController : MonoBehaviour
             return;
         }
 
-        GameObject breadcrumb = GameObject.Instantiate(breadcrumbGameObject, gameObject.transform.position, gameObject.transform.rotation);
-
-        GravitySourceComponent? activeSource = gravityController?.GetActiveGravitySource();
-        if (activeSource != null && activeSource.isMagnetized)
-        {
-            BreadcrumbAnchor.Attach(breadcrumb.transform, activeSource.transform);
-        }
+        GameObject.Instantiate(breadcrumbGameObject, gameObject.transform.position, gameObject.transform.rotation);
 
         lastSpawnPos = gameObject.transform.position;
     }

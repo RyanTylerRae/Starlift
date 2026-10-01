@@ -512,6 +512,9 @@ public class FirstPersonController : MonoBehaviour
         }
         else if (movementMode == ControllerMovementMode.ZeroG)
         {
+            // we are never grounded in zeroG, was causing a bug
+            isGrounded = false;
+
             if (_rigidbody != null)
             {
                 _previousZeroGVelocity = _rigidbody.linearVelocity;
