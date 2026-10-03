@@ -313,7 +313,8 @@ public class FirstPersonController : MonoBehaviour
     void Start()
     {
         // @trae todo - remove this
-        AkUnitySoundEngine.PostEvent("play_proto_worldonfire", gameObject);
+        // music disabled for now
+        // AkUnitySoundEngine.PostEvent("play_proto_worldonfire", gameObject);
 
         modifiers = GetComponent<Modifiers>();
         oxygenSystem = GetComponent<OxygenSystem>();
