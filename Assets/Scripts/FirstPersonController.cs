@@ -138,6 +138,9 @@ public class FirstPersonController : MonoBehaviour
     public float flightForce;
     public float maxFlightSpeed;
     public float zeroGIdleDamping = 0.5f;
+    // scales local pitch/yaw inertia in zeroG so collisions barely spin the player off their look
+    // axes - roll (local Z) keeps its natural inertia since Q/E can counter it
+    public float zeroGPitchYawInertiaMultiplier = 1000.0f;
     private bool hasPlayedStabilizedSound = false;
     private bool isRotationThrustPlaying = false;
     private bool isThrustForwardPlaying = false;
@@ -543,6 +546,12 @@ public class FirstPersonController : MonoBehaviour
             {
                 _rigidbody.freezeRotation = false;
                 _rigidbody.angularVelocity = Vector3.zero;
+
+                // recompute from colliders first so repeated zeroG entries don't compound the multiplier
+                _rigidbody.ResetInertiaTensor();
+                Vector3 inertia = _rigidbody.inertiaTensor;
+                _rigidbody.inertiaTensorRotation = Quaternion.identity;
+                _rigidbody.inertiaTensor = new Vector3(inertia.x * zeroGPitchYawInertiaMultiplier, inertia.y * zeroGPitchYawInertiaMultiplier, inertia.z);
             }
 
             if (cameraArm != null && playerCamera != null)

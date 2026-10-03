@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 [Serializable]
 public class SaveGameData
 {
-    public int maxOxygenTankCount = 2;
+    public int maxOxygenTankCount = 3;
 }
 
 public static class SaveGame
