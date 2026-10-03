@@ -74,7 +74,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000000000000000301}
-  m_Mesh: {fileID: -5495902117074765545, guid: 6a684f5f8345f174487c6fcea62522f1, type: 3}
+  m_Mesh: {fileID: -5495902117074765545, guid: c136d18d1ae840e4993e3e70a0e2a784, type: 3}
 --- !u!23 &1000000000000000304
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -160,7 +160,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000000000000000311}
-  m_Mesh: {fileID: -5495902117074765545, guid: 6a684f5f8345f174487c6fcea62522f1, type: 3}
+  m_Mesh: {fileID: -5495902117074765545, guid: c136d18d1ae840e4993e3e70a0e2a784, type: 3}
 --- !u!23 &1000000000000000314
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -246,7 +246,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000000000000000321}
-  m_Mesh: {fileID: -5495902117074765545, guid: 6a684f5f8345f174487c6fcea62522f1, type: 3}
+  m_Mesh: {fileID: -5495902117074765545, guid: c136d18d1ae840e4993e3e70a0e2a784, type: 3}
 --- !u!23 &1000000000000000324
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -645,8 +645,7 @@ MonoBehaviour:
   minSpeedToShowArrows: 0.5
   arrowEdgeFadeDistance: 0.2
   arrowSpeedFadeSpeed: 2
-  wideFaceAxisAngle: 90
-  wideFaceRotationSpeed: 60
+  wideFaceAxisAngle: 0
   logVelocity: 0
 --- !u!1 &3789652518770926418
 GameObject:
