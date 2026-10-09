@@ -275,15 +275,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Sprint"",
-                    ""type"": ""Button"",
-                    ""id"": ""c329981b-af96-43a9-80b6-a1bde8249d22"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Zoom"",
                     ""type"": ""Button"",
                     ""id"": ""2932e133-98f1-4472-8f5a-530e1892b570"",
@@ -445,28 +436,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse;Touch"",
                     ""action"": ""Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""1eb34ea0-0aff-4887-a6e5-9a330fc843f8"",
-                    ""path"": ""<Keyboard>/leftShift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7707c0d4-2f64-4ec5-bd82-170658211736"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1510,7 +1479,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_MovementGravity_Move = m_MovementGravity.FindAction("Move", throwIfNotFound: true);
         m_MovementGravity_Jump = m_MovementGravity.FindAction("Jump", throwIfNotFound: true);
         m_MovementGravity_Look = m_MovementGravity.FindAction("Look", throwIfNotFound: true);
-        m_MovementGravity_Sprint = m_MovementGravity.FindAction("Sprint", throwIfNotFound: true);
         m_MovementGravity_Zoom = m_MovementGravity.FindAction("Zoom", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
@@ -1688,7 +1656,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_MovementGravity_Move;
     private readonly InputAction m_MovementGravity_Jump;
     private readonly InputAction m_MovementGravity_Look;
-    private readonly InputAction m_MovementGravity_Sprint;
     private readonly InputAction m_MovementGravity_Zoom;
     public struct MovementGravityActions
     {
@@ -1697,7 +1664,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_MovementGravity_Move;
         public InputAction @Jump => m_Wrapper.m_MovementGravity_Jump;
         public InputAction @Look => m_Wrapper.m_MovementGravity_Look;
-        public InputAction @Sprint => m_Wrapper.m_MovementGravity_Sprint;
         public InputAction @Zoom => m_Wrapper.m_MovementGravity_Zoom;
         public InputActionMap Get() { return m_Wrapper.m_MovementGravity; }
         public void Enable() { Get().Enable(); }
@@ -1717,9 +1683,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
-            @Sprint.started += instance.OnSprint;
-            @Sprint.performed += instance.OnSprint;
-            @Sprint.canceled += instance.OnSprint;
             @Zoom.started += instance.OnZoom;
             @Zoom.performed += instance.OnZoom;
             @Zoom.canceled += instance.OnZoom;
@@ -1736,9 +1699,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
-            @Sprint.started -= instance.OnSprint;
-            @Sprint.performed -= instance.OnSprint;
-            @Sprint.canceled -= instance.OnSprint;
             @Zoom.started -= instance.OnZoom;
             @Zoom.performed -= instance.OnZoom;
             @Zoom.canceled -= instance.OnZoom;
@@ -2160,7 +2120,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
-        void OnSprint(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
     }
     public interface IUIActions

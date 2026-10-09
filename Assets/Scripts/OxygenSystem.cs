@@ -7,7 +7,6 @@ public class OxygenSystem : MonoBehaviour
 {
     public float usagePerSecond;
     public float thrustMultiplier;
-    public float sprintMultiplier;
     public float magnetizedWalkMultiplier;
     // seconds the player can survive at 0 oxygen before suffocating
     public float suffocationGracePeriod = 3f;
@@ -71,10 +70,6 @@ public class OxygenSystem : MonoBehaviour
         if (playerController.OxygenBurnRate > 0.0f)
         {
             oxygenAmount -= Time.deltaTime * usagePerSecond * thrustMultiplier * playerController.OxygenBurnRate;
-        }
-        else if (playerController.IsSprinting)
-        {
-            oxygenAmount -= Time.deltaTime * usagePerSecond * sprintMultiplier;
         }
         else if (playerController.IsMagnetizedWalking)
         {

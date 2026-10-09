@@ -606,23 +606,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &170886865 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 978333244769671072, guid: 25feb30eab771544dbcf98266978d619, type: 3}
-  m_PrefabInstance: {fileID: 4390072657872112164}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &170886867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 170886865}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a3a176ffb8cc4948bf234fd9756252e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &171492927
 GameObject:
   m_ObjectHideFlags: 0
@@ -2012,6 +1995,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &617729067
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2330,6 +2314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &662029963
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2526,6 +2511,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!1 &773296914
 GameObject:
   m_ObjectHideFlags: 0
@@ -2763,6 +2749,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &845429075
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3484,6 +3471,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &1115315056
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3606,6 +3594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &1115965655
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3728,6 +3717,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &1129633752
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4060,7 +4050,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   G_multiplier: 1
   priority: 0
-  defaultGravity: -10
+  defaultGravity: -15
   isGravityEnabled: 1
   isMagnetized: 0
   triggerCollider: {fileID: 1351400319}
@@ -4491,6 +4481,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &1474575199
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4659,6 +4650,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &1577932619
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4781,6 +4773,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &1607540245
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4960,6 +4953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &1695493259
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -5171,6 +5165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &1745288080
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -5664,6 +5659,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  canUse: 1
 --- !u!1 &1838467410
 GameObject:
   m_ObjectHideFlags: 0
@@ -5927,6 +5923,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &1956078977
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -6295,6 +6292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   replenishRate: 50
+  checkpointRoot: {fileID: 0}
 --- !u!135 &2011472645
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -6857,10 +6855,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 978333244769671072, guid: 25feb30eab771544dbcf98266978d619, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 170886867}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25feb30eab771544dbcf98266978d619, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

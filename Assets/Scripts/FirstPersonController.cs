@@ -18,7 +18,6 @@ public class FirstPersonController : MonoBehaviour
     [Header("Gravity-Based Movement")]
     public float moveForce;
     public float maxWalkSpeed;
-    public float maxRunSpeed;
     private bool isGrounded = false;
     private bool isJumping = false;
     // true from the moment a magnetized jump launches until HandleGrounded() confirms a real
@@ -42,7 +41,6 @@ public class FirstPersonController : MonoBehaviour
     public float maxJumpSpeed;
     public float groundFriction = 10f;
     public float groundStoppingFriction = 25f;
-    public bool IsSprinting { get; private set; }
     public bool IsMagnetizedWalking { get; private set; }
     public float footstepSpeed = 1.0f;
     public float footstepImpactPhaseOffset = 0.3f;
@@ -240,7 +238,6 @@ public class FirstPersonController : MonoBehaviour
     private InputAction? moveAction;
     private InputAction? lookAction;
     private InputAction? jumpAction;
-    private InputAction? sprintAction;
     private InputAction? stabilizeAction;
     private InputAction? forwardThrustAction;
     private InputAction? backwardThrustAction;
@@ -463,7 +460,6 @@ public class FirstPersonController : MonoBehaviour
 
             moveAction = playerInput.currentActionMap.FindAction("Move");
             lookAction = playerInput.currentActionMap.FindAction("Look");
-            sprintAction = playerInput.currentActionMap.FindAction("Sprint");
             jumpAction = playerInput.currentActionMap.FindAction("Jump");
             zoomAction = playerInput.currentActionMap.FindAction("Zoom");
 
@@ -498,7 +494,6 @@ public class FirstPersonController : MonoBehaviour
                 jumpAction.performed += OnMagnetizedJump;
             }
 
-            sprintAction = null;
             stabilizeAction = null;
             forwardThrustAction = null;
             backwardThrustAction = null;
@@ -540,7 +535,6 @@ public class FirstPersonController : MonoBehaviour
 
             moveAction = null;
             jumpAction = null;
-            sprintAction = null;
 
             if (_rigidbody != null)
             {
@@ -640,7 +634,6 @@ public class FirstPersonController : MonoBehaviour
             // still magnetized should keep burning until the coroutine finishes
             oxygenBurnRate = jumpThrustOxygenContribution;
             rotationOxygenContribution = 0.0f;
-            IsSprinting = false;
             IsMagnetizedWalking = false;
 
             HandleMouseLook();
@@ -1494,15 +1487,12 @@ public class FirstPersonController : MonoBehaviour
     private void HandleMovement()
     {
         Vector2? moveInput = moveAction?.ReadValue<Vector2>();
-        bool? sprintIsPressed = sprintAction?.IsPressed();
 
-        if (moveInput == null || sprintIsPressed == null)
+        if (moveInput == null)
         {
             desiredGravityForce = Vector3.zero;
             return;
         }
-
-        IsSprinting = sprintIsPressed.Value && moveInput.Value.sqrMagnitude > 0.0f;
 
         float adjustedMoveForce = moveForce;
         if (!isGrounded)
@@ -1513,8 +1503,7 @@ public class FirstPersonController : MonoBehaviour
         Vector3 direction = (transform.right * moveInput.Value.x + transform.forward * moveInput.Value.y).normalized;
         desiredGravityForce = direction * adjustedMoveForce;
 
-        float maxSpeed = sprintIsPressed.Value ? maxRunSpeed : maxWalkSpeed;
-        gravityModeMaxSpeed = isGrounded ? maxSpeed : maxJumpSpeed;
+        gravityModeMaxSpeed = isGrounded ? maxWalkSpeed : maxJumpSpeed;
     }
 
     void StartRotationThrustSound()

@@ -1016,17 +1016,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ef3528d233fd94eadd571fa4e4f27a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForce: 15
-  maxWalkSpeed: 3
-  maxRunSpeed: 5
+  moveForce: 30
+  maxWalkSpeed: 6
   groundedDistance: 0.15
   edgeRaycastMultiplier: 5
-  jumpForce: 6
+  jumpForce: 8
   jumpCooldown: 0.5
   airControlMultiplier: 0.1
-  maxJumpSpeed: 6
+  maxJumpSpeed: 5
   groundFriction: 0.5
-  groundStoppingFriction: 20
+  groundStoppingFriction: 15
   footstepSpeed: 3
   footstepImpactPhaseOffset: 0.3
   maxMagnetizedWalkSpeed: 5
@@ -1067,6 +1066,7 @@ MonoBehaviour:
   flightForce: 5
   maxFlightSpeed: 12
   zeroGIdleDamping: 0
+  zeroGPitchYawInertiaMultiplier: 1000
   substepDistance: 0.01
   airCollisionDampening: 0.2
   maxDepenetrationVelocity: 0.5
@@ -1238,7 +1238,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   usagePerSecond: 5
   thrustMultiplier: 1.1
-  sprintMultiplier: 1.5
   magnetizedWalkMultiplier: 1
   suffocationGracePeriod: 5
   usedTankPrefab: {fileID: 6082143147915795651, guid: 956be8cd75eb3eb4b8589293845bb55f, type: 3}
