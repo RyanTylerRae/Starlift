@@ -259,6 +259,8 @@ public class FirstPersonController : MonoBehaviour
     private bool canStabilize = true;
     private bool canThrust = true;
     private bool canZoom = true;
+    private bool canMove = true;
+    private bool canJump = true;
 
     public void SetLookEnabled(bool enabled)
     {
@@ -278,6 +280,16 @@ public class FirstPersonController : MonoBehaviour
     public void SetZoomEnabled(bool enabled)
     {
         canZoom = enabled;
+    }
+
+    public void SetMoveEnabled(bool enabled)
+    {
+        canMove = enabled;
+    }
+
+    public void SetJumpEnabled(bool enabled)
+    {
+        canJump = enabled;
     }
 
     public bool IsUsingGamepad { get { return playerInput != null && playerInput.currentControlScheme == "Gamepad"; } }
@@ -1345,7 +1357,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleJump()
     {
-        if (jumpAction == null || !jumpAction.WasPressedThisFrame())
+        if (!canJump || jumpAction == null || !jumpAction.WasPressedThisFrame())
         {
             return;
         }
@@ -1407,6 +1419,11 @@ public class FirstPersonController : MonoBehaviour
 
     private void OnMagnetizedJump(InputAction.CallbackContext context)
     {
+        if (!canJump)
+        {
+            return;
+        }
+
         if (_rigidbody != null && gravityController != null && cameraArm != null)
         {
             Vector3 gravity = gravityController.GetGravityVector();
@@ -1468,7 +1485,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleMovementSubStepped()
     {
-        Vector2? moveInput = moveAction?.ReadValue<Vector2>();
+        Vector2? moveInput = canMove ? moveAction?.ReadValue<Vector2>() : Vector2.zero;
         if (moveInput == null)
         {
             desiredMovementVelocity = Vector3.zero;
@@ -1486,7 +1503,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleMovement()
     {
-        Vector2? moveInput = moveAction?.ReadValue<Vector2>();
+        Vector2? moveInput = canMove ? moveAction?.ReadValue<Vector2>() : Vector2.zero;
 
         if (moveInput == null)
         {

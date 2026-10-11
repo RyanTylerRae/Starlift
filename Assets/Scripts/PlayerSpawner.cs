@@ -9,6 +9,7 @@ public class PlayerSpawner : MonoBehaviour
     private GameObject? player;
     private Entity? playerEntity = null;
     public Vector3 spawnOffset = new Vector3(0, 2, 0);
+    public bool fadeInOnSpawn = true;
 
     private GameObject? checkpointRoot = null;
 
@@ -31,7 +32,10 @@ public class PlayerSpawner : MonoBehaviour
                 playerEntity.OnKilled += OnPlayerKilled;
             }
 
-            FadeInFromDeath(player);
+            if (fadeInOnSpawn)
+            {
+                FadeInFromDeath(player);
+            }
         }
     }
 
