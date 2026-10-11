@@ -9,14 +9,19 @@ public class SM_CryopodSequence : StateMachineComponent
     public DirectedSequence? wakeSequence;
     public TextFader? zoomPrompt;
     public float fadeInDuration = 4f;
+    public bool restrictLook = true;
+    public float lookConeYawHalfAngle = 45f;
+    public float lookConePitchHalfAngle = 30f;
 
     private FirstPersonController? playerController = null;
     private ScreenFader? screenFader = null;
+    private HUDZoomFade? hudFade = null;
     private Task? fadeTask = null;
 
     private void TryResolvePlayerReferences()
     {
         playerController = StarliftStatics.FindFirstPersonController();
+        hudFade = FindFirstObjectByType<HUDZoomFade>();
 
         GameObject? player = StarliftStatics.FindPlayer();
         if (player != null && player.TryGetComponent<ScreenFader>(out var fader))
@@ -75,7 +80,14 @@ public class SM_CryopodSequence : StateMachineComponent
         stateMachine.GetState("Intro").OnEnterState += () =>
         {
             screenFader?.SetOpacity(1f);
+            hudFade?.SetHudHidden(true);
             SetAllControlsEnabled(false);
+
+            if (restrictLook)
+            {
+                playerController?.SetLookCone(lookConeYawHalfAngle, lookConePitchHalfAngle);
+            }
+
             introSequence?.Play();
         };
 
@@ -99,6 +111,8 @@ public class SM_CryopodSequence : StateMachineComponent
         stateMachine.GetState("Complete").OnEnterState += () =>
         {
             zoomPrompt?.Hide();
+            playerController?.ClearLookCone();
+            hudFade?.SetHudHidden(false);
             SetAllControlsEnabled(true);
         };
     }

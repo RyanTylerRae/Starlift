@@ -204,6 +204,9 @@ public class FirstPersonController : MonoBehaviour
     [Header("Camera")]
     public GameObject? cameraArm;
     private Vector3 cameraArmRestLocalPos = Vector3.zero;
+    // the eye in this transform's local space - all ZeroG rotation (look input and physics torques,
+    // via the rigidbody's center of mass) pivots here so the view turns in place instead of swinging
+    private Vector3 eyePivotLocal = Vector3.zero;
     private float cameraArmBobOffset = 0.0f;
     private float cameraArmDipOffset = 0.0f;
     private Coroutine? headBobDipCoroutine = null;
@@ -262,6 +265,12 @@ public class FirstPersonController : MonoBehaviour
     private bool canMove = true;
     private bool canJump = true;
 
+    private bool isLookConeActive = false;
+    private float lookConeYawHalfAngle = 0f;
+    private float lookConePitchHalfAngle = 0f;
+    private float lookConeYaw = 0f;
+    private float lookConePitchCenter = 0f;
+
     public void SetLookEnabled(bool enabled)
     {
         canLook = enabled;
@@ -290,6 +299,69 @@ public class FirstPersonController : MonoBehaviour
     public void SetJumpEnabled(bool enabled)
     {
         canJump = enabled;
+    }
+
+    public void SetLookCone(float yawHalfAngle, float pitchHalfAngle)
+    {
+        isLookConeActive = true;
+        lookConeYawHalfAngle = Mathf.Max(0f, yawHalfAngle);
+        lookConePitchHalfAngle = Mathf.Max(0f, pitchHalfAngle);
+        lookConeYaw = 0f;
+        lookConePitchCenter = xRotation;
+    }
+
+    public void ClearLookCone()
+    {
+        isLookConeActive = false;
+    }
+
+    // snaps the body to stand along upDirection and the view to face lookDirection: the body takes
+    // the heading and the camera arm takes the pitch, except in ZeroG where the body takes all of it.
+    // Clears any spin and re-centers the look cone and the smoothed camera follow
+    public void SnapToView(Vector3 lookDirection, Vector3 upDirection)
+    {
+        Vector3 up = upDirection.normalized;
+        Vector3 forward = Vector3.ProjectOnPlane(lookDirection, up);
+        if (forward.sqrMagnitude < 0.0001f)
+        {
+            forward = Vector3.ProjectOnPlane(transform.forward, up);
+        }
+        forward.Normalize();
+
+        Quaternion bodyRotation;
+        if (movementMode == ControllerMovementMode.ZeroG)
+        {
+            bodyRotation = Quaternion.LookRotation(lookDirection, up);
+            xRotation = 0f;
+        }
+        else
+        {
+            bodyRotation = Quaternion.LookRotation(forward, up);
+            Vector3 right = Vector3.Cross(up, forward);
+            xRotation = Mathf.Clamp(Vector3.SignedAngle(forward, lookDirection, right), -maxLookAngle, maxLookAngle);
+        }
+
+        transform.rotation = bodyRotation;
+        if (TryGetComponent(out Rigidbody body))
+        {
+            body.rotation = bodyRotation;
+            body.angularVelocity = Vector3.zero;
+        }
+
+        lookConeYaw = 0f;
+        lookConePitchCenter = xRotation;
+
+        if (cameraArm != null)
+        {
+            cameraArm.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+            if (cameraFollowTransform != null)
+            {
+                cameraFollowBaseRotation = cameraArm.transform.rotation;
+                cameraFollowBasePosition = cameraArm.transform.position;
+                cameraFollowTransform.SetPositionAndRotation(cameraFollowBasePosition, cameraFollowBaseRotation);
+            }
+        }
     }
 
     public bool IsUsingGamepad { get { return playerInput != null && playerInput.currentControlScheme == "Gamepad"; } }
@@ -376,6 +448,7 @@ public class FirstPersonController : MonoBehaviour
         if (cameraArm != null)
         {
             cameraArmRestLocalPos = cameraArm.transform.localPosition;
+            eyePivotLocal = transform.InverseTransformPoint(cameraArm.transform.position);
 
             // cameraArm is the authoritative pivot - all gameplay logic (movement direction,
             // thrust, aiming, ZeroG rotation control) reads from cameraArm.transform directly and
@@ -488,6 +561,7 @@ public class FirstPersonController : MonoBehaviour
             if (_rigidbody != null)
             {
                 _rigidbody.freezeRotation = true;
+                _rigidbody.ResetCenterOfMass();
             }
         }
         else if (movementMode == ControllerMovementMode.Magnetized)
@@ -519,6 +593,7 @@ public class FirstPersonController : MonoBehaviour
             if (_rigidbody != null)
             {
                 _rigidbody.freezeRotation = true;
+                _rigidbody.ResetCenterOfMass();
             }
         }
         else if (movementMode == ControllerMovementMode.ZeroG)
@@ -554,16 +629,24 @@ public class FirstPersonController : MonoBehaviour
                 _rigidbody.angularVelocity = Vector3.zero;
 
                 // recompute from colliders first so repeated zeroG entries don't compound the multiplier
+                _rigidbody.ResetCenterOfMass();
                 _rigidbody.ResetInertiaTensor();
                 Vector3 inertia = _rigidbody.inertiaTensor;
                 _rigidbody.inertiaTensorRotation = Quaternion.identity;
                 _rigidbody.inertiaTensor = new Vector3(inertia.x * zeroGPitchYawInertiaMultiplier, inertia.y * zeroGPitchYawInertiaMultiplier, inertia.z);
+
+                // moved only after the tensor is set - the tensor is defined about the center of mass,
+                // so the rotational response stays exactly the same and only the pivot moves to the eye
+                _rigidbody.centerOfMass = eyePivotLocal;
             }
 
             if (cameraArm != null && playerCamera != null)
             {
+                // fold the arm's pitch into the body, then shift the body so the eye stays put
+                Vector3 eyeBefore = transform.TransformPoint(eyePivotLocal);
                 transform.rotation = cameraArm.transform.rotation;
                 cameraArm.transform.localRotation = Quaternion.identity;
+                transform.position += eyeBefore - transform.TransformPoint(eyePivotLocal);
                 xRotation = 0f;
             }
         }
@@ -1127,8 +1210,15 @@ public class FirstPersonController : MonoBehaviour
             lookY = lookInput.Value.y * lookSensitivity;
         }
 
-        xRotation -= lookY;
-        xRotation = Mathf.Clamp(xRotation, -maxLookAngle, maxLookAngle);
+        float pitch = Mathf.Clamp(xRotation - lookY, -maxLookAngle, maxLookAngle);
+
+        if (isLookConeActive)
+        {
+            ClampToLookCone(ref lookX, ref pitch);
+            lookY = xRotation - pitch;
+        }
+
+        xRotation = pitch;
 
         cameraArm.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         ApplyCameraArmLocalPos();
@@ -1137,6 +1227,29 @@ public class FirstPersonController : MonoBehaviour
         // Cache look values for external use
         LastLookX = lookX;
         LastLookY = lookY;
+    }
+
+    // elliptical limit in yaw/pitch space around where the player was looking when the cone was set;
+    // an overshoot is scaled back toward the center so pushing into the edge slides along it
+    private void ClampToLookCone(ref float yawDelta, ref float pitch)
+    {
+        float yaw = lookConeYawHalfAngle > 0f ? lookConeYaw + yawDelta : 0f;
+        float pitchOffset = lookConePitchHalfAngle > 0f ? pitch - lookConePitchCenter : 0f;
+
+        float yawRatio = lookConeYawHalfAngle > 0f ? yaw / lookConeYawHalfAngle : 0f;
+        float pitchRatio = lookConePitchHalfAngle > 0f ? pitchOffset / lookConePitchHalfAngle : 0f;
+        float extent = yawRatio * yawRatio + pitchRatio * pitchRatio;
+
+        if (extent > 1f)
+        {
+            float scale = 1f / Mathf.Sqrt(extent);
+            yaw *= scale;
+            pitchOffset *= scale;
+        }
+
+        yawDelta = yaw - lookConeYaw;
+        lookConeYaw = yaw;
+        pitch = lookConePitchCenter + pitchOffset;
     }
 
     private void HandleGrounded()
@@ -1695,8 +1808,9 @@ public class FirstPersonController : MonoBehaviour
             // Apply pitch and yaw rotation to the rigidbody using the arm's forward as reference -
             // cameraArm is the instant, authoritative pivot; playerCamera is a visually-smoothed
             // follower and must never be read for control/gameplay purposes (see its declaration)
-            _rigidbody.transform.Rotate(cameraArm.transform.up, lookX, Space.World);
-            _rigidbody.transform.Rotate(cameraArm.transform.right, -lookY, Space.World);
+            Vector3 eyePivot = transform.TransformPoint(eyePivotLocal);
+            _rigidbody.transform.RotateAround(eyePivot, cameraArm.transform.up, lookX);
+            _rigidbody.transform.RotateAround(eyePivot, cameraArm.transform.right, -lookY);
 
             // Cache look values for external use
             LastLookX = lookX;

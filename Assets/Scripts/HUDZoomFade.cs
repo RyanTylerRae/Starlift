@@ -22,10 +22,23 @@ public class HUDZoomFade : MonoBehaviour
     private Camera? hudCamera = null;
     private CanvasGroup? canvasGroup = null;
     private FirstPersonController? playerController = null;
+    private bool isHudHidden = false;
 
     public void Awake()
     {
         hudCamera = GetComponent<Camera>();
+    }
+
+    // hides the whole HUD regardless of zoom (e.g. during scripted sequences) - hiding is instant,
+    // showing fades back in over fadeInDuration. Safe to call before the player has been bound
+    public void SetHudHidden(bool hidden)
+    {
+        isHudHidden = hidden;
+
+        if (hidden && canvasGroup != null)
+        {
+            canvasGroup.alpha = 0.0f;
+        }
     }
 
     public void Update()
@@ -37,6 +50,12 @@ public class HUDZoomFade : MonoBehaviour
 
         if (playerController == null || canvasGroup == null)
         {
+            return;
+        }
+
+        if (isHudHidden)
+        {
+            canvasGroup.alpha = 0.0f;
             return;
         }
 
