@@ -122,8 +122,7 @@ public class FirstPersonController : MonoBehaviour
     // follow-lag state and desync from cameraArm over time
     private Quaternion cameraFollowBaseRotation = Quaternion.identity;
 
-    // clean follow position, Lerp'd toward cameraArm every frame - the zoom dolly offset is
-    // re-applied on top of THIS each frame rather than accumulated into it, for the same reason
+    // clean follow position, Lerp'd toward cameraArm every frame
     private Vector3 cameraFollowBasePosition = Vector3.zero;
 
     // Cached look values for external use (e.g., HUD)
@@ -215,27 +214,24 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Zoom")]
     public float baseFieldOfView = 60f;
-    public float zoomFieldOfView = 45f;
     public float zoomInSpeed = 8f;
     public float zoomOutSpeed = 8f;
-    public float zoomDollyDistance = 0.5f;
+    private const float zoomFieldOfViewShort = 45f;
+    private const float zoomFieldOfViewMedium = 30f;
+    private const float zoomFieldOfViewFar = 20f;
+    private float zoomFieldOfView = zoomFieldOfViewFar;
     private float currentFieldOfView = 60f;
     private float targetFieldOfView = 60f;
     private bool zoomHeld = false;
     private float zoomFraction = 0f;
 
     [Header("Camera Wander")]
-    // max angular wander in degrees, reached at full zoom (scaled by zoomFraction only - NOT by
-    // dolly distance). The resulting on-screen/positional wander still ends up proportional to
-    // dolly distance on its own, because the wander rotation is applied to the arm connecting the
-    // pivot to the camera (see ApplyCameraDollyAndWander) - the same angular change sweeps a
-    // longer arc at the end of a longer arm, exactly like a lever, so a short dolly distance
-    // naturally reads as barely any positional wander without needing a second multiplier here
+    // max angular wander in degrees, reached at full zoom (scaled by zoomFraction). Applied as a
+    // pure rotation about the eye, so it reads larger on screen at narrower zoom FOVs
     public float wanderAmplitudeDegrees = 1.25f;
     public float wanderFrequency = 0.15f;
     private float wanderPitchSeed = 0f;
     private float wanderYawSeed = 0f;
-    private float currentDollyDistance = 0f;
 
     // input actions
     private InputAction? moveAction;
@@ -289,6 +285,21 @@ public class FirstPersonController : MonoBehaviour
     public void SetZoomEnabled(bool enabled)
     {
         canZoom = enabled;
+    }
+
+    public void SetZoomDistanceShort()
+    {
+        zoomFieldOfView = zoomFieldOfViewShort;
+    }
+
+    public void SetZoomDistanceMedium()
+    {
+        zoomFieldOfView = zoomFieldOfViewMedium;
+    }
+
+    public void SetZoomDistanceFar()
+    {
+        zoomFieldOfView = zoomFieldOfViewFar;
     }
 
     public void SetMoveEnabled(bool enabled)
@@ -842,7 +853,7 @@ public class FirstPersonController : MonoBehaviour
         cameraFollowTransform.rotation = cameraFollowBaseRotation;
 
         ApplyCameraZoom();
-        ApplyCameraDollyAndWander();
+        ApplyCameraWander();
     }
 
     // smoothly lerps fieldOfView toward the zoom target; zoomFraction (0..1) tracks the lerped
@@ -862,14 +873,12 @@ public class FirstPersonController : MonoBehaviour
         zoomFraction = Mathf.InverseLerp(baseFieldOfView, zoomFieldOfView, currentFieldOfView);
     }
 
-    private void ApplyCameraDollyAndWander()
+    private void ApplyCameraWander()
     {
         if (playerCamera == null || cameraFollowTransform == null)
         {
             return;
         }
-
-        currentDollyDistance = zoomDollyDistance * zoomFraction;
 
         float pitchNoise = Mathf.PerlinNoise(Time.time * wanderFrequency + wanderPitchSeed, 0f) * 2f - 1f;
         float yawNoise = Mathf.PerlinNoise(Time.time * wanderFrequency + wanderYawSeed, 0f) * 2f - 1f;
@@ -877,9 +886,7 @@ public class FirstPersonController : MonoBehaviour
         float wanderYawDeg = yawNoise * wanderAmplitudeDegrees * zoomFraction;
         Quaternion wanderOffset = Quaternion.Euler(wanderPitchDeg, wanderYawDeg, 0f);
 
-        Quaternion wanderedRotation = cameraFollowBaseRotation * wanderOffset;
-        cameraFollowTransform.rotation = wanderedRotation;
-        cameraFollowTransform.position = cameraFollowBasePosition + wanderedRotation * Vector3.forward * currentDollyDistance;
+        cameraFollowTransform.rotation = cameraFollowBaseRotation * wanderOffset;
     }
 
     public void FixedUpdate()

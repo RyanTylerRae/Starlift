@@ -314,6 +314,72 @@
 												<ActiveSource Name="musics_inkspots_worldonfire" ID="{C3BB574E-E471-4AFF-95B4-E1F07D600FED}" Platform="Linked"/>
 											</ActiveSourceList>
 										</Sound>
+										<Sound Name="cryopod_intro" ID="{24C68229-A724-48E2-ADEE-5CE6C569BF5D}" ShortID="426812164">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="prototype_Cryopod_Intro" ID="{8E926779-2ED9-4483-A1F5-710E7EB8A08C}">
+													<Language>SFX</Language>
+													<AudioFile>prototype_Cryopod_Intro.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="86758981"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="prototype_Cryopod_Intro" ID="{8E926779-2ED9-4483-A1F5-710E7EB8A08C}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="cryopod_wake" ID="{724F7A90-7BF2-43D8-AF3C-733D6FF83876}" ShortID="37972088">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="prototype_Cryopod_Wake" ID="{CDF7AFAE-591A-4709-9025-4719D7CDDABA}">
+													<Language>SFX</Language>
+													<AudioFile>prototype_Cryopod_Wake.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="730093539"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="prototype_Cryopod_Wake" ID="{CDF7AFAE-591A-4709-9025-4719D7CDDABA}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="cryopod_stasisFailure" ID="{D2716014-C735-42B2-BBCE-BB93C4FFC805}" ShortID="213542615">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{3457FE58-04C3-40B4-B48A-2AB679895086}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{C840A09C-5D6F-43F1-805E-F18B55BB2D9F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="prototype_Cryopod_StasisFailure" ID="{3FA9F5CE-587F-4281-B12B-5554909D1D79}">
+													<Language>SFX</Language>
+													<AudioFile>prototype_Cryopod_StasisFailure.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="206718540"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="prototype_Cryopod_StasisFailure" ID="{3FA9F5CE-587F-4281-B12B-5554909D1D79}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
 									</ChildrenList>
 								</Folder>
 							</ChildrenList>

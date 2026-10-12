@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{65A5C50A-9032-4D7E-BDBE-CA260E9DA9A5}",
     "Language": "SFX",
-    "Hash": "{82DDF466-EF91-A0C3-2802-F6C7268959FA}",
+    "Hash": "{BF26FACC-CC63-954A-FCF1-651F0B270CE4}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main",
     "ShortName": "Main",
     "Path": "Main.bnk",
@@ -30,6 +30,22 @@
       "Location": "Memory",
       "ShortName": "zapsplat_science_fiction_large_explosion_001_62585.wav",
       "CachePath": "8C/{8CDA27EE-221E-0C7D-8132-C2E2AED6695C}.wem"
+     },
+     {
+      "Id": "86758981",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "prototype_Cryopod_Intro.wav",
+      "CachePath": "45/{450E6DA9-3E0C-FD66-4290-7FA9A5735216}.wem"
+     },
+     {
+      "Id": "206718540",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "prototype_Cryopod_StasisFailure.wav",
+      "CachePath": "92/{9217EF13-F054-D62D-2727-61AE84406CF5}.wem"
      },
      {
       "Id": "401349144",
@@ -94,6 +110,14 @@
       "Location": "Memory",
       "ShortName": "musics_inkspots_worldonfire.wav",
       "CachePath": "84/{84556C36-5704-7AE2-0F73-4EC2D3F034C4}.wem"
+     },
+     {
+      "Id": "730093539",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "prototype_Cryopod_Wake.wav",
+      "CachePath": "97/{9730CA52-02BF-4526-1E04-4383D64BAEAB}.wem"
      },
      {
       "Id": "829844053",
@@ -183,6 +207,48 @@
       "MediaRefs": [
        {
         "Id": "1073171051"
+       }
+      ]
+     },
+     {
+      "Id": "3996014237",
+      "Name": "play_cryopod_intro",
+      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\prototype\\play_cryopod_intro",
+      "GUID": "{9907363A-E5E4-4221-BF4E-8988317BDB82}",
+      "DurationType": "OneShot",
+      "DurationMin": "29.0445",
+      "DurationMax": "29.0445",
+      "MediaRefs": [
+       {
+        "Id": "86758981"
+       }
+      ]
+     },
+     {
+      "Id": "3915121410",
+      "Name": "play_cryopod_stasisFailure",
+      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\prototype\\play_cryopod_stasisFailure",
+      "GUID": "{CDF478BC-A027-4AC8-A0C3-7D3BFE295A32}",
+      "DurationType": "OneShot",
+      "DurationMin": "10.8895",
+      "DurationMax": "10.8895",
+      "MediaRefs": [
+       {
+        "Id": "206718540"
+       }
+      ]
+     },
+     {
+      "Id": "504330137",
+      "Name": "play_cryopod_wake",
+      "ObjectPath": "\\Events\\Default Work Unit\\dialogue\\prototype\\play_cryopod_wake",
+      "GUID": "{EE22DA6D-2482-4DF6-9F76-C5DF0A9CE0B9}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.6095",
+      "DurationMax": "2.6095",
+      "MediaRefs": [
+       {
+        "Id": "730093539"
        }
       ]
      },
@@ -447,6 +513,6 @@
     ]
    }
   ],
-  "FileHash": "{EECC36E6-158D-145F-2CDE-61A22994342A}"
+  "FileHash": "{1BCF9558-52D1-BB6B-B023-E07888EEEE80}"
  }
 }

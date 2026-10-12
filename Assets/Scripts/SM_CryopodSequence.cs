@@ -54,7 +54,6 @@ public class SM_CryopodSequence : StateMachineComponent
     {
         stateMachine.RegisterState("Init", isStartingState: true);
         stateMachine.RegisterState("Intro");
-        stateMachine.RegisterState("FadeIn");
         stateMachine.RegisterState("Wake");
         stateMachine.RegisterState("ZoomPrompt");
         stateMachine.RegisterState("Complete");
@@ -69,11 +68,13 @@ public class SM_CryopodSequence : StateMachineComponent
             return playerController != null && screenFader != null;
         });
 
-        stateMachine.AddEdge("Intro", "FadeIn", () => IsSequenceFinished(introSequence));
+        stateMachine.AddEdge("Intro", "Wake", () => IsSequenceFinished(introSequence));
 
-        stateMachine.AddEdge("FadeIn", "Wake", () => fadeTask == null || fadeTask.IsCompleted);
-
-        stateMachine.AddEdge("Wake", "ZoomPrompt", () => IsSequenceFinished(wakeSequence));
+        stateMachine.AddEdge("Wake", "ZoomPrompt", () =>
+        {
+            bool fadeFinished = fadeTask == null || fadeTask.IsCompleted;
+            return fadeFinished && IsSequenceFinished(wakeSequence);
+        });
 
         stateMachine.AddEdge("ZoomPrompt", "Complete", () => playerController != null && playerController.IsZoomHeld);
 
@@ -91,14 +92,10 @@ public class SM_CryopodSequence : StateMachineComponent
             introSequence?.Play();
         };
 
-        stateMachine.GetState("FadeIn").OnEnterState += () =>
+        stateMachine.GetState("Wake").OnEnterState += () =>
         {
             playerController?.SetLookEnabled(true);
             fadeTask = screenFader?.FadeToOpacity(0f, fadeInDuration);
-        };
-
-        stateMachine.GetState("Wake").OnEnterState += () =>
-        {
             wakeSequence?.Play();
         };
 

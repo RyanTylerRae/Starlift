@@ -65,6 +65,39 @@
 										</Action>
 									</ChildrenList>
 								</Event>
+								<Event Name="play_cryopod_intro" ID="{9907363A-E5E4-4221-BF4E-8988317BDB82}">
+									<ChildrenList>
+										<Action Name="" ID="{72B43FBE-B46F-4BD8-B703-9CA7EA604103}" ShortID="842678937">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="cryopod_intro" ID="{24C68229-A724-48E2-ADEE-5CE6C569BF5D}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_cryopod_wake" ID="{EE22DA6D-2482-4DF6-9F76-C5DF0A9CE0B9}">
+									<ChildrenList>
+										<Action Name="" ID="{62D3D5BA-357D-4983-9359-01BFB0F8EE32}" ShortID="701357898">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="cryopod_wake" ID="{724F7A90-7BF2-43D8-AF3C-733D6FF83876}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="play_cryopod_stasisFailure" ID="{CDF478BC-A027-4AC8-A0C3-7D3BFE295A32}">
+									<ChildrenList>
+										<Action Name="" ID="{EB978D88-952E-4749-897A-2E8001F450D2}" ShortID="742324911">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="cryopod_stasisFailure" ID="{D2716014-C735-42B2-BBCE-BB93C4FFC805}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
 							</ChildrenList>
 						</Folder>
 					</ChildrenList>

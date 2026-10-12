@@ -1,6 +1,7 @@
 Event	ID	Name			Wwise Object Path	Notes
 	19228180	play_footstep_thud			\Default Work Unit\play_footstep_thud	
 	130567783	play_breathing_death			\Default Work Unit\play_breathing_death	
+	504330137	play_cryopod_wake			\Default Work Unit\dialogue\prototype\play_cryopod_wake	
 	505312832	stop_magnetized			\Default Work Unit\stop_magnetized	
 	866766775	play_thrust_forward_loop			\Default Work Unit\play_thrust_forward_loop	
 	1199850460	play_thrust_impulse			\Default Work Unit\play_thrust_impulse	
@@ -16,7 +17,9 @@ Event	ID	Name			Wwise Object Path	Notes
 	3529544671	play_stabilized			\Default Work Unit\play_stabilized	
 	3591904104	play_blend_breathing			\Default Work Unit\play_blend_breathing	
 	3696184339	play_footstep_soft			\Default Work Unit\play_footstep_soft	
+	3915121410	play_cryopod_stasisFailure			\Default Work Unit\dialogue\prototype\play_cryopod_stasisFailure	
 	3972341671	play_thrust_stop			\Default Work Unit\play_thrust_stop	
+	3996014237	play_cryopod_intro			\Default Work Unit\dialogue\prototype\play_cryopod_intro	
 	4105009584	play_mine_beep_far			\Default Work Unit\play_mine_beep_far	
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
@@ -29,6 +32,8 @@ Effect plug-ins	ID	Name	Type				Notes
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	78625041	tank_used	.cache\92\{92AD8BEE-53FB-AEFA-3FC4-A63D468A2C10}.wem		\Containers\Default Work Unit\Audio\tank_used		325492
 	80774218	mine_explosion	.cache\8C\{8CDA27EE-221E-0C7D-8132-C2E2AED6695C}.wem		\Containers\Default Work Unit\Audio\mine_explosion		789532
+	86758981	cryopod_intro	.cache\45\{450E6DA9-3E0C-FD66-4290-7FA9A5735216}.wem		\Containers\Default Work Unit\Audio\dialogue\prototype\cryopod_intro		2788368
+	206718540	cryopod_stasisFailure	.cache\92\{9217EF13-F054-D62D-2727-61AE84406CF5}.wem		\Containers\Default Work Unit\Audio\dialogue\prototype\cryopod_stasisFailure		1045488
 	401349144	thrust_forward_loop	.cache\D7\{D710A713-B06F-FC1C-A1E5-941B28E06E5F}.wem		\Containers\Default Work Unit\Audio\thrust_forward_loop		42290
 	469141184	mine_beep_near	.cache\FA\{FA2CF5AA-7C9C-4CAD-2AB3-B4C31D5CCC22}.wem		\Containers\Default Work Unit\Audio\mine_beep_near		166892
 	477313710	mine_beep_far	.cache\88\{883C2449-2553-D41A-0744-58EC51E3ACAC}.wem		\Containers\Default Work Unit\Audio\mine_beep_far		143792
@@ -37,6 +42,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	664015539	thrust_stop	.cache\03\{032D85C2-F644-FD40-04B2-5FDB389006FD}.wem		\Containers\Default Work Unit\Audio\thrust_stop		20280
 	679527475	thrust_start	.cache\59\{5980F175-7EA4-2698-43F4-9B1A497F9874}.wem		\Containers\Default Work Unit\Audio\thrust_rotate\thrust_start		15950
 	686684793	music_worldonfire	.cache\84\{84556C36-5704-7AE2-0F73-4EC2D3F034C4}.wem		\Containers\Default Work Unit\Audio\dialogue\prototype\music_worldonfire		31532828
+	730093539	cryopod_wake	.cache\97\{9730CA52-02BF-4526-1E04-4383D64BAEAB}.wem		\Containers\Default Work Unit\Audio\dialogue\prototype\cryopod_wake		250608
 	829844053	oxygen_replenish	.cache\D8\{D83D8296-C217-AD4E-196D-C81E5DF77266}.wem		\Containers\Default Work Unit\Audio\oxygen_replenish		356448
 	891846702	footstep_thud	.cache\27\{2791A02B-EDB2-CFA0-F395-438F77978E88}.wem		\Containers\Default Work Unit\Audio\footstep_thud		124228
 	896755970	stablized	.cache\7A\{7AF23D0E-C694-2BAD-7599-5D0EB4B39C0E}.wem		\Containers\Default Work Unit\Audio\stablized		56664
