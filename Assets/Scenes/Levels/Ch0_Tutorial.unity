@@ -4370,6 +4370,7 @@ GameObject:
   - component: {fileID: 1491182490}
   - component: {fileID: 1491182489}
   - component: {fileID: 1491182492}
+  - component: {fileID: 1491182493}
   m_Layer: 0
   m_Name: Drone
   m_TagString: Untagged
@@ -4468,6 +4469,23 @@ MonoBehaviour:
   maxAngularSpeed: 60
   angularAcceleration: 30
   arriveAngle: 0.1
+--- !u!114 &1491182493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1491182487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d481402e47b4058a08a9ca8c94c7712, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: ACTIVATE DRONE
+  scanProgress: 0
+  showProgressBar: 1
+  offScreenMode: 0
+  hudOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &1502290616
 GameObject:
   m_ObjectHideFlags: 0

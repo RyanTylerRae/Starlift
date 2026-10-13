@@ -480,7 +480,7 @@ public class FirstPersonController : MonoBehaviour
             wanderYawSeed = UnityEngine.Random.Range(0f, 1000f) + 500f;
 
             Camera mainCamera = cameraFollowObject.AddComponent<Camera>();
-            mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD");
+            mainCamera.cullingMask &= ~LayerMask.GetMask("3D_HUD", "3D_HUD_World");
             mainCamera.depth = -1.0f;
 
             var cameraData = cameraFollowObject.AddComponent<UniversalAdditionalCameraData>();

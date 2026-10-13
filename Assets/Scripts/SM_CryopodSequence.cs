@@ -15,13 +15,14 @@ public class SM_CryopodSequence : StateMachineComponent
 
     private FirstPersonController? playerController = null;
     private ScreenFader? screenFader = null;
-    private HUDZoomFade? hudFade = null;
+    // the main HUD and the world-element HUD each have their own fade
+    private HUDZoomFade[] hudFades = System.Array.Empty<HUDZoomFade>();
     private Task? fadeTask = null;
 
     private void TryResolvePlayerReferences()
     {
         playerController = StarliftStatics.FindFirstPersonController();
-        hudFade = FindFirstObjectByType<HUDZoomFade>();
+        hudFades = FindObjectsByType<HUDZoomFade>(FindObjectsSortMode.None);
 
         GameObject? player = StarliftStatics.FindPlayer();
         if (player != null && player.TryGetComponent<ScreenFader>(out var fader))
@@ -43,6 +44,17 @@ public class SM_CryopodSequence : StateMachineComponent
         playerController.SetJumpEnabled(enabled);
         playerController.SetStabilizeEnabled(enabled);
         playerController.SetThrustEnabled(enabled);
+    }
+
+    private void SetHudHidden(bool hidden)
+    {
+        foreach (HUDZoomFade hudFade in hudFades)
+        {
+            if (hudFade != null)
+            {
+                hudFade.SetHudHidden(hidden);
+            }
+        }
     }
 
     private bool IsSequenceFinished(DirectedSequence? sequence)
@@ -81,7 +93,7 @@ public class SM_CryopodSequence : StateMachineComponent
         stateMachine.GetState("Intro").OnEnterState += () =>
         {
             screenFader?.SetOpacity(1f);
-            hudFade?.SetHudHidden(true);
+            SetHudHidden(true);
             SetAllControlsEnabled(false);
 
             if (restrictLook)
@@ -109,7 +121,7 @@ public class SM_CryopodSequence : StateMachineComponent
         {
             zoomPrompt?.Hide();
             playerController?.ClearLookCone();
-            hudFade?.SetHudHidden(false);
+            SetHudHidden(false);
             SetAllControlsEnabled(true);
         };
     }

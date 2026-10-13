@@ -15,14 +15,19 @@ public class HUDZoomFade : MonoBehaviour
     public float fadeOutDuration = 0.25f;
     public float fadeInDuration = 0.25f;
 
-    // alpha while zoomed - raise above 0 to dim the HUD rather than hide it
+    // alpha while hidden - raise above 0 to dim the HUD rather than hide it
     [Range(0f, 1f)]
     public float hiddenAlpha = 0.0f;
+
+    // inverts the fade: hidden normally and shown while zoom is held (e.g. world scan markers)
+    public bool showOnlyWhileZoomed = false;
 
     private Camera? hudCamera = null;
     private CanvasGroup? canvasGroup = null;
     private FirstPersonController? playerController = null;
     private bool isHudHidden = false;
+
+    public bool IsHudHidden { get { return isHudHidden; } }
 
     public void Awake()
     {
@@ -60,8 +65,9 @@ public class HUDZoomFade : MonoBehaviour
         }
 
         bool zoomHeld = playerController.IsZoomHeld;
-        float targetAlpha = zoomHeld ? hiddenAlpha : 1.0f;
-        float duration = zoomHeld ? fadeOutDuration : fadeInDuration;
+        bool isShown = showOnlyWhileZoomed ? zoomHeld : !zoomHeld;
+        float targetAlpha = isShown ? 1.0f : hiddenAlpha;
+        float duration = isShown ? fadeInDuration : fadeOutDuration;
 
         // rate covers the full 1 -> hiddenAlpha span in the given duration
         float span = Mathf.Max(1.0f - hiddenAlpha, 0.0001f);
@@ -103,6 +109,12 @@ public class HUDZoomFade : MonoBehaviour
         if (!hudDisplay.TryGetComponent(out CanvasGroup group))
         {
             group = hudDisplay.gameObject.AddComponent<CanvasGroup>();
+        }
+
+        // start hidden rather than fading out from full on the first frames
+        if (showOnlyWhileZoomed)
+        {
+            group.alpha = hiddenAlpha;
         }
 
         playerController = controller;
