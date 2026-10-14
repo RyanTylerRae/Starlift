@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SM_CryopodSequence : StateMachineComponent
 {
@@ -12,6 +13,14 @@ public class SM_CryopodSequence : StateMachineComponent
     public bool restrictLook = true;
     public float lookConeYawHalfAngle = 45f;
     public float lookConePitchHalfAngle = 30f;
+
+    // after the zoom prompt the player scans the drone, which plays droneSequence before everything unlocks
+    public Scannable? droneScannable;
+    public DirectedSequence? droneSequence;
+
+    // fires once droneSequence has finished - wire the drone's activation here (e.g. DroneController.enabled),
+    // so it doesn't start flying while the sequence is still animating it
+    public UnityEvent onDroneSequenceFinished = new();
 
     private FirstPersonController? playerController = null;
     private ScreenFader? screenFader = null;
@@ -57,6 +66,18 @@ public class SM_CryopodSequence : StateMachineComponent
         }
     }
 
+    // the scan markers' HUD is the fade on the same camera as the WorldHUDProjector
+    private void SetScanHudHidden(bool hidden)
+    {
+        foreach (HUDZoomFade hudFade in hudFades)
+        {
+            if (hudFade != null && hudFade.TryGetComponent(out WorldHUDProjector _))
+            {
+                hudFade.SetHudHidden(hidden);
+            }
+        }
+    }
+
     private bool IsSequenceFinished(DirectedSequence? sequence)
     {
         return sequence == null || sequence.IsFinished;
@@ -68,6 +89,8 @@ public class SM_CryopodSequence : StateMachineComponent
         stateMachine.RegisterState("Intro");
         stateMachine.RegisterState("Wake");
         stateMachine.RegisterState("ZoomPrompt");
+        stateMachine.RegisterState("Scan");
+        stateMachine.RegisterState("DroneSequence");
         stateMachine.RegisterState("Complete");
 
         stateMachine.AddEdge("Init", "Intro", () =>
@@ -88,7 +111,11 @@ public class SM_CryopodSequence : StateMachineComponent
             return fadeFinished && IsSequenceFinished(wakeSequence);
         });
 
-        stateMachine.AddEdge("ZoomPrompt", "Complete", () => playerController != null && playerController.IsZoomHeld);
+        stateMachine.AddEdge("ZoomPrompt", "Scan", () => playerController != null && playerController.IsZoomHeld);
+
+        stateMachine.AddEdge("Scan", "DroneSequence", () => droneScannable == null || droneScannable.IsScanned);
+
+        stateMachine.AddEdge("DroneSequence", "Complete", () => IsSequenceFinished(droneSequence));
 
         stateMachine.GetState("Intro").OnEnterState += () =>
         {
@@ -117,9 +144,21 @@ public class SM_CryopodSequence : StateMachineComponent
             playerController?.SetZoomEnabled(true);
         };
 
-        stateMachine.GetState("Complete").OnEnterState += () =>
+        // the main HUD stays hidden until Complete, but the scan marker needs to be visible to scan with
+        stateMachine.GetState("Scan").OnEnterState += () =>
         {
             zoomPrompt?.Hide();
+            SetScanHudHidden(false);
+        };
+
+        stateMachine.GetState("DroneSequence").OnEnterState += () =>
+        {
+            droneSequence?.Play();
+        };
+
+        stateMachine.GetState("Complete").OnEnterState += () =>
+        {
+            onDroneSequenceFinished.Invoke();
             playerController?.ClearLookCone();
             SetHudHidden(false);
             SetAllControlsEnabled(true);

@@ -52,6 +52,8 @@ public class WorldHUDProjector : MonoBehaviour
     public TMP_FontAsset? font;
 
     [Header("Bar Materials")]
+    // optional full-width quad behind the fill - leave empty to let the brackets alone frame the bar.
+    // Needs a colour clearly different from the fill, or progress won't read
     public Material? barBackgroundMaterial;
     public Material? barFillMaterial;
 

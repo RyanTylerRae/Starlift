@@ -190,7 +190,7 @@ MonoBehaviour:
   bracketGap: 0
   bracketColor: {r: 1, g: 1, b: 1, a: 1}
   font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  barBackgroundMaterial: {fileID: 2100000, guid: c31d3c5557f302e41a08e63aad8ad84e, type: 2}
+  barBackgroundMaterial: {fileID: 0}
   barFillMaterial: {fileID: 2100000, guid: c31d3c5557f302e41a08e63aad8ad84e, type: 2}
 --- !u!114 &1200000000000000008
 MonoBehaviour:

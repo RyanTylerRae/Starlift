@@ -54,7 +54,10 @@ public class WorldHUDElement : MonoBehaviour
         bar = CreateChild("Bar", visuals.transform, layer);
         Vector2 barSize = new Vector2(owner.barWidth, owner.barHeight);
 
-        CreateBarQuad("Background", bar.transform, barSize, 0.0f, owner.barBackgroundMaterial, 0);
+        if (owner.barBackgroundMaterial != null)
+        {
+            CreateBarQuad("Background", bar.transform, barSize, 0.0f, owner.barBackgroundMaterial, 0);
+        }
 
         // the ProgressBar shader is built on ShaderGraph's Canvas sub-target, which doesn't reliably
         // depth-sort, so draw order is forced with sortingOrder as well as a small step toward the camera
