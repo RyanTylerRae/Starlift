@@ -15,7 +15,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 [UnityEditor.CanEditMultipleObjects]
@@ -180,7 +180,9 @@ public class AkAmbientInspector : AkEventInspector
         if (in_multiPosType != m_AkAmbient.multiPositionTypeLabel)
         {
             //Get all AkAmbients in the scene
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+            var akAmbients = FindObjectsByType<AkAmbient>();            
+#elif UNITY_6000_0_OR_NEWER
             var akAmbients = FindObjectsByType<AkAmbient>(FindObjectsSortMode.None);
 #else
             var akAmbients = FindObjectsOfType<AkAmbient>();
@@ -212,7 +214,9 @@ public class AkAmbientInspector : AkEventInspector
         else if (!HasSameTriggers(triggerList) || UnityEngine.Event.current.type == UnityEngine.EventType.ValidateCommand &&
                  UnityEngine.Event.current.commandName == "UndoRedoPerformed")
         {
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+            var akAmbients = FindObjectsByType<AkAmbient>();
+#elif UNITY_6000_0_OR_NEWER
             var akAmbients = FindObjectsByType<AkAmbient>(FindObjectsSortMode.None);
 #else
             var akAmbients = FindObjectsOfType<AkAmbient>();
@@ -267,7 +271,9 @@ public class AkAmbientInspector : AkEventInspector
             }
             else
             {
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+                var akAmbients = FindObjectsByType<AkAmbient>();
+#elif UNITY_6000_0_OR_NEWER
                 var akAmbients = FindObjectsByType<AkAmbient>(FindObjectsSortMode.None);
 #else
                 var akAmbients = FindObjectsOfType<AkAmbient>();
@@ -284,7 +290,9 @@ public class AkAmbientInspector : AkEventInspector
         }
         else
         {
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+            var akAmbients = FindObjectsByType<AkAmbient>();
+#elif UNITY_6000_0_OR_NEWER
             var akAmbients = FindObjectsByType<AkAmbient>(FindObjectsSortMode.None);
 #else
             var akAmbients = FindObjectsOfType<AkAmbient>();

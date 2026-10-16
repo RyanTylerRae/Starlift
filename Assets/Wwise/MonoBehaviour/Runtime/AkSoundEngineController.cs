@@ -1,4 +1,4 @@
-#if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#if !(UNITY_QNX) // Disable under unsupported platforms.
 
 /*******************************************************************************
 The content of this file includes portions of the proprietary AUDIOKINETIC Wwise
@@ -14,8 +14,10 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
+
+using AK.Wwise.Unity.Logging;
 
 
 #if AK_WWISE_ADDRESSABLES && UNITY_ADDRESSABLES
@@ -85,7 +87,7 @@ public class AkSoundEngineController
 #if !(AK_WWISE_ADDRESSABLES && UNITY_ADDRESSABLES)
 		AkBankManager.DoUnloadBanks();
 #elif WWISE_ADDRESSABLES_24_1_OR_LATER
-		if (AkAddressableBankManager.Instance != null) ;
+		if (AkAddressableBankManager.Instance != null)
 		{
 			AkAddressableBankManager.Instance.DoUnloadBank();
 		}
@@ -110,11 +112,13 @@ public class AkSoundEngineController
 
 	public void Init(AkInitializer akInitializer)
 	{
+		AkUnitySoundEngine.SetErrorLogger(AkLogger.WwiseInternalLogError);
+		
 #if UNITY_EDITOR
 		var arguments = System.Environment.GetCommandLineArgs();
 		if (UnityEngine.Application.isBatchMode && System.Array.IndexOf(arguments, "-wwiseEnableWithNoGraphics") < 0)
 		{
-			UnityEngine.Debug.LogWarning("WwiseUnity: Sound engine will not be initialized in batch/nographics mode. To override, specify -wwiseEnableWithNoGraphics");
+			WwiseLogger.Log("Sound engine will not be initialized in batch/nographics mode. To override, specify -wwiseEnableWithNoGraphics");
 			return;
 		}
 #endif
@@ -134,13 +138,11 @@ public class AkSoundEngineController
 
 		if (akInitializer == null)
 		{
-			UnityEngine.Debug.LogError("WwiseUnity: AkInitializer must not be null. Sound engine will not be initialized.");
+			WwiseLogger.Error("AkInitializer must not be null. Sound engine will not be initialized.");
 			return;
 		}
 
 		var isInitialized = AkUnitySoundEngine.IsInitialized();
-
-		AkLogger.Instance.Init();
 
 		if (isInitialized)
 		{
@@ -148,6 +150,10 @@ public class AkSoundEngineController
 			if (!UnityEditor.EditorApplication.isPlaying)
 			{
 				OnEnableEditorListener(akInitializer.gameObject);
+			}
+			if (AkUnitySoundEngineInitialization.Instance.ShouldKeepSoundEngineEnabled())
+			{
+				return;
 			}
 			if (AkUnitySoundEngineInitialization.Instance.ResetSoundEngine(UnityEngine.Application.isPlaying || UnityEditor.BuildPipeline.isBuildingPlayer))
 			{
@@ -159,7 +165,7 @@ public class AkSoundEngineController
 				AkUnitySoundEngine.Suspend(true);
 			}
 #else
-			UnityEngine.Debug.LogError("WwiseUnity: Sound engine is already initialized.");
+			WwiseLogger.Error("Sound engine is already initialized.");
 #endif
 			return;
 		}
@@ -199,6 +205,7 @@ public class AkSoundEngineController
 
 	public void Terminate()
 	{
+		AkUnitySoundEngine.SetErrorLogger();
 		AkUnitySoundEngineInitialization.Instance.TerminateSoundEngine();
 		AkRoomManager.Terminate();
 	}
@@ -212,6 +219,9 @@ public class AkSoundEngineController
 
 	public void OnApplicationFocus(bool focus)
 	{
+#if UNITY_EDITOR
+		ActivateAudio(focus,AkWwiseInitializationSettings.Instance.RenderDuringFocusLoss);
+#endif
 	}
 #elif UNITY_WEBGL
 	// On WebGL, allow background audio when browser is un-focused in development builds to make the Wwise Profiler usable.
@@ -384,4 +394,4 @@ public class AkSoundEngineController
 #endregion
 #endif // UNITY_EDITOR
 }
-#endif // #if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#endif // #if !(UNITY_QNX) // Disable under unsupported platforms.

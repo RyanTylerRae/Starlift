@@ -12,9 +12,10 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -220,6 +221,12 @@ public class ReturnWwiseObjects : JsonSerializable
 	public List<WwiseObjectInfoJsonObject> @return;
 }
 
+[System.Serializable]
+public class PingWwiseObject : JsonSerializable
+{
+	public bool isAvailable;
+}
+
 /// <summary>
 /// Generic class to deserialize a WAAPI response containing Wwise objects with custom return options.
 /// </summary>
@@ -356,7 +363,9 @@ public class WwiseObjectInfoParent
 [System.Serializable]
 public struct WwiseObjectInfo
 {
+	[NonSerialized]
 	public System.Guid objectGUID;
+	[NonSerialized]
 	public System.Guid parentID;
 	public string name;
 	public WwiseObjectType type;

@@ -12,7 +12,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 using System;
 using UnityEditor;
@@ -23,10 +23,11 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor.Callbacks;
+using AK.Wwise.Unity.Logging;
+using LogLevel = AK.Wwise.Unity.Logging.LogLevel;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 #if AK_WWISE_ADDRESSABLES
-using System.Linq;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using AK.Wwise.Unity.WwiseAddressables;
@@ -168,17 +169,17 @@ public static class AddressableInstaller
     /// <param name="errorMsg">The message to log</param>
     public static void LogError(string source, string errorMsg)
     {
-        Debug.LogError($"{source}: {errorMsg}");
+        WwiseLogger.LogFormat(LogLevel.Error, "{0}: {1}", source, errorMsg);
     }
 
     public static void LogWarning(string source, string errorMsg)
     {
-        Debug.LogWarning($"{source}: {errorMsg}");
+        WwiseLogger.LogFormat(LogLevel.Warning, "{0}: {1}", source, errorMsg);
     }
 
     public static void Log(string source, string errorMsg)
     {
-        Debug.Log($"{source}: {errorMsg}");
+        WwiseLogger.LogFormat(LogLevel.Log, "{0}: {1}", source, errorMsg);
     }
     private static AddRequest _addRequest;
 
@@ -218,8 +219,11 @@ public static class AddressableInstaller
     public static void UninstallPackage()
     {
         ReadSettings();
+        if (!AdjustLoadBankAsynchronously())
+        {
+            return;
+        }
         ToggleAkInitializer(false);
-        AdjustLoadBankAsynchronously();
         AkSoundEngineController.Instance.DisableEditorLateUpdate();
         EditorApplication.update += ContinueUninstallation;
     }
@@ -247,18 +251,25 @@ public static class AddressableInstaller
     
 #endif
 
-    private static void AdjustLoadBankAsynchronously()
+    private static bool AdjustLoadBankAsynchronously()
     {
 #if AK_WWISE_ADDRESSABLES
         bool shouldDisableAsynchronousBankLoading = false;
         if (_enableUninstallationPrompt)
         {
-            shouldDisableAsynchronousBankLoading = EditorUtility.DisplayDialog(
+            int dialogChoiceIndex = EditorUtility.DisplayDialogComplex(
                 "Wwise Unity Addressables Uninstallation",
-                "Do you wish to set the Load Bank Asynchrnous settings to false during uninstallation? The original value was modified during the installation of the Wwise Unity Addressables integration package. Most project have it set to disabled when not working with addressables. It is possible to set a default value for this prompt as well as disabling it in the Wwise Settings.",
-                "Yes, do it",
-                "No, leave the setting as is"
+                "Set the Load Bank Asynchronous settings to false during uninstallation? The original value was modified during the installation of the Wwise Unity Addressables integration package. In most projects, it is disabled when not working with Addressables. You can set a default value for this prompt or disable it in the Wwise Settings.",
+                "Yes",
+                "Cancel",
+                "No"
             );
+
+            if (dialogChoiceIndex == 1)
+            {
+                return false;
+            }
+            shouldDisableAsynchronousBankLoading = dialogChoiceIndex == 0;
         }
         else
         {
@@ -276,16 +287,21 @@ public static class AddressableInstaller
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
+        return true;
 #else
-        
+
         var platformSettings = AkWwiseInitializationSettings.Instance.PlatformSettingsList;
         foreach (var platformSetting in platformSettings)
         {
-            platformSetting.LoadBanksAsynchronously = true;
-            EditorUtility.SetDirty(platformSetting);
+            if (platformSetting)
+            {
+                platformSetting.LoadBanksAsynchronously = true;
+                EditorUtility.SetDirty(platformSetting);
+            }
         }
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+        return true;
 #endif
     }
   
@@ -366,7 +382,7 @@ public static class AddressableInstaller
     {
         if (string.IsNullOrEmpty(packageSource))
         {
-            Debug.LogError("Package source not provided. Use -packageSource=<url_or_path> in the command line.");
+            WwiseLogger.Error("Package source not provided. Use -packageSource=<url_or_path> in the command line.");
             return false;
         }
         
@@ -382,7 +398,7 @@ public static class AddressableInstaller
         }
         else
         {
-            Debug.LogError($"Invalid package source: {packageSource}. Ensure it is a valid Git URL or local path.");
+            WwiseLogger.LogFormat(LogLevel.Error, "Invalid package source: {0}. Ensure it is a valid Git URL or local path.", packageSource);
             return false;
         }
 
@@ -395,7 +411,7 @@ public static class AddressableInstaller
     /// <param name="url">The Git URL of the package.</param>
     private static void InstallFromUrl(string url)
     {
-        Debug.Log($"Installing package from Git URL: {url}");
+        WwiseLogger.LogFormat(LogLevel.Log, "Installing package from Git URL: {0}", url);
         _addRequest = Client.Add(url);
         EditorApplication.update += Progress;
     }
@@ -458,11 +474,11 @@ public static class AddressableInstaller
         {
             if (_addRequest.Status == StatusCode.Success)
             {
-                Debug.Log($"Successfully installed package: {_addRequest.Result.packageId}");
+                WwiseLogger.LogFormat(LogLevel.Log, "Successfully installed package: {0}", _addRequest.Result.packageId);
             }
             else if (_addRequest.Status >= StatusCode.Failure)
             {
-                Debug.LogError($"Failed to install package: {_addRequest.Error.message}");
+                WwiseLogger.LogFormat(LogLevel.Error, "Failed to install package: {0}", _addRequest.Error.message);
             }
 
             EditorApplication.update -= Progress;
@@ -491,7 +507,7 @@ public static class AddressableInstaller
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("Addressables cleaned successfully.");
+        WwiseLogger.Log("Addressables cleaned successfully.");
     }
     
     /// <summary>
@@ -506,7 +522,7 @@ public static class AddressableInstaller
 
         if (targetObject == null)
         {
-            Debug.LogError($"GameObject '{targetObjectName}' not found in the scene.");
+            WwiseLogger.LogFormat(LogLevel.Error, "GameObject '{0}' not found in the scene.", targetObjectName);
             return;
         }
 
@@ -515,11 +531,11 @@ public static class AddressableInstaller
         if (component != null)
         {
             UnityEngine.GameObject.DestroyImmediate(component);
-            Debug.Log($"Removed component '{targetComponentName}' from '{targetObjectName}'.");
+            WwiseLogger.LogFormat(LogLevel.Log, "Removed component '{0}' from '{1}'.", targetComponentName, targetObjectName);
         }
         else
         {
-            Debug.LogWarning($"Component '{targetComponentName}' not found on '{targetObjectName}'.");
+            WwiseLogger.LogFormat(LogLevel.Warning, "Component '{0}' not found on '{1}'.", targetComponentName, targetObjectName);
         }
     }
     
@@ -542,16 +558,16 @@ public static class AddressableInstaller
         {
             if (AssetDatabase.DeleteAsset(folderPath))
             {
-                Debug.Log($"Folder deleted: {folderPath}");
+                WwiseLogger.LogFormat(LogLevel.Log, "Folder deleted: {0}", folderPath);
             }
             else
             {
-                Debug.LogError($"Failed to delete folder: {folderPath}");
+                WwiseLogger.LogFormat(LogLevel.Error, "Failed to delete folder: {0}", folderPath);
             }
         }
         else
         {
-            Debug.LogError($"Folder does not exist: {folderPath}");
+            WwiseLogger.LogFormat(LogLevel.Error, "Folder does not exist: {0}", folderPath);
         }
     }
     

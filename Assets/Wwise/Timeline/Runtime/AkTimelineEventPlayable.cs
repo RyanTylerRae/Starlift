@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-#if !(UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+using AK.Wwise.Unity.Logging;
+#if !(UNITY_QNX) // Disable under unsupported platforms.
 #if !UNITY_2019_1_OR_NEWER
 #define AK_ENABLE_TIMELINE
 #endif
@@ -20,7 +21,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 /// @brief Defines the behavior of a \ref AkTimelineEventPlayable within a \ref AkTimelineEventTrack.
@@ -158,7 +159,7 @@ public class AkTimelineEventPlayableBehavior : UnityEngine.Playables.PlayableBeh
 			var currentTime = UnityEngine.Playables.PlayableExtensions.GetTime(playable);
 			var computedDelta = System.Math.Abs(currentTime - previousTime);
 
-			UnityEngine.Debug.Log($"{FunctionName}: prevTime={previousTime}; curTime={currentTime}; computedDelta={computedDelta}; evalType={info.evaluationType}; deltaTime={info.deltaTime}; playState={info.effectivePlayState}; timeHeld={info.timeHeld}; speed={info.effectiveSpeed}; parentSpeed={info.effectiveParentSpeed}");
+			WwiseLogger.LogFormat(LogLevel.Log, "{0}: prevTime={1}; curTime={2}; computedDelta={3}; evalType={4}; deltaTime={5}; playState={6}; timeHeld={7}; speed={8}; parentSpeed={9}", FunctionName, previousTime, currentTime, computedDelta, info.evaluationType, info.deltaTime, info.effectivePlayState, info.timeHeld, info.effectiveSpeed, info.effectiveParentSpeed);
 		}
 	}
 
@@ -684,7 +685,7 @@ public class AkTimelineEventPlayable : UnityEngine.Playables.PlayableAsset, Unit
 
 				var path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
 				var objects = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path);
-				var instanceIds = new System.Collections.Generic.List<int>();
+				var instanceIds = new System.Collections.Generic.List<ulong>();
 				foreach (var obj in objects)
 				{
 					if (obj == null)
@@ -692,7 +693,7 @@ public class AkTimelineEventPlayable : UnityEngine.Playables.PlayableAsset, Unit
 						continue;
 					}
 
-					var id = obj.GetInstanceID();
+					var id = AkUnitySoundEngine.GetAkGameObjectID(obj);
 					if (!instanceIds.Contains(id))
 					{
 						instanceIds.Add(id);
@@ -705,7 +706,7 @@ public class AkTimelineEventPlayable : UnityEngine.Playables.PlayableAsset, Unit
 					objects = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path);
 					foreach (var obj in objects)
 					{
-						if (obj && obj.GetInstanceID() == id)
+						if (obj && AkUnitySoundEngine.GetAkGameObjectID(obj) == id)
 						{
 							var playable = obj as AkTimelineEventPlayable;
 							if (playable)
@@ -769,4 +770,4 @@ public class AkTimelineEventPlayable : UnityEngine.Playables.PlayableAsset, Unit
 }
 
 #endif // AK_ENABLE_TIMELINE
-#endif // #if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#endif // #if !(UNITY_QNX) // Disable under unsupported platforms.

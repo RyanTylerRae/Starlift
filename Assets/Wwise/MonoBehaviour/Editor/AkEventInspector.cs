@@ -1,3 +1,5 @@
+using AK.Wwise.Unity.Logging;
+
 #if UNITY_EDITOR
 /*******************************************************************************
 The content of this file includes portions of the proprietary AUDIOKINETIC Wwise
@@ -13,7 +15,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 [UnityEditor.CanEditMultipleObjects]
@@ -27,19 +29,19 @@ public class AkEventInspector : AkBaseInspector
 	private UnityEditor.SerializedProperty enableActionOnEvent;
 	private UnityEditor.SerializedProperty transitionDuration;
 	private UnityEditor.SerializedProperty useCallbacks;
-	private UnityEditor.SerializedProperty stopSoundOnDestroy;
+	private UnityEditor.SerializedProperty stopSoundOnDisable;
 
 	public void OnEnable()
 	{
 		m_UnityEventHandlerInspector.Init(serializedObject);
 
-		enableActionOnEvent = serializedObject.FindProperty("enableActionOnEvent");
-		actionOnEventType = serializedObject.FindProperty("actionOnEventType");
-		curveInterpolation = serializedObject.FindProperty("curveInterpolation");
-		transitionDuration = serializedObject.FindProperty("transitionDuration");
-		useCallbacks = serializedObject.FindProperty("useCallbacks");
-		callbackData = serializedObject.FindProperty("Callbacks");
-		stopSoundOnDestroy = serializedObject.FindProperty("stopSoundOnDestroy");
+		enableActionOnEvent = serializedObject.FindProperty(nameof(AkEvent.enableActionOnEvent));
+		actionOnEventType = serializedObject.FindProperty(nameof(AkEvent.actionOnEventType));
+		curveInterpolation = serializedObject.FindProperty(nameof(AkEvent.curveInterpolation));
+		transitionDuration = serializedObject.FindProperty(nameof(AkEvent.transitionDuration));
+		useCallbacks = serializedObject.FindProperty(nameof(AkEvent.useCallbacks));
+		callbackData = serializedObject.FindProperty(nameof(AkEvent.Callbacks));
+		stopSoundOnDisable = serializedObject.FindProperty(nameof(AkEvent.stopSoundOnDisable));
 
 		AkEditorEventPlayer.RefreshGUI += Repaint;
 	}
@@ -55,16 +57,13 @@ public class AkEventInspector : AkBaseInspector
 			return;
 
 		UnityEngine.GUILayout.Space(UnityEditor.EditorGUIUtility.standardVerticalSpacing);
-		using (new UnityEditor.EditorGUILayout.VerticalScope("box"))
-		{
-			UnityEditor.EditorGUILayout.PropertyField(enableActionOnEvent, new UnityEngine.GUIContent("Action On Event: "));
-			if (!enableActionOnEvent.boolValue)
-				return;
+		UnityEditor.EditorGUILayout.PropertyField(enableActionOnEvent, new UnityEngine.GUIContent("Action On Event"));
+		if (!enableActionOnEvent.boolValue)
+			return;
 
-			UnityEditor.EditorGUILayout.PropertyField(actionOnEventType, new UnityEngine.GUIContent("Action On EventType: "));
-			UnityEditor.EditorGUILayout.PropertyField(curveInterpolation, new UnityEngine.GUIContent("Curve Interpolation: "));
-			UnityEditor.EditorGUILayout.Slider(transitionDuration, 0.0f, 60.0f, new UnityEngine.GUIContent("Fade Time (secs): "));
-		}
+		UnityEditor.EditorGUILayout.PropertyField(actionOnEventType, new UnityEngine.GUIContent("Action On EventType"));
+		UnityEditor.EditorGUILayout.PropertyField(curveInterpolation);
+		UnityEditor.EditorGUILayout.Slider(transitionDuration, 0.0f, 60.0f, new UnityEngine.GUIContent("Fade Time (secs)"));
 	}
 
 	private void DisplayCallbackInformation()
@@ -73,77 +72,71 @@ public class AkEventInspector : AkBaseInspector
 			return;
 
 		UnityEngine.GUILayout.Space(UnityEditor.EditorGUIUtility.standardVerticalSpacing);
-		using (new UnityEditor.EditorGUILayout.VerticalScope("box"))
+		UnityEditor.EditorGUILayout.PropertyField(useCallbacks, new UnityEngine.GUIContent("Use Callbacks"));
+
+		if (useCallbacks.boolValue)
 		{
-			UnityEditor.EditorGUILayout.PropertyField(useCallbacks, new UnityEngine.GUIContent("Use Callback: "));
+			var emptyContent = new UnityEngine.GUIContent("");
 
-			if (useCallbacks.boolValue)
+			// ensure that there is always at least one entry since we are "using" callbacks
+			if (callbackData.arraySize == 0)
+				callbackData.arraySize = 1;
+
+			const float callbackSpacerWidth = 4;
+			const float removeButtonWidth = 20;
+			var rect = UnityEditor.EditorGUILayout.GetControlRect();
+			var callbackFieldWidth = (rect.width - removeButtonWidth) / 3;
+			rect.width = callbackFieldWidth - callbackSpacerWidth;
+
+			UnityEngine.GUI.Label(rect, "Game Object");
+
+			rect.x += callbackFieldWidth;
+			UnityEngine.GUI.Label(rect, "Callback Function");
+
+			rect.x += callbackFieldWidth;
+			UnityEngine.GUI.Label(rect, "Callback Flags");
+
+			for (var i = 0; i < callbackData.arraySize; ++i)
 			{
-				var emptyContent = new UnityEngine.GUIContent("");
-
-				// ensure that there is always at least one entry since we are "using" callbacks
-				if (callbackData.arraySize == 0)
-					callbackData.arraySize = 1;
-
-				const float callbackSpacerWidth = 4;
-				const float removeButtonWidth = 20;
-				var rect = UnityEditor.EditorGUILayout.GetControlRect();
-				var callbackFieldWidth = (rect.width - removeButtonWidth) / 3;
+				var data = callbackData.GetArrayElementAtIndex(i);
+				rect = UnityEditor.EditorGUILayout.GetControlRect();
 				rect.width = callbackFieldWidth - callbackSpacerWidth;
-
-				UnityEngine.GUI.Label(rect, "Game Object");
-
-				rect.x += callbackFieldWidth;
-				UnityEngine.GUI.Label(rect, "Callback Function");
+				UnityEditor.EditorGUI.PropertyField(rect, data.FindPropertyRelative("GameObject"), emptyContent);
 
 				rect.x += callbackFieldWidth;
-				UnityEngine.GUI.Label(rect, "Callback Flags");
+				UnityEditor.EditorGUI.PropertyField(rect, data.FindPropertyRelative("FunctionName"), emptyContent);
 
-				for (var i = 0; i < callbackData.arraySize; ++i)
-				{
-					var data = callbackData.GetArrayElementAtIndex(i);
-					rect = UnityEditor.EditorGUILayout.GetControlRect();
-					rect.width = callbackFieldWidth - callbackSpacerWidth;
-					UnityEditor.EditorGUI.PropertyField(rect, data.FindPropertyRelative("GameObject"), emptyContent);
+				rect.x += callbackFieldWidth;
+				UnityEditor.EditorGUI.PropertyField(rect, data.FindPropertyRelative("Flags"), emptyContent);
 
-					rect.x += callbackFieldWidth;
-					UnityEditor.EditorGUI.PropertyField(rect, data.FindPropertyRelative("FunctionName"), emptyContent);
-
-					rect.x += callbackFieldWidth;
-					UnityEditor.EditorGUI.PropertyField(rect, data.FindPropertyRelative("Flags"), emptyContent);
-
-					rect.x += callbackFieldWidth;
-					rect.width = removeButtonWidth;
-					if (UnityEngine.GUI.Button(rect, "X"))
-						callbackData.DeleteArrayElementAtIndex(i);
-				}
-
-				if (UnityEngine.GUI.Button(UnityEditor.EditorGUILayout.GetControlRect(), "Add"))
-				{
-					var i = callbackData.arraySize++;
-					var data = callbackData.GetArrayElementAtIndex(i);
-					data.FindPropertyRelative("GameObject").objectReferenceValue = null;
-					data.FindPropertyRelative("FunctionName").stringValue = string.Empty;
-					data.FindPropertyRelative("Flags.value").intValue = 0;
-				}
+				rect.x += callbackFieldWidth;
+				rect.width = removeButtonWidth;
+				if (UnityEngine.GUI.Button(rect, "X"))
+					callbackData.DeleteArrayElementAtIndex(i);
 			}
-			else if (callbackData.arraySize == 1)
+
+			if (UnityEngine.GUI.Button(UnityEditor.EditorGUILayout.GetControlRect(), "Add"))
 			{
-				var data = callbackData.GetArrayElementAtIndex(0);
-				if (data.FindPropertyRelative("GameObject").objectReferenceValue == null)
-					if (string.IsNullOrEmpty(data.FindPropertyRelative("FunctionName").stringValue))
-						if (data.FindPropertyRelative("Flags.value").intValue == 0)
-							callbackData.arraySize = 0;
+				var i = callbackData.arraySize++;
+				var data = callbackData.GetArrayElementAtIndex(i);
+				data.FindPropertyRelative("GameObject").objectReferenceValue = null;
+				data.FindPropertyRelative("FunctionName").stringValue = string.Empty;
+				data.FindPropertyRelative("Flags.value").intValue = 0;
 			}
+		}
+		else if (callbackData.arraySize == 1)
+		{
+			var data = callbackData.GetArrayElementAtIndex(0);
+			if (data.FindPropertyRelative("GameObject").objectReferenceValue == null)
+				if (string.IsNullOrEmpty(data.FindPropertyRelative("FunctionName").stringValue))
+					if (data.FindPropertyRelative("Flags.value").intValue == 0)
+						callbackData.arraySize = 0;
 		}
 	}
 
 	private void DisplayStopSoundOnDestroy()
 	{
-		using (new UnityEditor.EditorGUILayout.VerticalScope("box"))
-		{
-			UnityEditor.EditorGUILayout.PropertyField(stopSoundOnDestroy, new UnityEngine.GUIContent("Stop Sound On Destroy: "));
-		}
+		UnityEditor.EditorGUILayout.PropertyField(stopSoundOnDisable);
 	}
 
 	public override void OnChildInspectorGUI()
@@ -277,12 +270,12 @@ public class AkEventInspector : AkBaseInspector
 		{
 			if (!AkUnitySoundEngine.IsInitialized())
 			{
-				UnityEngine.Debug.LogWarning("Sound Engine is not initialized. No sound will be heard.");
+				WwiseLogger.Warning("Sound Engine is not initialized. No sound will be heard.");
 				return;
 			}
 			if (!AkSoundEngineController.Instance.EditorListenerIsInitialized() && !UnityEditor.EditorApplication.isPlaying)
 			{
-				UnityEngine.Debug.LogWarning("Editor Listener isn't initialized. No sound will be heard.");
+				WwiseLogger.Warning("Editor Listener isn't initialized. No sound will be heard.");
 				return;
 			}
 			if (akEvents.Contains(akEvent))

@@ -12,12 +12,13 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
+using AK.Wwise.Unity.Logging;
 
 public partial class AkBuildPreprocessor
 {
@@ -98,7 +99,7 @@ public partial class AkBuildPreprocessor : UnityEditor.Build.IPreprocessBuild, U
 	{
 		if (string.IsNullOrEmpty(platformName))
 		{
-			UnityEngine.Debug.LogErrorFormat("WwiseUnity: Could not determine platform name for <{0}> platform", platformName);
+			WwiseLogger.LogFormat(LogLevel.Error, "Could not determine platform name for <{0}> platform", platformName);
 			return false;
 		}
 
@@ -121,11 +122,11 @@ public partial class AkBuildPreprocessor : UnityEditor.Build.IPreprocessBuild, U
 		if (!AkUtilities.DirectoryCopy(sourceFolder, destinationFolder, true))
 		{
 			destinationFolder = null;
-			UnityEngine.Debug.LogErrorFormat("WwiseUnity: Could not copy SoundBank folder for <{0}> platform", platformName);
+			WwiseLogger.LogFormat(LogLevel.Error, "Could not copy SoundBank folder for <{0}> platform", platformName);
 			return false;
 		}
 
-		UnityEngine.Debug.Log($"WwiseUnity: Copied SoundBank folder from <{sourceFolder}> to streaming assets folder <{destinationFolder}> for <{platformName}> platform build");
+		WwiseLogger.LogFormat(LogLevel.Log, "Copied SoundBank folder from <{0}> to streaming assets folder <{1}> for <{2}> platform build", sourceFolder, destinationFolder, platformName);
 		return true;
 	}
 
@@ -136,7 +137,7 @@ public partial class AkBuildPreprocessor : UnityEditor.Build.IPreprocessBuild, U
 			return;
 
 		System.IO.Directory.Delete(destinationFolder, true);
-		UnityEngine.Debug.LogFormat("WwiseUnity: Deleting streaming assets folder <{0}>", destinationFolder);
+		WwiseLogger.LogFormat(LogLevel.Log, "Deleting streaming assets folder <{0}>", destinationFolder);
 	}
 
 	public void OnPreprocessBuildInternal(UnityEditor.BuildTarget target, string path)
@@ -147,7 +148,7 @@ public partial class AkBuildPreprocessor : UnityEditor.Build.IPreprocessBuild, U
 		{
 			if (!CopySoundbanks(AkWwiseEditorSettings.Instance.GenerateSoundBanksAsPreBuildStep, platformName, ref destinationSoundBankFolder))
 			{
-				UnityEngine.Debug.LogErrorFormat("WwiseUnity: SoundBank folder has not been copied for <{0}> target at <{1}>. This will likely result in a build without sound!!!", target, path);
+				WwiseLogger.LogFormat(LogLevel.Error, "SoundBank folder has not been copied for <{0}> target at <{1}>. This will likely result in a build without sound!!!", target, path);
 			}
 		}
 #endif

@@ -13,7 +13,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 [UnityEditor.CustomEditor(typeof(AkSurfaceReflector), true)]
@@ -27,6 +27,7 @@ public class AkSurfaceReflectorInspector : UnityEditor.Editor
 	private UnityEditor.SerializedProperty TransmissionLossValues;
 	private UnityEditor.SerializedProperty EnableDiffraction;
 	private UnityEditor.SerializedProperty EnableDiffractionOnBoundaryEdges;
+	private UnityEditor.SerializedProperty BypassPortalSubtraction;
 	private UnityEditor.SerializedProperty Solid;
 	private UnityEditor.SerializedProperty isStatic;
 
@@ -40,6 +41,7 @@ public class AkSurfaceReflectorInspector : UnityEditor.Editor
 		EnableDiffraction = serializedObject.FindProperty("EnableDiffraction");
 		EnableDiffractionOnBoundaryEdges = serializedObject.FindProperty("EnableDiffractionOnBoundaryEdges");
 		Solid = serializedObject.FindProperty("Solid");
+		BypassPortalSubtraction = serializedObject.FindProperty("BypassPortalSubtraction");
 		isStatic = serializedObject.FindProperty("isStatic");
 	}
 
@@ -66,6 +68,7 @@ public class AkSurfaceReflectorInspector : UnityEditor.Editor
 			UnityEditor.EditorGUILayout.PropertyField(EnableDiffractionOnBoundaryEdges);
 		}
 
+		UnityEditor.EditorGUILayout.PropertyField(BypassPortalSubtraction);
 		UnityEditor.EditorGUILayout.PropertyField(Solid);
 
 		serializedObject.ApplyModifiedProperties();

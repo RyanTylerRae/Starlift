@@ -12,11 +12,12 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using AK.Wwise.Unity.Logging;
 
 public class AddressableBankPathSetter
 {
@@ -28,7 +29,7 @@ public class AddressableBankPathSetter
     {
 	    if (bankFolder == null)
 	    {
-		    UnityEngine.Debug.LogError("AddressableBankPathSetter: Bank folder was not specified.");
+		    WwiseLogger.Error("AddressableBankPathSetter: Bank folder was not specified.");
 		    return false;
 	    }
 
@@ -52,7 +53,7 @@ public class AddressableBankPathSetter
     {
 	    if (externalSourcePath == null)
 	    {
-		    UnityEngine.Debug.LogError("AddressableBankPathSetter: Bank folder was not specified.");
+		    WwiseLogger.Error("AddressableBankPathSetter: Bank folder was not specified.");
 		    return false;
 	    }
 
@@ -75,7 +76,7 @@ public class AddressableBankPathSetter
     {
 	    if (soundBankPath == null)
 	    {
-		    UnityEngine.Debug.LogError("AddressableBankPathSetter: Bank folder was not specified.");
+		    WwiseLogger.Error("AddressableBankPathSetter: Bank folder was not specified.");
 	    }
 
 	    var fullPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, soundBankPath);

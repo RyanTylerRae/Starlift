@@ -12,7 +12,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 #if UNITY_EDITOR
 using System.Runtime.InteropServices;
@@ -226,12 +226,21 @@ public class WwiseProjectDataBasePINVOKE
     /*
      * Switch Group Ref
      */
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetSwitchGroupRef(string InString);
 
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern global::System.IntPtr GetAllSwitchGroupRef();
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern uint GetSwitchGroupCount();
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteSwitchGroupRef(global::System.IntPtr switchGroupRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteSwitchGroupArrayRef(global::System.IntPtr switchGroupRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern global::System.IntPtr GetSwitchGroup(global::System.IntPtr switchArrayRefPtr, int index);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern System.IntPtr GetSwitchGroupName(global::System.IntPtr switchGroupRefPtr);
@@ -246,17 +255,7 @@ public class WwiseProjectDataBasePINVOKE
     public static extern uint GetSwitchGroupShortId(global::System.IntPtr switchGroupRefPtr);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteSwitchGroupRef(global::System.IntPtr switchGroupRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteSwitchGroupArrayRef(global::System.IntPtr switchGroupRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetSwitchGroup(global::System.IntPtr switchArrayRefPtr, int index);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint GetSwitchGroupCount();
-    
+    public static extern global::System.IntPtr GetSwitchGroupRefString(string InString);
     
     /*
      * Switch Ref
@@ -266,7 +265,16 @@ public class WwiseProjectDataBasePINVOKE
     public static extern global::System.IntPtr GetAllSwitchRef();
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetSwitchRef(string InString);
+    public static extern uint GetSwitchCount();
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteSwitchRef(global::System.IntPtr switchRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteSwitchArrayRef(global::System.IntPtr switchRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern global::System.IntPtr GetSwitch(global::System.IntPtr switchArrayRefPtr, int index);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern System.IntPtr GetSwitchName(global::System.IntPtr switchRefPtr);
@@ -284,26 +292,27 @@ public class WwiseProjectDataBasePINVOKE
     public static extern uint GetSwitchGroupId(global::System.IntPtr switchRefPtr);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteSwitchRef(global::System.IntPtr switchRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteSwitchArrayRef(global::System.IntPtr switchRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetSwitch(global::System.IntPtr switchArrayRefPtr, int index);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint GetSwitchCount();
+    public static extern global::System.IntPtr GetSwitchRefString(string InString);
+
     
     /*
      * State Group Ref
      */
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetStateGroupRef(string InString);
+    public static extern global::System.IntPtr GetAllStateGroupRef();
+        
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern uint GetStateGroupCount();
 
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetAllStateGroupRef();
+    public static extern void DeleteStateGroupRef(global::System.IntPtr StateGroupRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteStateGroupArrayRef(global::System.IntPtr StateGroupRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern global::System.IntPtr GetStateGroup(global::System.IntPtr StateArrayRefPtr, int index);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern System.IntPtr GetStateGroupName(global::System.IntPtr StateGroupRefPtr);
@@ -316,19 +325,9 @@ public class WwiseProjectDataBasePINVOKE
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern uint GetStateGroupShortId(global::System.IntPtr StateGroupRefPtr);
-    
+
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteStateGroupRef(global::System.IntPtr StateGroupRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteStateGroupArrayRef(global::System.IntPtr StateGroupRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetStateGroup(global::System.IntPtr StateArrayRefPtr, int index);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint GetStateGroupCount();
-    
+    public static extern global::System.IntPtr GetStateGroupRefString(string InString);
     
     /*
      * State Ref
@@ -338,7 +337,16 @@ public class WwiseProjectDataBasePINVOKE
     public static extern global::System.IntPtr GetAllStateRef();
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetStateRef(string InString);
+    public static extern uint GetStateCount();
+
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteStateRef(global::System.IntPtr StateRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteStateArrayRef(global::System.IntPtr StateRefPtr);
+        
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern global::System.IntPtr GetState(global::System.IntPtr StateArrayRefPtr, int index);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern System.IntPtr GetStateName(global::System.IntPtr StateRefPtr);
@@ -356,17 +364,7 @@ public class WwiseProjectDataBasePINVOKE
     public static extern uint GetStateGroupId(global::System.IntPtr StateRefPtr);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteStateRef(global::System.IntPtr StateRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteStateArrayRef(global::System.IntPtr StateRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetState(global::System.IntPtr StateArrayRefPtr, int index);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint GetStateCount();
-    
+    public static extern global::System.IntPtr GetStateRefString(string InString);
     /*
      * AcousticTexture Ref
      */
@@ -375,7 +373,16 @@ public class WwiseProjectDataBasePINVOKE
     public static extern global::System.IntPtr GetAllAcousticTextureRef();
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetAcousticTextureRef(string InString);
+    public static extern uint GetAcousticTextureCount();
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteAcousticTextureRef(global::System.IntPtr AcousticTextureRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteAcousticTextureArrayRef(global::System.IntPtr AcousticTextureRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern global::System.IntPtr GetAcousticTexture(global::System.IntPtr AcousticTextureArrayRefPtr, int index);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern System.IntPtr GetAcousticTextureName(global::System.IntPtr AcousticTextureRefPtr);
@@ -390,16 +397,7 @@ public class WwiseProjectDataBasePINVOKE
     public static extern uint GetAcousticTextureShortId(global::System.IntPtr AcousticTextureRefPtr);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteAcousticTextureRef(global::System.IntPtr AcousticTextureRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteAcousticTextureArrayRef(global::System.IntPtr AcousticTextureRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetAcousticTexture(global::System.IntPtr AcousticTextureArrayRefPtr, int index);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint GetAcousticTextureCount();
+    public static extern global::System.IntPtr GetAcousticTextureRefString(string InString);
     
     /*
      * GameParameter Ref
@@ -409,7 +407,16 @@ public class WwiseProjectDataBasePINVOKE
     public static extern global::System.IntPtr GetAllGameParameterRef();
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetGameParameterRef(string InString);
+    public static extern uint GetGameParameterCount();
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteGameParameterRef(global::System.IntPtr GameParameterRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteGameParameterArrayRef(global::System.IntPtr GameParameterRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern global::System.IntPtr GetGameParameter(global::System.IntPtr GameParameterArrayRefPtr, int index);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern System.IntPtr GetGameParameterName(global::System.IntPtr GameParameterRefPtr);
@@ -424,16 +431,7 @@ public class WwiseProjectDataBasePINVOKE
     public static extern uint GetGameParameterShortId(global::System.IntPtr GameParameterRefPtr);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteGameParameterRef(global::System.IntPtr GameParameterRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteGameParameterArrayRef(global::System.IntPtr GameParameterRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetGameParameter(global::System.IntPtr GameParameterArrayRefPtr, int index);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint GetGameParameterCount();
+    public static extern global::System.IntPtr GetGameParameterRefString(string InString);
     
     /*
      * Trigger Ref
@@ -443,7 +441,16 @@ public class WwiseProjectDataBasePINVOKE
     public static extern global::System.IntPtr GetAllTriggerRef();
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetTriggerRef(string InString);
+    public static extern uint GetTriggerCount();
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteTriggerRef(global::System.IntPtr TriggerRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteTriggerArrayRef(global::System.IntPtr TriggerRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern global::System.IntPtr GetTrigger(global::System.IntPtr TriggerArrayRefPtr, int index);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern System.IntPtr GetTriggerName(global::System.IntPtr TriggerRefPtr);
@@ -456,18 +463,9 @@ public class WwiseProjectDataBasePINVOKE
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern uint GetTriggerShortId(global::System.IntPtr TriggerRefPtr);
-    
+
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteTriggerRef(global::System.IntPtr TriggerRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteTriggerArrayRef(global::System.IntPtr TriggerRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetTrigger(global::System.IntPtr TriggerArrayRefPtr, int index);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint GetTriggerCount();
+    public static extern global::System.IntPtr GetTriggerRefString(string InString);
     
     /*
      * Bus Ref
@@ -477,7 +475,16 @@ public class WwiseProjectDataBasePINVOKE
     public static extern global::System.IntPtr GetAllBusRef();
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetBusRef(string InString);
+    public static extern uint GetBusCount();
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteBusRef(global::System.IntPtr BusRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteBusArrayRef(global::System.IntPtr BusRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern global::System.IntPtr GetBus(global::System.IntPtr BusArrayRefPtr, int index);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern System.IntPtr GetBusName(global::System.IntPtr BusRefPtr);
@@ -492,16 +499,7 @@ public class WwiseProjectDataBasePINVOKE
     public static extern uint GetBusShortId(global::System.IntPtr BusRefPtr);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteBusRef(global::System.IntPtr BusRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteBusArrayRef(global::System.IntPtr BusRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetBus(global::System.IntPtr BusArrayRefPtr, int index);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint GetBusCount();
+    public static extern global::System.IntPtr GetBusRefString(string InString);
     
     /*
      * AuxBus Ref
@@ -511,7 +509,16 @@ public class WwiseProjectDataBasePINVOKE
     public static extern global::System.IntPtr GetAllAuxBusRef();
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetAuxBusRef(string InString);
+    public static extern uint GetAuxBusCount();
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteAuxBusRef(global::System.IntPtr AuxBusRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DeleteAuxBusArrayRef(global::System.IntPtr AuxBusRefPtr);
+    
+    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern global::System.IntPtr GetAuxBus(global::System.IntPtr AuxBusArrayRefPtr, int index);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern System.IntPtr GetAuxBusName(global::System.IntPtr AuxBusRefPtr);
@@ -526,15 +533,6 @@ public class WwiseProjectDataBasePINVOKE
     public static extern uint GetAuxBusShortId(global::System.IntPtr AuxBusRefPtr);
     
     [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteAuxBusRef(global::System.IntPtr AuxBusRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DeleteAuxBusArrayRef(global::System.IntPtr AuxBusRefPtr);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern global::System.IntPtr GetAuxBus(global::System.IntPtr AuxBusArrayRefPtr, int index);
-    
-    [DllImport("WwiseProjectDatabase.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint GetAuxBusCount();
+    public static extern global::System.IntPtr GetAuxBusRefString(string InString);
 }
 #endif

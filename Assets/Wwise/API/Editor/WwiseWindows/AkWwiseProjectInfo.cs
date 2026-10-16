@@ -13,11 +13,12 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEditor;
+using AK.Wwise.Unity.Logging;
 
 public static class AkWwiseProjectInfo
 {
@@ -71,7 +72,7 @@ public static class AkWwiseProjectInfo
 			}
 			catch (System.Exception e)
 			{
-				UnityEngine.Debug.LogError("WwiseUnity: Unable to load Wwise Data: " + e);
+				WwiseLogger.LogFormat(LogLevel.Error, "Unable to load Wwise Data: {0}", e);
 			}
 		}
 

@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using AK.Wwise.Unity.Logging;
 
-#if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#if !(UNITY_QNX) // Disable under unsupported platforms.
 /*******************************************************************************
 The content of this file includes portions of the proprietary AUDIOKINETIC Wwise
 Technology released in source code form as part of the game integration package.
@@ -17,7 +18,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 /// <summary>
@@ -286,8 +287,7 @@ public static class AkCallbackManager
 				string soundBankPath = System.IO.Path.Combine(AkBasePathGetter.GetPlatformBasePath(), "SoundbanksInfo.xml");
 				if (!System.IO.File.Exists(soundBankPath))
 				{
-					Debug.LogWarning("The XMLTranslator has been disabled since the SoundbanksInfo.xml couldn't be located at " + soundBankPath + ". To remove the warning," +
-						" either disable the XMLTranslator by going to Project Settings -> Wwise Integration and setting XML Translator Timeout to 0 or generate the xml file by editing the wwise project settings.");
+					WwiseLogger.LogFormat(LogLevel.Warning, "The XMLTranslator has been disabled since the SoundbanksInfo.xml couldn't be located at {0}. To remove the warning, either disable the XMLTranslator by going to Project Settings -> Wwise Integration and setting XML Translator Timeout to 0 or generate the xml file by editing the wwise project settings.", soundBankPath);
 					XmlTimeout = 0;
 				}
 			}
@@ -303,18 +303,17 @@ public static class AkCallbackManager
 		}
 		catch (System.Exception)
 		{
-			UnityEngine.Debug.LogWarning("Error parsing WaapiPort, XMLTranslatorTimeout or WaapiTranslatorTimeout. Must be an integer.");
+			WwiseLogger.Warning("Error parsing WaapiPort, XMLTranslatorTimeout or WaapiTranslatorTimeout. Must be an integer.");
 		}
 #endif
 	}
 	
 #if UNITY_EDITOR
-	private static void FreeXMLFileHandle()
+	private static void FreeXMLFileHandle(uint xmlTimeout)
 	{
-		uint XmlTimeout = uint.Parse(AkWwiseEditorSettings.Instance.XMLTranslatorTimeout);
 		string baseSoundBankPath = AkBasePathGetter.GetPlatformBasePath();
 		baseSoundBankPath += "SoundbanksInfo.xml";
-		AkCallbackSerializer.FreeXmlTranslatorHandle(baseSoundBankPath, XmlTimeout);
+		AkCallbackSerializer.FreeXmlTranslatorHandle(baseSoundBankPath, xmlTimeout);
 	}
 #endif
 
@@ -351,27 +350,37 @@ public static class AkCallbackManager
 				}
 				catch (System.ArgumentNullException)
 				{
-					UnityEngine.Debug.LogWarning(s_gID + " was null.");
+					WwiseLogger.LogFormat(LogLevel.Warning, "{0} was null.", s_gID);
 				}
 				catch (System.ArgumentException)
 				{
-					UnityEngine.Debug.LogWarning(s_gID + " is not a number.");
+					WwiseLogger.LogFormat(LogLevel.Warning, "{0} is not a number.", s_gID);
 				}
 				catch (System.FormatException)
 				{
-					UnityEngine.Debug.LogWarning("Unable to parse " + s_gID + ".");
+					WwiseLogger.LogFormat(LogLevel.Warning, "Unable to parse {0}.", s_gID);
 				}
 				catch (System.OverflowException)
 				{
-					UnityEngine.Debug.LogWarning(s_gID + " is out of range of the UInt64 type.");
+					WwiseLogger.LogFormat(LogLevel.Warning, "{0} is out of range of the UInt64 type.", s_gID);
 				}
 				bool gameIdResolved = false;
 #if UNITY_EDITOR
 				if (gId != AkUnitySoundEngine.AK_INVALID_GAME_OBJECT)
 				{
+#if UNITY_6000_4_OR_NEWER
+					var obj =
+						UnityEditor.EditorUtility.EntityIdToObject(EntityId.FromULong( AkMonitoringCallbackInfo.gameObjID)) as
+							UnityEngine.GameObject;
+#elif UNITY_6000_3_OR_NEWER
+					var obj =
+						UnityEditor.EditorUtility.EntityIdToObject((int)AkMonitoringCallbackInfo.gameObjID) as
+							UnityEngine.GameObject;
+#else
 					var obj =
 						UnityEditor.EditorUtility.InstanceIDToObject((int)AkMonitoringCallbackInfo.gameObjID) as
 							UnityEngine.GameObject;
+#endif
 					if (obj != null)
 					{
 						in_message = in_message.Replace(in_message.Substring(currentPos, idStringSize + 2), obj.name);
@@ -441,13 +450,13 @@ public static class AkCallbackManager
 						{
 							AkMonitoringCallbackInfo.setCPtr(pData);
 
-							var msg = "Wwise: " + AkMonitoringCallbackInfo.message;
+							var msg = "WwiseMonitor: " + AkMonitoringCallbackInfo.message;
 							ParseCallbackInfoMessage(ref msg);
 
 							if (AkMonitoringCallbackInfo.errorLevel == AkMonitorErrorLevel.ErrorLevel_Error)
-								UnityEngine.Debug.LogError(msg);
+								WwiseLogger.Error(msg);
 							else
-								UnityEngine.Debug.Log(msg);
+								WwiseLogger.Log(msg);
 						}
 						atLeastOneMonitoringCallback = true;
 #endif
@@ -457,7 +466,7 @@ public static class AkCallbackManager
 						BankCallbackPackage bankPkg = null;
 						if (!m_mapBankCallbacks.TryGetValue((int) pPackage, out bankPkg))
 						{
-							UnityEngine.Debug.LogError("WwiseUnity: BankCallbackPackage not found for <" + pPackage + ">.");
+							WwiseLogger.LogFormat(LogLevel.Error, "BankCallbackPackage not found for <{0}>.", pPackage);
 							break;
 						}
 
@@ -474,7 +483,7 @@ public static class AkCallbackManager
 						EventCallbackPackage eventPkg = null;
 						if (!m_mapEventCallbacks.TryGetValue((int) pPackage, out eventPkg))
 						{
-							UnityEngine.Debug.LogError("WwiseUnity: EventCallbackPackage not found for <" + pPackage + ">.");
+							WwiseLogger.LogFormat(LogLevel.Error, "EventCallbackPackage not found for <{0}>.", pPackage);
 							break;
 						}
 
@@ -533,7 +542,7 @@ public static class AkCallbackManager
 								break;
 
 							default:
-								UnityEngine.Debug.LogError("WwiseUnity: Undefined callback type <" + eType + "> received. Callback object possibly corrupted.");
+								WwiseLogger.LogFormat(LogLevel.Error, "Undefined callback type <{0}> received. Callback object possibly corrupted.", eType);
 								break;
 						}
 
@@ -544,9 +553,10 @@ public static class AkCallbackManager
 			}
 			
 #if UNITY_EDITOR
-			if (atLeastOneMonitoringCallback)
+			uint xmlTimeout = uint.Parse(AkWwiseEditorSettings.Instance.XMLTranslatorTimeout);
+			if (atLeastOneMonitoringCallback && xmlTimeout > 0)
 			{
-				FreeXMLFileHandle();
+				FreeXMLFileHandle(xmlTimeout);
 			}
 #endif
 			return numCallbacks;
@@ -557,4 +567,4 @@ public static class AkCallbackManager
 		}
 	}
 }
-#endif // #if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#endif // #if !(UNITY_QNX) // Disable under unsupported platforms.

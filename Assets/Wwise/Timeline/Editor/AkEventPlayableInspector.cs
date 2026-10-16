@@ -18,7 +18,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 [System.Obsolete(AkUnitySoundEngine.Deprecation_2019_2_0)]
@@ -137,13 +137,13 @@ public class AkEventPlayableInspector : UnityEditor.Editor
 
 			var path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
 			var objects = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path);
-			var instanceIds = new System.Collections.Generic.List<int>();
+			var instanceIds = new System.Collections.Generic.List<ulong>();
 			foreach (var obj in objects)
 			{
 				if (obj == null)
 					continue;
 
-				var id = obj.GetInstanceID();
+				var id = AkUnitySoundEngine.GetAkGameObjectID(obj);
 				if (!instanceIds.Contains(id))
 					instanceIds.Add(id);
 			}
@@ -154,7 +154,7 @@ public class AkEventPlayableInspector : UnityEditor.Editor
 				objects = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path);
 				foreach (var obj in objects)
 				{
-					if (obj && obj.GetInstanceID() == id)
+					if (obj && AkUnitySoundEngine.GetAkGameObjectID(obj) == id)
 					{
 						var playable = obj as AkEventPlayable;
 						if (playable)

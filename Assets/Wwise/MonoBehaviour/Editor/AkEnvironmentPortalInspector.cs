@@ -15,7 +15,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 [UnityEditor.CustomEditor(typeof(AkEnvironmentPortal), true)]
@@ -144,7 +144,9 @@ public class AkEnvironmentPortalInspector : UnityEditor.Editor
 		var myCollider = m_envPortal.gameObject.GetComponent<UnityEngine.Collider>();
 		if (myCollider == null)
 			return;
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+		var environments = FindObjectsByType<AkEnvironment>();		
+#elif UNITY_6000_0_OR_NEWER
 		var environments = FindObjectsByType<AkEnvironment>(FindObjectsSortMode.None);
 #else
 		var environments = FindObjectsOfType<AkEnvironment>();

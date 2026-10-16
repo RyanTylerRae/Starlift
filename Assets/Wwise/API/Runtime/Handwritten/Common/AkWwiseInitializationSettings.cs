@@ -12,8 +12,10 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
+
+using AK.Wwise.Unity.Logging;
 
 public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 {
@@ -218,7 +220,7 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 			string currentClassName;
 			if (m_PlatformSettingsClassNames.TryGetValue(platformName, out currentClassName) && currentClassName == className)
 			{
-				UnityEngine.Debug.LogWarning("WwiseUnity: The class <" + currentClassName + "> is being replaced by <" + className + "> for the reference platform: " + platformName);
+				WwiseLogger.LogFormat(LogLevel.Warning, "The class <{0}> is being replaced by <{1}> for the reference platform: {2}", currentClassName, className, platformName);
 				return;
 			}
 
@@ -282,7 +284,7 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 				AkUnitySoundEngineInitialization.Instance.initializationDelegate += m_Instance.SetActiveSettings;
 #else
 				m_Instance = CreateInstance<AkWwiseInitializationSettings>();
-				UnityEngine.Debug.LogWarning("WwiseUnity: No platform specific settings were created. Default initialization settings will be used.");
+				WwiseLogger.Warning("No platform specific settings were created. Default initialization settings will be used.");
 #endif
 			}
 
@@ -314,7 +316,7 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 				return platformSettings;
 		}
 
-		UnityEngine.Debug.LogWarning("WwiseUnity: Platform specific settings cannot be found for <" + platformName + ">. Using global settings.");
+		WwiseLogger.LogFormat(LogLevel.Warning, "Platform specific settings cannot be found for <{0}>. Using global settings.", platformName);
 		return instance;
 	}
 
@@ -340,7 +342,7 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 		}
 		else if (m_Instance != this)
 		{
-			UnityEngine.Debug.LogWarning("WwiseUnity: There are multiple AkWwiseInitializationSettings objects instantiated; only one will be used.");
+			WwiseLogger.Warning("There are multiple AkWwiseInitializationSettings objects instantiated; only one will be used.");
 		}
 	}
 
@@ -441,6 +443,8 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 		}
 
 		var customPlatformSettingsMap = new System.Collections.Generic.Dictionary<string, PlatformSettings>();
+		var updated = false;
+
 		var instance = Instance;
 		if (instance.IsValid)
 		{
@@ -452,10 +456,14 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 				{
 					customPlatformSettingsMap.Add(name, settings);
 				}
+				else
+				{
+					//The PlatformSettingsList contains invalid platforms, we need to clean it.
+					updated = true;
+				}
 			}
 		}
 
-		var updated = false;
 		var allCustomPlatforms = new System.Collections.Generic.List<string>();
 		foreach (var pair in AkUtilities.PlatformMapping)
 		{
@@ -468,7 +476,7 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 				if (!instance.InvalidReferencePlatforms.Contains(referencePlatform))
 				{
 					instance.InvalidReferencePlatforms.Add(referencePlatform);
-					UnityEngine.Debug.LogError("WwiseUnity: A class has not been registered for the reference platform: " + referencePlatform + ". Has the platform been added to your Wwise Integration?");
+					WwiseLogger.LogFormat(LogLevel.Error, "A class has not been registered for the reference platform: {0}. Has the platform been added to your Wwise Integration?", referencePlatform);
 				}
 				continue;
 			}

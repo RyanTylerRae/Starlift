@@ -12,11 +12,13 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 #if UNITY_EDITOR
 using System.IO;
+using AK.Wwise.Unity.Logging;
+
 
 internal class StaticPluginRegistration
 {
@@ -45,7 +47,7 @@ internal class StaticPluginRegistration
 			{
 				if (!platformPluginActivator.Architectures.Contains(pluginInfo.PluginArch))
 				{
-					UnityEngine.Debug.Log("WwiseUnity: Architecture not found: " + pluginInfo.PluginArch);
+					WwiseLogger.LogFormat(LogLevel.Log, "Architecture not found: {0}", pluginInfo.PluginArch);
 					continue;
 				}
 			}
@@ -65,14 +67,14 @@ internal class StaticPluginRegistration
 		if (missingPlugins.Count == 0)
 		{
 			if (plugins == null)
-				UnityEngine.Debug.LogWarningFormat("WwiseUnity: The activated Wwise plug-ins may not be correct. Could not read PluginInfo.xml for platform: {0}", deploymentTargetName);
+				WwiseLogger.LogFormat(LogLevel.Warning, "The activated Wwise plug-ins may not be correct. Could not read PluginInfo.xml for platform: {0}", deploymentTargetName);
 			
 			staticPluginRegistration.TryWriteToFile(platformPluginActivator);
 		}
 		else
 		{
-			UnityEngine.Debug.LogErrorFormat(
-				"WwiseUnity: These plugins used by the Wwise project are missing from the Unity project: {0}. Please check folder Assets/Wwise/API/Runtime/Plugin/{1}.",
+			WwiseLogger.LogFormat(LogLevel.Error, 
+				"These plugins used by the Wwise project are missing from the Unity project: {0}. Please check folder Assets/Wwise/API/Runtime/Plugin/{1}.",
 				string.Join(", ", missingPlugins.ToArray()), deploymentTargetName);
 		}
 	}
@@ -103,7 +105,7 @@ internal class StaticPluginRegistration
 				}
 				else
 				{
-					UnityEngine.Debug.LogErrorFormat("WwiseUnity: Could not find '{0}', required for building plugin.", fullPath);
+					WwiseLogger.LogFormat(LogLevel.Error, "Could not find '{0}', required for building plugin.", fullPath);
 				}
 			}
 		}
@@ -161,7 +163,7 @@ internal class StaticPluginRegistration
 		}
 		catch (System.Exception e)
 		{
-			UnityEngine.Debug.LogError("WwiseUnity: Could not write <" + RelativePath + ">. Exception: " + e.Message);
+			WwiseLogger.LogFormat(LogLevel.Error, "Could not write <{0}>. Exception: {1}", RelativePath, e.Message);
 			return;
 		}
 

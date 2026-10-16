@@ -1,4 +1,4 @@
-#if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#if !(UNITY_QNX) // Disable under unsupported platforms.
 /*******************************************************************************
 The content of this file includes portions of the proprietary AUDIOKINETIC Wwise
 Technology released in source code form as part of the game integration package.
@@ -13,8 +13,11 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
+
+using AK.Wwise.Unity.Logging;
+
 [UnityEngine.AddComponentMenu("Wwise/Spatial Audio/AkRoomPortal")]
 [UnityEngine.RequireComponent(typeof(UnityEngine.BoxCollider))]
 [UnityEngine.DisallowMultipleComponent]
@@ -77,6 +80,8 @@ public class AkRoomPortal : AkTriggerHandler
 	private bool portalSet = false;
 	private bool portalNeedsUpdate = false;
 
+	private ulong[] previousRoomIDs = new ulong[MAX_ROOMS_PER_PORTAL];
+
 	private void SetRoomPortal()
 	{
 		if (!AkUnitySoundEngine.IsInitialized())
@@ -104,7 +109,7 @@ public class AkRoomPortal : AkTriggerHandler
 		}
 		else
 		{
-			UnityEngine.Debug.LogWarning(name + " Portal placement is invalid. The portal is not set in the Spatial Audio engine. The front and back Rooms of the Portal cannot be the same or have a ReverbZone-parent relationship.");
+			WwiseLogger.LogFormat(LogLevel.Warning, "{0} Portal placement is invalid. The portal is not set in the Spatial Audio engine. The front and back Rooms of the Portal cannot be the same or have a ReverbZone-parent relationship.", name);
 			if (portalSet)
 			{
 				AkUnitySoundEngine.RemovePortal(GetID());
@@ -181,7 +186,10 @@ public class AkRoomPortal : AkTriggerHandler
 	}
 
 	/// Access the portal's ID
-	public ulong GetID() { return (ulong)GetInstanceID(); }
+	public ulong GetID()
+	{
+		return AkUnitySoundEngine.GetAkGameObjectID(this);
+	}
 
 	protected override void Awake()
 	{
@@ -197,6 +205,12 @@ public class AkRoomPortal : AkTriggerHandler
 
 		// init update condition
 		transform.hasChanged = false;
+
+		// init previous room IDs
+		for (var i = 0; i < MAX_ROOMS_PER_PORTAL; ++i)
+		{
+			previousRoomIDs[i] = AkRoom.INVALID_ROOM_ID;
+		}
 
 		base.Awake();
 	}
@@ -285,11 +299,15 @@ public class AkRoomPortal : AkTriggerHandler
 		// compute halfExtents and divide the local z extent by 2
 		var halfExtentZ = portalCollider.size.z / 2;
 
-		// move the center backward
-		FillRoomList(UnityEngine.Vector3.forward * -halfExtentZ, roomList[0]);
+		// get the local center of the portal
+		UnityEngine.Vector3 localCenter = portalCollider.center;
 
-		// move the center forward
-		FillRoomList(UnityEngine.Vector3.forward * halfExtentZ, roomList[1]);
+		// move the center forward/backward
+		UnityEngine.Vector3 localFront = localCenter + UnityEngine.Vector3.forward * halfExtentZ;
+		UnityEngine.Vector3 localBack = localCenter + UnityEngine.Vector3.forward * -halfExtentZ;
+
+		FillRoomList(localBack, roomList[0]);
+		FillRoomList(localFront, roomList[1]);
 	}
 
 	private void FillRoomList(UnityEngine.Vector3 position, AkRoom.PriorityList list)
@@ -318,13 +336,15 @@ public class AkRoomPortal : AkTriggerHandler
 		for (var i = 0; i < MAX_ROOMS_PER_PORTAL; ++i)
 		{
 			var room = roomList[i].GetHighestPriorityActiveAndEnabledRoom();
+			var roomID = room != null ? room.GetID() : AkRoom.INVALID_ROOM_ID;
 
-			if (room != rooms[i])
+			if (roomID != previousRoomIDs[i])
 			{
 				wasUpdated = true;
 			}
 
 			rooms[i] = room;
+			previousRoomIDs[i] = roomID;
 		}
 
 		return wasUpdated;
@@ -405,19 +425,19 @@ public class AkRoomPortal : AkTriggerHandler
 	[System.Obsolete(AkUnitySoundEngine.Deprecation_2019_2_0)]
 	public void SetRoom(int in_roomIndex, AkRoom in_room)
 	{
-		UnityEngine.Debug.LogFormat("SetRoom is deprecated. Highest priority, active and enabled room will be automatically chosen. Make sure room priorities and game object placements are correct.");
+		WwiseLogger.LogFormat(LogLevel.Log, "SetRoom is deprecated. Highest priority, active and enabled room will be automatically chosen. Make sure room priorities and game object placements are correct.");
 	}
 
 	[System.Obsolete(AkUnitySoundEngine.Deprecation_2019_2_0)]
 	public void SetFrontRoom(AkRoom room)
 	{
-		UnityEngine.Debug.LogFormat("SetFrontRoom is deprecated. Highest priority, active and enabled room will be automatically chosen. Make sure room priorities and game object placements are correct.");
+		WwiseLogger.LogFormat(LogLevel.Log, "SetFrontRoom is deprecated. Highest priority, active and enabled room will be automatically chosen. Make sure room priorities and game object placements are correct.");
 	}
 
 	[System.Obsolete(AkUnitySoundEngine.Deprecation_2019_2_0)]
 	public void SetBackRoom(AkRoom room)
 	{
-		UnityEngine.Debug.LogFormat("SetBackRoom is deprecated. Highest priority, active and enabled room will be automatically chosen. Make sure room priorities and game object placements are correct.");
+		WwiseLogger.LogFormat(LogLevel.Log, "SetBackRoom is deprecated. Highest priority, active and enabled room will be automatically chosen. Make sure room priorities and game object placements are correct.");
 	}
 
 	[System.Obsolete(AkUnitySoundEngine.Deprecation_2019_2_0)]
@@ -433,4 +453,4 @@ public class AkRoomPortal : AkTriggerHandler
 	}
 	#endregion
 }
-#endif // #if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#endif // #if !(UNITY_QNX) // Disable under unsupported platforms.

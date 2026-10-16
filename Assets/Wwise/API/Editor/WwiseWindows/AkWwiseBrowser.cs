@@ -12,17 +12,24 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 using System;
 using UnityEditor;
 using UnityEngine;
+using AK.Wwise.Unity.Logging;
+
+#if UNITY_6000_2_OR_NEWER
+using WwiseTreeViewState = UnityEditor.IMGUI.Controls.TreeViewState<int>;
+#else
+using WwiseTreeViewState = UnityEditor.IMGUI.Controls.TreeViewState;
+#endif
 
 #if UNITY_EDITOR
 public class AkWwiseBrowser : UnityEditor.EditorWindow
 {
-	[UnityEngine.SerializeField] UnityEditor.IMGUI.Controls.TreeViewState m_treeViewState;
+	[UnityEngine.SerializeField] WwiseTreeViewState m_treeViewState;
 
 	public static AkWwiseTreeView m_treeView;
 	UnityEditor.IMGUI.Controls.SearchField m_SearchField;
@@ -41,23 +48,56 @@ public class AkWwiseBrowser : UnityEditor.EditorWindow
 	[UnityEditor.MenuItem("Window/Wwise Browser", false, (int)AkWwiseWindowOrder.WwisePicker)]
 	public static void InitBrowserWindow()
 	{
-		AkWwiseBrowser window = (AkWwiseBrowser)EditorWindow.GetWindow(typeof(AkWwiseBrowser));
-
-		if (window == null)
+		if (!EditorWindow.HasOpenInstances<AkWwiseBrowser>())
 		{
-			window = GetWindow<AkWwiseBrowser>("Wwise Browser", true,typeof(EditorWindow).Assembly.GetType("UnityEditor.ConsoleWindow"));
+			AkWwiseBrowser window = (AkWwiseBrowser)EditorWindow.GetWindow(typeof(AkWwiseBrowser));
+			
+			if (window != null)
+			{
+				LoadWindowTexture(window);
+				window.Show();
+			}
 		}
-		Texture2D windowIcon = EditorGUIUtility.Load("Assets/Wwise/API/Editor/WwiseWindows/BrowserIcon.png") as Texture2D;
-		window.titleContent = new GUIContent("Wwise Browser", windowIcon);
-		
-		window.Show();
+	}
+
+	private static void LoadWindowTexture(AkWwiseBrowser window)
+	{
+		Texture2D originalIcon = EditorGUIUtility.Load("Assets/Wwise/API/Editor/WwiseWindows/BrowserIcon.png") as Texture2D;
+
+		if (originalIcon != null)
+		{
+			window.titleContent = new GUIContent("Wwise Browser", originalIcon);
+		}
+	}
+
+
+	private static Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
+	{
+		RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight);
+		RenderTexture.active = rt;
+		Graphics.Blit(source, rt);
+		Texture2D result = new Texture2D(targetWidth, targetHeight);
+		result.ReadPixels(new Rect(0, 0, targetWidth, targetHeight), 0, 0);
+		result.Apply();
+		RenderTexture.active = null; 
+		RenderTexture.ReleaseTemporary(rt);
+		return result;
 	}
 
 	public void OnEnable()
 	{
 		if (m_treeViewState == null)
 		{
-			m_treeViewState = new UnityEditor.IMGUI.Controls.TreeViewState();
+			m_treeViewState = new WwiseTreeViewState();
+		}
+		
+		if (EditorWindow.HasOpenInstances<AkWwiseBrowser>())
+		{
+			AkWwiseBrowser window = (AkWwiseBrowser)EditorWindow.GetWindow(typeof(AkWwiseBrowser), false, null, false);
+			if (window != null)
+			{
+				LoadWindowTexture(window);
+			}
 		}
 
 		var multiColumnHeaderState = AkWwiseTreeView.CreateDefaultMultiColumnHeaderState();
@@ -350,7 +390,7 @@ public class AkWwiseBrowser : UnityEditor.EditorWindow
         }
         else if (!AkUtilities.GeneratingSoundBanks)
         {
-            UnityEngine.Debug.LogError("Access to Wwise is required to generate the SoundBanks. Please go to Edit > Project Settings... and set the Wwise Application Path found in the Wwise Integration view.");
+            WwiseLogger.Error("Access to Wwise is required to generate the SoundBanks. Please go to Edit > Project Settings... and set the Wwise Application Path found in the Wwise Integration view.");
         }
     }
 

@@ -13,7 +13,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 using UnityEngine;
 
@@ -25,13 +25,13 @@ public class AkPortalManager
 	public System.Collections.Generic.List<AkEnvironment> EnvironmentList =
 		new System.Collections.Generic.List<AkEnvironment>();
 
-	public System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<AkEnvironment>>[]
+	public System.Collections.Generic.Dictionary<ulong, System.Collections.Generic.List<AkEnvironment>>[]
 		IntersectingEnvironments =
 		{
 			//All environments on the negative side of each portal(opposite to the direction of the chosen axis)
-			new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<AkEnvironment>>(),
+			new System.Collections.Generic.Dictionary<ulong, System.Collections.Generic.List<AkEnvironment>>(),
 			//All environments on the positive side of each portal(same direction as the chosen axis)
-			new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<AkEnvironment>>()
+			new System.Collections.Generic.Dictionary<ulong, System.Collections.Generic.List<AkEnvironment>>()
 		};
 
 	private float m_timeStamp = UnityEngine.Time.realtimeSinceStartup;
@@ -75,7 +75,9 @@ public class AkPortalManager
 	public void Populate()
 	{
 		//Add all environments in the scene to the environment list 
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+		var akEnv = Object.FindObjectsByType<AkEnvironment>();
+#elif UNITY_6000_0_OR_NEWER
 		var akEnv = Object.FindObjectsByType<AkEnvironment>(FindObjectsSortMode.None);
 #else
 		var akEnv = Object.FindObjectsOfType<AkEnvironment>();
@@ -84,7 +86,9 @@ public class AkPortalManager
 		s_portalManager.EnvironmentList.AddRange(akEnv);
 
 		//Add all portals in the scene to the portal list 
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+		var akPortals = Object.FindObjectsByType<AkEnvironmentPortal>();
+#elif UNITY_6000_0_OR_NEWER
 		var akPortals = Object.FindObjectsByType<AkEnvironmentPortal>(FindObjectsSortMode.None);
 #else
 		var akPortals = Object.FindObjectsOfType<AkEnvironmentPortal>();
@@ -103,10 +107,10 @@ public class AkPortalManager
 
 		for (var i = 0; i < 2; i++)
 		{
-			if (!IntersectingEnvironments[i].TryGetValue(in_portal.GetInstanceID(), out envList[i]))
+			if (!IntersectingEnvironments[i].TryGetValue(AkUnitySoundEngine.GetAkGameObjectID(in_portal), out envList[i]))
 			{
 				envList[i] = new System.Collections.Generic.List<AkEnvironment>();
-				IntersectingEnvironments[i][in_portal.GetInstanceID()] = envList[i];
+				IntersectingEnvironments[i][AkUnitySoundEngine.GetAkGameObjectID(in_portal)] = envList[i];
 			}
 			else
 				envList[i].Clear();
@@ -153,11 +157,11 @@ public class AkPortalManager
 						? 1
 						: 0;
 
-					if (!IntersectingEnvironments[index].TryGetValue(PortalList[i].GetInstanceID(), out envList))
+					if (!IntersectingEnvironments[index].TryGetValue(AkUnitySoundEngine.GetAkGameObjectID(PortalList[i]), out envList))
 					{
 						envList = new System.Collections.Generic.List<AkEnvironment>();
 						envList.Add(in_env);
-						IntersectingEnvironments[index][PortalList[i].GetInstanceID()] = envList;
+						IntersectingEnvironments[index][AkUnitySoundEngine.GetAkGameObjectID(PortalList[i])] = envList;
 					}
 					else if (!envList.Contains(in_env))
 						envList.Add(in_env);

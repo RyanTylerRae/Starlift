@@ -12,11 +12,12 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 using System.IO;
 using System.Threading.Tasks;
+using AK.Wwise.Unity.Logging;
 
 public partial class WwiseProjectDatabase
 {
@@ -37,7 +38,7 @@ public partial class WwiseProjectDatabase
         directory += "/Mac/DSP";
 #endif
         
-        UnityEngine.Debug.LogError($"WwiseUnity: {libraryName} could not be found. Please check the parent folder {directory}. If the {Path.GetExtension(libraryName)} is missing, try 1. Modifying the Wwise Project or 2. Copying the {libraryName} directly from the SDK\\platform_architecture\\Profile\\bin folder of your Wwise installation into {directory}.");
+        WwiseLogger.LogFormat(LogLevel.Error, "{0} could not be found. Please check the parent folder {1}. If the {2} is missing, try 1. Modifying the Wwise Project or 2. Copying the {0} directly from the SDK\\platform_architecture\\Profile\\bin folder of your Wwise installation into {1}.", libraryName, directory, Path.GetExtension(libraryName));
     }
 
     public static void LogProjectDatabaseDLLException(System.Exception e)
@@ -48,7 +49,7 @@ public partial class WwiseProjectDatabase
         }
         else
         {
-            UnityEngine.Debug.LogError($"WwiseUnity: The project database dll encountered the following error: {e.Message}" );
+            WwiseLogger.LogFormat(LogLevel.Error, "The project database dll encountered the following error: {0}", e.Message);
         }
     }
     public static void InitCheckUp(string inDirectoryPath)
@@ -927,7 +928,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            return WwiseProjectDataBasePINVOKE.GetSwitchGroupRef(switchName);
+            return WwiseProjectDataBasePINVOKE.GetSwitchGroupRefString(switchName);
         }
         catch (System.Exception e)
         {
@@ -1065,7 +1066,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-           return WwiseProjectDataBasePINVOKE.GetSwitchRef(switchName); 
+           return WwiseProjectDataBasePINVOKE.GetSwitchRefString(switchName); 
         }
         catch (System.Exception e)
         {
@@ -1174,7 +1175,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            WwiseProjectDataBasePINVOKE.DeletePlatformRef(switchRefPtr);
+            WwiseProjectDataBasePINVOKE.DeleteSwitchRef(switchRefPtr);
         }
         catch (System.Exception e)
         {
@@ -1217,7 +1218,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            return WwiseProjectDataBasePINVOKE.GetStateGroupRef(StateName);
+            return WwiseProjectDataBasePINVOKE.GetStateGroupRefString(StateName);
         }
         catch (System.Exception e)
         {
@@ -1356,7 +1357,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            return WwiseProjectDataBasePINVOKE.GetStateRef(StateName);
+            return WwiseProjectDataBasePINVOKE.GetStateRefString(StateName);
         }
         catch (System.Exception e)
         {
@@ -1464,7 +1465,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            WwiseProjectDataBasePINVOKE.DeletePlatformRef(StateRefPtr);
+            WwiseProjectDataBasePINVOKE.DeleteStateRef(StateRefPtr);
         }
         catch (System.Exception e)
         {
@@ -1507,7 +1508,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            return WwiseProjectDataBasePINVOKE.GetAcousticTextureRef(AcousticTextureName);
+            return WwiseProjectDataBasePINVOKE.GetAcousticTextureRefString(AcousticTextureName);
         }
         catch (System.Exception e)
         {
@@ -1602,7 +1603,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            WwiseProjectDataBasePINVOKE.DeletePlatformRef(AcousticTextureRefPtr);
+            WwiseProjectDataBasePINVOKE.DeleteAcousticTextureRef(AcousticTextureRefPtr);
         }
         catch (System.Exception e)
         {
@@ -1645,7 +1646,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            return WwiseProjectDataBasePINVOKE.GetGameParameterRef(GameParameterName);
+            return WwiseProjectDataBasePINVOKE.GetGameParameterRefString(GameParameterName);
         }
         catch (System.Exception e)
         {
@@ -1740,7 +1741,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            WwiseProjectDataBasePINVOKE.DeletePlatformRef(GameParameterRefPtr);
+            WwiseProjectDataBasePINVOKE.DeleteGameParameterRef(GameParameterRefPtr);
         }
         catch (System.Exception e)
         {
@@ -1783,7 +1784,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            return WwiseProjectDataBasePINVOKE.GetTriggerRef(TriggerName);
+            return WwiseProjectDataBasePINVOKE.GetTriggerRefString(TriggerName);
         }
         catch (System.Exception e)
         {
@@ -1878,7 +1879,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            WwiseProjectDataBasePINVOKE.DeletePlatformRef(TriggerRefPtr);
+            WwiseProjectDataBasePINVOKE.DeleteTriggerRef(TriggerRefPtr);
         }
         catch (System.Exception e)
         {
@@ -1921,7 +1922,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            return WwiseProjectDataBasePINVOKE.GetBusRef(BusName);
+            return WwiseProjectDataBasePINVOKE.GetBusRefString(BusName);
         }
         catch (System.Exception e)
         {
@@ -2016,7 +2017,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            WwiseProjectDataBasePINVOKE.DeletePlatformRef(BusRefPtr);
+            WwiseProjectDataBasePINVOKE.DeleteBusRef(BusRefPtr);
         }
         catch (System.Exception e)
         {
@@ -2059,7 +2060,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            return WwiseProjectDataBasePINVOKE.GetAuxBusRef(AuxBusName);
+            return WwiseProjectDataBasePINVOKE.GetAuxBusRefString(AuxBusName);
         }
         catch (System.Exception e)
         {
@@ -2154,7 +2155,7 @@ public partial class WwiseProjectDatabase
     {
         try
         {
-            WwiseProjectDataBasePINVOKE.DeletePlatformRef(AuxBusRefPtr);
+            WwiseProjectDataBasePINVOKE.DeleteAuxBusRef(AuxBusRefPtr);
         }
         catch (System.Exception e)
         {

@@ -13,7 +13,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 using System;
@@ -22,6 +22,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using AK.Wwise.Unity.Logging;
 
 /// <summary>
 /// This class wraps the client that communicates with the Wwise Authoring application via WAAPI.
@@ -234,7 +235,7 @@ private static async void Loop()
             }
             catch (System.Net.WebSockets.WebSocketException)
             {
-                UnityEngine.Debug.Log("Wwise Unity : WAAPI disconnected because Wwise Authoring was closed");
+                WwiseLogger.Log("Wwise Unity : WAAPI disconnected because Wwise Authoring was closed");
                 Disconnecting?.Invoke(false);
                 waapiCommandQueue = new ConcurrentQueue<WaapiCommand>();
                 projectConnected = false;
@@ -304,7 +305,7 @@ private static async void Loop()
 						case ak.wwise.error.invalid_json:
 						case ak.wwise.error.invalid_arguments:
 						default:
-							UnityEngine.Debug.Log(ErrorMessage);
+							WwiseLogger.Log(ErrorMessage);
 							break;
 					}
 					break;
@@ -325,8 +326,9 @@ private static async void Loop()
 	private static void TriggerConnectionCheck()
 	{
 		loopSleep = 0;
+		WaapiClient.CancelConnectionAttempt();
 	}
-
+	
 	/// <summary>
 	/// Checks the global WAAPI settings and disconnects if WAAPI is disabled or connection settings have changed.
 	/// If disconnected, try to connect with current settings.
@@ -392,6 +394,11 @@ private static async void Loop()
 	{
 		try
 		{
+			var projectAvailable = await IsProjectAvailable();
+			if (!projectAvailable)
+			{
+				return false;
+			}
 			var result = await GetProjectInfo();
 			if (result.Count == 0)
 			{
@@ -562,6 +569,12 @@ private static async void Loop()
 
 		return ParseObjectInfo(ret);
 	}
+	
+	private static async Task<bool> IsProjectAvailable()
+	{
+		var result = await WaapiClient.Call(ak.wwise.core.@object.ping, null, null);
+		return UnityEngine.JsonUtility.FromJson<PingWwiseObject>(result).isAvailable;
+	}
 
 	/// <summary>
 	/// Use this function to queue a command with no expected return object.
@@ -633,12 +646,15 @@ private static async void Loop()
 	public static void GetWwiseObjects<T>(List<System.Guid> guids, ReturnOptions options, GetResultListDelegate<T> callback)
 	{
 		string guidString = "";
-		foreach (var guid in guids)
+		for (int i = 0; i < guids.Count; i++)
 		{
-			guidString += $"{guid:B} ,";
-		}
-
-		var args = new WaqlArgs($"from object \"{guidString}\" ");
+			guidString += $"{guids[i]:B}";
+			if (i < guids.Count - 1)
+			{
+				guidString += ",";
+			}
+        }
+		var args = new WaqlArgs("from object \"" + guidString + "\" ");
 		QueueCommandWithReturnWwiseObjects(args, options, callback);
 	}
 
@@ -818,7 +834,7 @@ private static async void Loop()
         }
         catch (Exception e)
         {
-	        UnityEngine.Debug.LogError($"WwiseUnity: Log Parsing Failed: Could not deserialize JSON.\nError: {e.Message}");
+	        WwiseLogger.LogFormat(LogLevel.Error, "Log Parsing Failed: Could not deserialize JSON.\nError: {0}", e.Message);
             return;
         }
 
@@ -849,20 +865,18 @@ private static async void Loop()
 
         if (issues.Count > 0)
         {
-            string header = $"WwiseUnity: SoundBanks generation FAILED with {errorCount} Error(s) and {warningCount} Warning(s):";
-            string combinedLog = header + "\n" + string.Join("\n", issues);
             if (errorCount > 0)
             {
-	            UnityEngine.Debug.LogError(combinedLog);
+	            WwiseLogger.LogFormat(LogLevel.Error, "SoundBanks generation FAILED with {0} Error(s) and {1} Warning(s):\n{2}", errorCount, warningCount, string.Join("\n", issues));
             }
             else
             {
-	            UnityEngine.Debug.LogWarning(combinedLog);
+	            WwiseLogger.LogFormat(LogLevel.Warning, "SoundBanks generation FAILED with {0} Error(s) and {1} Warning(s):\n{2}", errorCount, warningCount, string.Join("\n", issues));
             }
         }
         else
         {
-            UnityEngine.Debug.Log("WwiseUnity: SoundBanks generation successful:");
+            WwiseLogger.Log("SoundBanks generation successful:");
         }
 	}
 	
@@ -918,7 +932,7 @@ private static async void Loop()
 			}
 			catch (System.Exception e)
 			{
-				UnityEngine.Debug.LogError($"WwiseUnity: Failed to open Explorer when opening a work unit in the file explorer: {e.Message}");
+				WwiseLogger.LogFormat(LogLevel.Error, "Failed to open Explorer when opening a work unit in the file explorer: {0}", e.Message);
 			}
 #elif UNITY_EDITOR_OSX
 			string arguments = $"-R \"{filePath}\"";
@@ -928,7 +942,7 @@ private static async void Loop()
 		    }
 		    catch (System.Exception e)
 		    {
-		        UnityEngine.Debug.LogError($"WwiseUnity: macOS failed to reveal a work unit in Finder: {e.Message}");
+		        WwiseLogger.LogFormat(LogLevel.Error, "macOS failed to reveal a work unit in Finder: {0}", e.Message);
 		    }
 #endif
 		}

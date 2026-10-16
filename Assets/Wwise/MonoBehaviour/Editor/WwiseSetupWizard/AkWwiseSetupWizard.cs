@@ -12,7 +12,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 #if UNITY_EDITOR
@@ -38,7 +38,7 @@ public class WwiseSetupWizard
 	};
 	
 	//Change this when an API change is introduced that would break older version of the addrerssables package
-	private static string WwiseAddressableAPIDefine = "ADDRESSABLES_API_2025_DEFAULT";
+	private static string WwiseAddressableAPIDefine = "ADDRESSABLES_API_BREAK_AK_UTILITIES_WWISE_LOGGER";
 
 	public static void RunModify()
 	{
@@ -163,7 +163,9 @@ public class WwiseSetupWizard
 		foreach (var objectType in wwiseComponentTypes)
 		{
 			// Get all objects in the scene with the specified type.
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+			var objects = UnityEngine.Object.FindObjectsByType(objectType);
+#elif UNITY_6000_0_OR_NEWER
 			var objects = UnityEngine.Object.FindObjectsByType(objectType, FindObjectsSortMode.None);
 #else
 			var objects = UnityEngine.Object.FindObjectsOfType(objectType);
@@ -295,13 +297,13 @@ public class WwiseSetupWizard
 			// migration loop, we need to get a valid array of MonoBehaviours again, because it might
 			// have been invalidated by the call to MigrateObject. We then migrate the objects that
 			// need migration by making sure their InstanceID is in the list of unmigrated MonoBehaviours.
-			var instanceIds = new System.Collections.Generic.List<int>();
+			var instanceIds = new System.Collections.Generic.List<ulong>();
 			foreach (var obj in objects)
 			{
 				if (obj == null)
 					continue;
 
-				var id = obj.GetInstanceID();
+				var id = AkUnitySoundEngine.GetAkGameObjectID(obj);
 				if (!instanceIds.Contains(id))
 					instanceIds.Add(id);
 			}
@@ -309,8 +311,14 @@ public class WwiseSetupWizard
 			for (; instanceIds.Count > 0; instanceIds.RemoveAt(0))
 			{
 				var id = instanceIds[0];
-				var obj = UnityEditor.EditorUtility.InstanceIDToObject(id);
-				if (obj && obj.GetInstanceID() == id)
+#if UNITY_6000_4_OR_NEWER
+				var obj = UnityEditor.EditorUtility.EntityIdToObject(EntityId.FromULong(id));
+#elif UNITY_6000_3_OR_NEWER
+				var obj = UnityEditor.EditorUtility.EntityIdToObject((int)id);
+#else
+				var obj = UnityEditor.EditorUtility.InstanceIDToObject((int)id);
+#endif
+				if (obj && AkUnitySoundEngine.GetAkGameObjectID(obj) == id)
 				{
 					MigrateObject(obj);
 				}
@@ -415,13 +423,13 @@ public class WwiseSetupWizard
 			// migration loop, we need to get a valid array of MonoBehaviours again, because it might
 			// have been invalidated by the call to MigrateObject. We then migrate the objects that
 			// need migration by making sure their InstanceID is in the list of unmigrated MonoBehaviours.
-			var instanceIds = new System.Collections.Generic.List<int>();
+			var instanceIds = new System.Collections.Generic.List<ulong>();
 			foreach (var obj in objects)
 			{
 				if (obj == null)
 					continue;
 
-				var id = obj.GetInstanceID();
+				var id = AkUnitySoundEngine.GetAkGameObjectID(obj);
 				if (!instanceIds.Contains(id))
 					instanceIds.Add(id);
 			}
@@ -429,8 +437,14 @@ public class WwiseSetupWizard
 			for (; instanceIds.Count > 0; instanceIds.RemoveAt(0))
 			{
 				var id = instanceIds[0];
-				var obj = UnityEditor.EditorUtility.InstanceIDToObject(id);
-				if (obj && obj.GetInstanceID() == id)
+#if UNITY_6000_4_OR_NEWER
+				var obj = UnityEditor.EditorUtility.EntityIdToObject(EntityId.FromULong(id));
+#elif UNITY_6000_3_OR_NEWER
+				var obj = UnityEditor.EditorUtility.EntityIdToObject((int)id);
+#else
+				var obj = UnityEditor.EditorUtility.InstanceIDToObject((int)id);
+#endif
+				if (obj && AkUnitySoundEngine.GetAkGameObjectID(obj) == id)
 				{
 					MigrateObject(obj);
 				}
@@ -546,7 +560,6 @@ public class WwiseSetupWizard
 	{
 		UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.DefaultGameObjects);
 
-		AkPluginActivator.IsVerboseLogging = true;
 		UnityEngine.Debug.Log("WwiseUnity: Deactivating all plugins...");
 		AkPluginActivator.DeactivateAllPlugins();
 
@@ -635,9 +648,15 @@ public class WwiseSetupWizard
 
 		if (wwiseVersionAsInteger >= 2023)
 		{
-			foreach (var TargetGroup in AvailableBuildTargetGroups)
+			foreach (BuildTargetGroup targetGroup in GetNonObsoleteTargetGroups())
 			{
-				var namedTarget = UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(TargetGroup);
+#if UNITY_5_4_OR_NEWER
+				if (targetGroup == BuildTargetGroup.Unknown)
+				{
+					continue;
+				}
+#endif
+				var namedTarget = UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(targetGroup);
 				string defines = PlayerSettings.GetScriptingDefineSymbols(namedTarget);
 				for (int i = 2023; i <= minimalVersion; ++i)
 				{
@@ -662,7 +681,9 @@ public class WwiseSetupWizard
 	private static void CreateWwiseGlobalObject()
 	{
 		// Look for a game object which has the initializer component
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+		var AkInitializers = UnityEngine.Object.FindObjectsByType<AkInitializer>();
+#elif UNITY_6000_0_OR_NEWER
 		var AkInitializers = UnityEngine.Object.FindObjectsByType<AkInitializer>(FindObjectsSortMode.None);
 #else
 		var AkInitializers = UnityEngine.Object.FindObjectsOfType<AkInitializer>();
@@ -752,7 +773,9 @@ public class WwiseSetupWizard
 		// on the first scene of a new project
 		if (camera == null)
 		{
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
+			var cameraArray = UnityEngine.Object.FindObjectsByType<UnityEngine.Camera>();
+#elif UNITY_6000_0_OR_NEWER
 			var cameraArray = UnityEngine.Object.FindObjectsByType<UnityEngine.Camera>(FindObjectsSortMode.None);
 #else
 			var cameraArray = UnityEngine.Object.FindObjectsOfType<UnityEngine.Camera>();
@@ -800,7 +823,7 @@ public class WwiseSetupWizard
 
 		if (logWarning)
 		{
-			UnityEngine.Debug.LogWarning("Automatically added AkAudioListener to Main Camera. Go to \"Edit > Wwise Settings...\" to disable this functionality.");
+			UnityEngine.Debug.Log("Automatically added AkAudioListener to Main Camera. Go to \"Edit > Wwise Settings...\" to disable this functionality.");
 		}
 	}
 	
@@ -821,11 +844,6 @@ public class WwiseSetupWizard
 	
 	private static void SetAddressableAdapterSymbol()
 	{
-		if (PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone).Contains(WwiseAddressableAPIDefine))
-		{
-			return;
-		}
-        
 		foreach (BuildTargetGroup targetGroup in GetNonObsoleteTargetGroups())
 		{
 #if UNITY_5_4_OR_NEWER
@@ -834,7 +852,13 @@ public class WwiseSetupWizard
 				continue;
 			}
 #endif
-			string currentDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
+			var namedTarget = UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(targetGroup);
+			if (PlayerSettings.GetScriptingDefineSymbols(namedTarget).Contains(WwiseAddressableAPIDefine))
+			{
+				continue;
+			}
+			
+			string currentDefines = PlayerSettings.GetScriptingDefineSymbols(namedTarget);
 			var currentDefineList = currentDefines.Split(';').ToList();
 
 			const string wwiseAddressablePrefix = "ADDRESSABLES_API";
@@ -843,7 +867,7 @@ public class WwiseSetupWizard
 			currentDefineList.Add(WwiseAddressableAPIDefine);
 
 			string newDefinesString = string.Join(";", currentDefineList.Distinct());
-			PlayerSettings.SetScriptingDefineSymbolsForGroup(targetGroup, newDefinesString);
+			PlayerSettings.SetScriptingDefineSymbols(namedTarget, newDefinesString);
 		}
 	}
 

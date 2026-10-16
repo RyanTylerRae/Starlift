@@ -12,9 +12,10 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 using System.Collections.Generic;
+using AK.Wwise.Unity.Logging;
 
 /// @brief Represents Wwise objects as Unity assets.
 public abstract class WwiseObjectReference : UnityEngine.ScriptableObject
@@ -271,7 +272,7 @@ public abstract class WwiseObjectReference : UnityEngine.ScriptableObject
 		}
 		catch
 		{
-			UnityEngine.Debug.LogWarning("WwiseUnity: Invalid guid for WwiseObjectReference of type <WwiseObjectType." + wwiseObjectType + ">.");
+			WwiseLogger.LogFormat(LogLevel.Warning, "Invalid guid for WwiseObjectReference of type <WwiseObjectType.{0}>.", wwiseObjectType);
 			return null;
 		}
 
@@ -421,7 +422,7 @@ public abstract class WwiseObjectReference : UnityEngine.ScriptableObject
 		var objectReference = FindOrCreateWwiseObject(wwiseObjectType, data.objectName, guid);
 		if (objectReference && objectReference.Id != formattedId)
 		{
-			UnityEngine.Debug.LogWarning("WwiseUnity: ID mismatch for WwiseObjectReference of type <WwiseObjectType." + wwiseObjectType + ">. Expected <" + formattedId + ">. Found <" + objectReference.Id + ">.");
+			WwiseLogger.LogFormat(LogLevel.Warning, "ID mismatch for WwiseObjectReference of type <WwiseObjectType.{0}>. Expected <{1}>. Found <{2}>.", wwiseObjectType, formattedId, objectReference.Id);
 		}
 
 		return objectReference;
@@ -485,14 +486,14 @@ public abstract class WwiseGroupValueObjectReference : WwiseObjectReference
 		var groupValueObjectReference = objectReference as WwiseGroupValueObjectReference;
 		if (!groupValueObjectReference)
 		{
-			UnityEngine.Debug.LogWarning("WwiseUnity: Not setting WwiseObjectReference since it is not a WwiseGroupValueObjectReference.");
+			WwiseLogger.Warning("Not setting WwiseObjectReference since it is not a WwiseGroupValueObjectReference.");
 			return null;
 		}
 
 		var groupObjectReference = GetWwiseObjectForMigration(groupValueObjectReference.GroupWwiseObjectType, groupGuid, groupId);
 		if (!groupObjectReference)
 		{
-			UnityEngine.Debug.LogWarning("WwiseUnity: Not setting WwiseObjectReference since its GroupObjectReference cannot be determined.");
+			WwiseLogger.Warning("Not setting WwiseObjectReference since its GroupObjectReference cannot be determined.");
 			return null;
 		}
 

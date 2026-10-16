@@ -1,4 +1,4 @@
-#if !(UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#if !(UNITY_QNX) // Disable under unsupported platforms.
 /*******************************************************************************
 The content of this file includes portions of the proprietary AUDIOKINETIC Wwise
 Technology released in source code form as part of the game integration package.
@@ -13,13 +13,14 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEditor;
+using AK.Wwise.Unity.Logging;
 
 /// <summary>
 ///     This class is responsible for determining the path where sound banks are located. When using custom platforms, this
@@ -82,7 +83,7 @@ public partial class AkBasePathGetter
 			return TargetPlatforms[target];
 		}
 		
-		UnityEngine.Debug.LogWarning($"WwiseUnity: Target {target.ToString()} is not supported by default by Wwise. Make sure to create a custom script and subscribe to GetCustomTargetPlatformName delegate to add it. ");
+		WwiseLogger.LogFormat(LogLevel.Warning, "Target {0} is not supported by default by Wwise. Make sure to create a custom script and subscribe to GetCustomTargetPlatformName delegate to add it. ", target.ToString());
 
 		return string.Empty;
 	}
@@ -137,7 +138,7 @@ public partial class AkBasePathGetter
 		if (string.IsNullOrEmpty(sourcePlatformBasePath))
 		{
 			if (LogWarnings)
-				UnityEngine.Debug.LogErrorFormat("WwiseUnity: Could not find source folder for <{0}> platform. Did you remember to generate your banks?", platformName);
+				WwiseLogger.LogFormat(LogLevel.Error, "Could not find source folder for <{0}> platform. Did you remember to generate your banks?", platformName);
 
 			destinationPlatformBasePath = string.Empty;
 			return false;
@@ -147,7 +148,7 @@ public partial class AkBasePathGetter
 		if (string.IsNullOrEmpty(destinationPlatformBasePath))
 		{
 			if (LogWarnings)
-				UnityEngine.Debug.LogErrorFormat("WwiseUnity: Could not find destination folder for <{0}> platform", platformName);
+				WwiseLogger.LogFormat(LogLevel.Error, "Could not find destination folder for <{0}> platform", platformName);
 
 			return false;
 		}
@@ -216,7 +217,7 @@ public partial class AkBasePathGetter
 		{
 			if (string.IsNullOrEmpty(SoundBankDest))
 			{
-				UnityEngine.Debug.LogWarning("WwiseUnity: The platform SoundBank subfolder within the Wwise project could not be found.");
+				WwiseLogger.Warning("The platform SoundBank subfolder within the Wwise project could not be found.");
 				return null;
 			}
 
@@ -233,7 +234,7 @@ public partial class AkBasePathGetter
 				if (!SoundBankDest.Contains(platformName))
 				{
 					if (LogWarnings)
-						UnityEngine.Debug.LogWarning("WwiseUnity: The platform SoundBank subfolder does not match your platform name. You will need to create a custom platform name getter for your game. See section \"Using Wwise Custom Platforms in Unity\" of the Wwise Unity integration documentation for more information");
+						WwiseLogger.Warning("The platform SoundBank subfolder does not match your platform name. You will need to create a custom platform name getter for your game. See section \"Using Wwise Custom Platforms in Unity\" of the Wwise Unity integration documentation for more information");
 				}
 
 				return SoundBankDest;
@@ -274,7 +275,7 @@ public partial class AkBasePathGetter
 		{
 			tempSoundBankBasePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(tempPersistentDataPath, persistentDataSubfolder));
 			if (LogWarnings)
-				UnityEngine.Debug.LogFormat("WwiseUnity: Using persistentDataPath. SoundBanks base path set to <{0}>.", tempSoundBankBasePath);
+				WwiseLogger.LogFormat(LogLevel.Log, "Using persistentDataPath. SoundBanks base path set to <{0}>.", tempSoundBankBasePath);
 		}
 		else
 		{
@@ -286,11 +287,11 @@ public partial class AkBasePathGetter
 				if (LogWarnings)
 				{
 #if UNITY_EDITOR
-					var format = "WwiseUnity: Could not locate the SoundBanks in {0}. Did you make sure to generate them?";
+					var format = "Could not locate the SoundBanks in {0}. Did you make sure to generate them?";
 #else
-					var format = "WwiseUnity: Could not locate the SoundBanks in {0}. Did you make sure to copy them to the StreamingAssets folder?";
+					var format = "Could not locate the SoundBanks in {0}. Did you make sure to copy them to the StreamingAssets folder?";
 #endif
-					UnityEngine.Debug.LogErrorFormat(format, tempSoundBankBasePath);
+					WwiseLogger.LogFormat(LogLevel.Error, format, tempSoundBankBasePath);
 				}
 			}
 #endif
@@ -307,4 +308,4 @@ public partial class AkBasePathGetter
 	public string DecodedBankFullPath { get; private set; }
 }
 
-#endif // #if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#endif // #if !(UNITY_QNX) // Disable under unsupported platforms.

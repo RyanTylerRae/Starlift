@@ -12,7 +12,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 #if !(UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
@@ -21,6 +21,8 @@ Copyright (c) 2025 Audiokinetic Inc.
 using System.IO;
 using UnityEditor;
 using System.Linq;
+using AK.Wwise.Unity.Logging;
+
 #region GUI
 #if UNITY_2018_3_OR_NEWER
 	class SettingsProvider : UnityEditor.SettingsProvider
@@ -63,6 +65,7 @@ using System.Linq;
 			public static string TranslatorSection = "Wwise Error Message Translator";
 			public static UnityEngine.GUIContent XMLTranslatorTimeout = new UnityEngine.GUIContent("XML Translator Timeout", "Maximum time (ms) taken to convert numeric ID in errors through SoundBankInfo.xml. Set to 0 to disable. Change will be applied next time play mode is entered.");
 			public static UnityEngine.GUIContent WaapiTranslatorTimeout = new UnityEngine.GUIContent("WAAPI Translator Timeout", "Maximum time (ms) taken to convert numeric ID in errors through WAAPI. Set to 0 to disable. Change will be applied next time play mode is entered.");
+			public static UnityEngine.GUIContent AkLoggerLevel = new UnityEngine.GUIContent("AkLogger Level", "Log Verbosity.");
 
 			private static UnityEngine.GUIStyle version;
 			public static UnityEngine.GUIStyle Version
@@ -126,6 +129,7 @@ using System.Linq;
 				AkUnitySoundEngineInitialization.Instance.TerminateSoundEngine();
 			}
 		}
+			
 
 		public override void OnGUI(string searchContext)
 #else
@@ -192,7 +196,7 @@ using System.Linq;
 #endif
 					if (path != "" && !IsFolderWwiseApplicationPath(path))
 					{
-						EditorUtility.DisplayDialog("Wwise Application Path could not be set", $"WwiseUnity: {path} did not contain a Wwise Authoring application.", "OK");
+						EditorUtility.DisplayDialog("Wwise Application Path could not be set", $"{path} did not contain a Wwise Authoring application.", "OK");
 					}
 					else if (path.Length != 0)
 					{

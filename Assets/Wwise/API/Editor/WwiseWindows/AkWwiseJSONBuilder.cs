@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using AK.Wwise.Unity.Logging;
 
 #if UNITY_EDITOR
 /*******************************************************************************
@@ -17,7 +18,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 [UnityEditor.InitializeOnLoad]
@@ -151,7 +152,7 @@ public class AkWwiseJSONBuilder : UnityEditor.AssetPostprocessor
 		}
 		catch (System.Exception e)
 		{
-			UnityEngine.Debug.Log("WwiseUnity: Exception occured while parsing SoundbanksInfo.json: " + e.ToString());
+			WwiseLogger.LogFormat(LogLevel.Log, "Exception occured while parsing SoundbanksInfo.json: {0}", e.ToString());
 			return false;
 		}
 	}
@@ -258,7 +259,7 @@ public class AkWwiseJSONBuilder : UnityEditor.AssetPostprocessor
 			}
 			else
 			{
-				UnityEngine.Debug.Log("WwiseUnity: Could not parse float number " + s);
+				WwiseLogger.LogFormat(LogLevel.Log, "Could not parse float number {0}", s);
 				return 0.0f;
 			}
 		}

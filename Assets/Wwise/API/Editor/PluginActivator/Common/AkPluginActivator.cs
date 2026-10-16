@@ -12,7 +12,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
 #if UNITY_EDITOR
@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using AK.Wwise.Unity.Logging;
 
 [InitializeOnLoad]
 public class AkPluginActivator : UnityEditor.AssetPostprocessor
@@ -32,12 +33,6 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 		if (UnityEditor.AssetDatabase.IsAssetImportWorkerProcess() || bIsAlreadyActivating)
 		{
 			return;
-		}
-
-		if (Array.IndexOf(Environment.GetCommandLineArgs(), "-verboseAkPluginActivator") != -1)
-		{
-            UnityEngine.Debug.Log("Enabling verbose logging!");
-			IsVerboseLogging = true;
 		}
 
 		if (didDomainReload)
@@ -61,7 +56,7 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 
 	public static void RegisterPlatformPluginActivator(BuildTarget target, AkPlatformPluginActivator platformPluginActivator)
 	{
-		LogVerbose("Adding platform " + target.ToString() + " to PluginActivator");
+		WwiseLogger.LogFormat(LogLevel.Verbose, "Adding platform {0} to PluginActivator", target.ToString());
 		BuildTargetToPlatformPluginActivator.Add(target, platformPluginActivator);
 	}
 
@@ -113,13 +108,13 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 	{
 		if (!BuildTargetToPlatformPluginActivator.TryGetValue(target, out var platformPluginActivator))
 		{
-			Debug.LogError("WwiseUnity: Unable to find Plugin Activator for Build Target " + target + ". Check that platform " + target +  " has been installed as part of your Wwise Integration.");
+			WwiseLogger.LogFormat(LogLevel.Error, "Unable to find Plugin Activator for Build Target {0}. Check that platform {1} has been installed as part of your Wwise Integration.", target, target);
 			return;
 		}
 
 		if (!platformPluginActivator.IsBuildEnvironmentValid())
 		{
-			Debug.LogError("Build Environment for platform " + platformPluginActivator.WwisePlatformName + " is not valid. Current BuildTarget is " + EditorUserBuildSettings.activeBuildTarget);
+			WwiseLogger.LogFormat(LogLevel.Error, "Build Environment for platform {0} is not valid. Current BuildTarget is {1}", platformPluginActivator.WwisePlatformName, EditorUserBuildSettings.activeBuildTarget);
 			return;
 		}
 
@@ -132,11 +127,12 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 
 		var importers = GetWwisePluginImporters();
 		var assetChanged = false;
+		AssetDatabase.StartAssetEditing();
 		foreach (var pluginImporter in importers)
 		{
 			if (pluginImporter.GetCompatibleWithAnyPlatform())
 			{
-				LogVerbose("Plugin" + pluginImporter.assetPath + " was compatible with the \"any\" platform, deactivating.");
+				WwiseLogger.LogFormat(LogLevel.Log, "Plugin{0} was compatible with the \"any\" platform, deactivating.", pluginImporter.assetPath);
 				pluginImporter.SetCompatibleWithAnyPlatform(false);
 				assetChanged = true;
 			}
@@ -159,36 +155,36 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 			{
 				if (!pluginInfo.IsSupportLibrary && !AkPlatformPluginList.IsPluginUsed(platformPluginActivator, pluginPlatform, Path.GetFileNameWithoutExtension(pluginImporter.assetPath)))
 				{
-					LogVerbose("Plugin" + pluginImporter.assetPath + " is not used, skipping.");
+					WwiseLogger.LogFormat(LogLevel.Verbose, "Plugin{0} is not used, skipping.", pluginImporter.assetPath);
 					bShouldActivatePlugin = false;
 				}
 			}
 			else if (pluginInfo.PluginConfig != GetCurrentConfig())
 			{
-				LogVerbose("Plugin" + pluginImporter.assetPath + " does not match current config (" + GetCurrentConfig() + "). Skipping.");
+				WwiseLogger.LogFormat(LogLevel.Verbose, "Plugin{0} does not match current config ({1}). Skipping.", pluginImporter.assetPath, GetCurrentConfig());
 				bShouldActivatePlugin = false;
 			}
 
 			if (!string.IsNullOrEmpty(pluginInfo.PluginSDKVersion))
 			{
 				var sdkCompatible = platformPluginActivator.IsPluginSDKVersionCompatible(pluginInfo.PluginSDKVersion);
-				LogVerbose("Plugin " + pluginImporter.assetPath + " is " + (sdkCompatible ? "" : "NOT ") + "compatible with current platform SDK");
+				WwiseLogger.LogFormat(LogLevel.Verbose, "Plugin {0} is {1}compatible with current platform SDK", pluginImporter.assetPath, (sdkCompatible ? "" : "NOT "));
 				bShouldActivatePlugin &= sdkCompatible;
 			}
 
 			bool isCompatibleWithPlatform = bShouldActivatePlugin && Activate;
-			LogVerbose("Will set plugin " + pluginImporter.assetPath + " as " + (isCompatibleWithPlatform ? "" : "NOT ") + "compatible with platform.");
+			WwiseLogger.LogFormat(LogLevel.Verbose, "Will set plugin {0} as {1}compatible with platform.", pluginImporter.assetPath, (isCompatibleWithPlatform ? "" : "NOT "));
 			assetChanged |= pluginImporter.GetCompatibleWithPlatform(target) != isCompatibleWithPlatform;
 
 			pluginImporter.SetCompatibleWithPlatform(target, isCompatibleWithPlatform);
 
 			if (assetChanged)
 			{
-				LogVerbose("Changed plugin " + pluginImporter.assetPath + ", saving and reimporting.");
+				WwiseLogger.LogFormat(LogLevel.Verbose, "Changed plugin {0}, saving and reimporting.", pluginImporter.assetPath);
 				pluginImporter.SaveAndReimport();
 			}
 		}
-
+		AssetDatabase.StopAssetEditing();
 		bIsAlreadyActivating = false;
 	}
 
@@ -228,8 +224,9 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 
 			if (!BuildTargetToPlatformPluginActivator.TryGetValue(pluginBuildTarget, out var platformPluginActivator))
 			{
-				Debug.Log("WwiseUnity: Build Target " + pluginBuildTarget + " not supported.");
+				WwiseLogger.LogFormat(LogLevel.Log, "Build Target {0} not supported.", pluginBuildTarget);
 				bIsAlreadyActivating = false;
+				AssetDatabase.StopAssetEditing();
 				return;
 			}
 
@@ -238,7 +235,7 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 			var assetChanged = false;
 			if (pluginImporter.GetCompatibleWithAnyPlatform())
 			{
-				LogVerbose("ActivatePluginsForEditor: Plugin" + pluginImporter.assetPath + " was compatible with the \"any\" platform, deactivating.");
+				WwiseLogger.LogFormat(LogLevel.Verbose, "ActivatePluginsForEditor: Plugin{0} was compatible with the \"any\" platform, deactivating.", pluginImporter.assetPath);
 				pluginImporter.SetCompatibleWithAnyPlatform(false);
 				assetChanged = true;
 			}
@@ -263,7 +260,7 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 
 				if (bActivate)
 				{
-					LogVerbose("ActivatePluginsForEditor: Activating " + pluginImporter.assetPath);
+					WwiseLogger.LogFormat(LogLevel.Verbose, "ActivatePluginsForEditor: Activating {0}", pluginImporter.assetPath);
 					pluginImporter.SetEditorData("CPU", pluginInfo.EditorCPU);
 					pluginImporter.SetEditorData("OS", pluginInfo.EditorOS);
 				}
@@ -273,20 +270,20 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 			}
 			else
 			{
-				LogVerbose("ActivatePluginsForEditor: Could not determine EditorOS for " + pluginImporter.assetPath);
+				WwiseLogger.LogFormat(LogLevel.Verbose, "ActivatePluginsForEditor: Could not determine EditorOS for {0}", pluginImporter.assetPath);
 			}
 
 			if (assetChanged)
 			{
 				changedSomeAssets = true;
-				LogVerbose("ActivatePluginsForEditor: Changed plugin " + pluginImporter.assetPath + ", saving and reimporting.");
+				WwiseLogger.LogFormat(LogLevel.Verbose, "ActivatePluginsForEditor: Changed plugin {0}, saving and reimporting.", pluginImporter.assetPath);
 			}
 		}
 		
 		AssetDatabase.StopAssetEditing();
 		if (changedSomeAssets)
 		{
-			Debug.Log("WwiseUnity: Plugins successfully activated for " + EditorConfiguration + " in Editor.");
+			WwiseLogger.LogFormat(LogLevel.Log, "Plugins successfully activated for {0} in Editor.", EditorConfiguration);
 			AssetDatabase.Refresh();
 		}
 
@@ -319,13 +316,5 @@ public class AkPluginActivator : UnityEditor.AssetPostprocessor
 		AkPluginActivatorMenus.CheckMenuItems(GetCurrentConfig());
 	}
 
-	public static bool IsVerboseLogging = false;
-	public static void LogVerbose(string msg)
-	{
-		if (IsVerboseLogging)
-		{
-			Debug.Log("wwiseunity: AkPluginActivator VERBOSE: " + msg);
-		}
-	}
 }
 #endif

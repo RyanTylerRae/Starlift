@@ -1,4 +1,4 @@
-#if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#if !(UNITY_QNX) // Disable under unsupported platforms.
 /*******************************************************************************
 The content of this file includes portions of the proprietary AUDIOKINETIC Wwise
 Technology released in source code form as part of the game integration package.
@@ -13,8 +13,11 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2025 Audiokinetic Inc.
+Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
+
+using AK.Wwise.Unity.Logging;
+using UnityEngine.Serialization;
 
 /// <summary>
 ///     Event callback information.
@@ -32,15 +35,15 @@ public class AkEventCallbackMsg
 	public AkCallbackType type;
 }
 
-[UnityEngine.AddComponentMenu("Wwise/AkEvent")]
-[UnityEngine.ExecuteInEditMode]
-[UnityEngine.RequireComponent(typeof(AkGameObj))]
 /// @brief Helper class that knows a Wwise Event and when to trigger it in Unity. As of 2017.2.0, the AkEvent inspector has buttons for play/stop, play multiple, stop multiple, and stop all.
 /// Play/Stop will play or stop the event such that it can be previewed both in edit mode and play mode. When multiple objects are selected, Play Multiple and Stop Multiple will play or stop the associated AkEvent for each object.
 /// \sa
 /// - \ref sect_edit_mode
 /// - \ref unity_use_AkEvent_AkAmbient
-/// - <a href="https://www.audiokinetic.com/library/edge/?source=SDK&id=soundengine__events.html" target="_blank">Integration Details - Events</a> (Note: This is described in the Wwise SDK documentation.)
+/// - <a href="https://www.audiokinetic.com/library/edge/?source=SDK&amp;id=soundengine__events.html" target="_blank">Integration Details - Events</a> (Note: This is described in the Wwise SDK documentation.)
+[UnityEngine.AddComponentMenu("Wwise/AkEvent")]
+[UnityEngine.ExecuteInEditMode]
+[UnityEngine.RequireComponent(typeof(AkGameObj))]
 public class AkEvent : AkDragDropTriggerHandler
 #if UNITY_EDITOR
 	, AK.Wwise.IMigratable
@@ -52,7 +55,7 @@ public class AkEvent : AkDragDropTriggerHandler
 	/// Fade curve to use with the new Action.  See AK::SoundEngine::ExecuteEventOnAction()
 	public AkCurveInterpolation curveInterpolation = AkCurveInterpolation.AkCurveInterpolation_Linear;
 
-	/// Enables additional options to reuse existing events.  Use it to transform a Play event into a Stop event without having to define one in the Wwise Project.
+	[UnityEngine.Tooltip("Enables additional options to reuse existing events.  Use it to transform a Play event into a Stop event without having to define one in the Wwise Project.")]
 	public bool enableActionOnEvent = false;
 
 	public AK.Wwise.Event data = new AK.Wwise.Event();
@@ -73,8 +76,14 @@ public class AkEvent : AkDragDropTriggerHandler
 	}
 	
 	private UnityEngine.GameObject otherGameObject;
+
+	[UnityEngine.Tooltip("Subscribe to Event callbacks with a custom handler.")]
 	public bool useCallbacks = false;
-	public bool stopSoundOnDestroy = true;
+
+	[UnityEngine.Tooltip("Whether to automatically stop the event when the GameObject is disabled.")]
+	[FormerlySerializedAs("stopSoundOnDestroy")]
+	public bool stopSoundOnDisable = true;
+
 	public System.Collections.Generic.List<CallbackData> Callbacks = new System.Collections.Generic.List<CallbackData>();
 
 	public uint playingId => data.PlayingId;
@@ -165,10 +174,10 @@ public class AkEvent : AkDragDropTriggerHandler
 		data.Post(gameObj);
 	}
 
-	protected new void OnDestroy()
+	protected void OnDisable()
 	{
 		var akGameObj = gameObject.GetComponent<AkGameObj>();
-		if (stopSoundOnDestroy && akGameObj != null && akGameObj.GameObjIsRegistered())
+		if (stopSoundOnDisable && akGameObj != null && akGameObj.GameObjIsRegistered())
 		{
 			var gameObj = useOtherObject && otherGameObject != null ? otherGameObject : gameObject;
 			data.ExecuteAction(gameObj, AkActionOnEventType.AkActionOnEventType_Stop, (int)transitionDuration * 1000, curveInterpolation);
@@ -204,6 +213,14 @@ public class AkEvent : AkDragDropTriggerHandler
 
 	[System.Obsolete(AkUnitySoundEngine.Deprecation_2018_1_6)]
 	public AkEventCallbackData m_callbackData { get { return m_callbackDataInternal; } }
+
+	[System.Obsolete("This property will be removed in a future release. Use stopSoundOnDisable instead.")]
+	public bool stopSoundOnDestroy
+	{
+		get => stopSoundOnDisable;
+		set => stopSoundOnDisable = value;
+	}
+
 	#endregion
 
 	#region WwiseMigration
@@ -243,7 +260,7 @@ public class AkEvent : AkDragDropTriggerHandler
 		var count = oldCallbackData.callbackFlags.Count;
 		if (count != oldCallbackData.callbackFunc.Count || count != oldCallbackData.callbackGameObj.Count)
 		{
-			UnityEngine.Debug.LogWarning("WwiseUnity: Inconsistent callback data!");
+			WwiseLogger.Warning("Inconsistent callback data!");
 			return hasMigrated;
 		}
 
@@ -257,7 +274,7 @@ public class AkEvent : AkDragDropTriggerHandler
 			data.FindPropertyRelative("GameObject").objectReferenceValue = oldCallbackData.callbackGameObj[i];
 			data.FindPropertyRelative("FunctionName").stringValue = oldCallbackData.callbackFunc[i];
 			data.FindPropertyRelative("Flags.value").intValue = oldCallbackData.callbackFlags[i];
-			UnityEngine.Debug.Log("WwiseUnity: Migrated Callback for function \"" + oldCallbackData.callbackFunc[i] + "\" on <" + oldCallbackData.callbackGameObj[i] + "> with flags <" + (AkCallbackType)oldCallbackData.callbackFlags[i] + ">.");
+			WwiseLogger.LogFormat(LogLevel.Log, "Migrated Callback for function \"{0}\" on <{1}> with flags <{2}>.", oldCallbackData.callbackFunc[i], oldCallbackData.callbackGameObj[i], (AkCallbackType)oldCallbackData.callbackFlags[i]);
 		}
 
 		return true;
@@ -265,4 +282,4 @@ public class AkEvent : AkDragDropTriggerHandler
 #endif
 	#endregion
 }
-#endif // #if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
+#endif // #if !(UNITY_QNX) // Disable under unsupported platforms.
