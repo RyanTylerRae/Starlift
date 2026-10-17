@@ -268,6 +268,24 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="TEST_EVENT" ID="{5BC57ABC-C98E-4AE8-8E30-586E53888738}">
+					<ChildrenList>
+						<Action Name="" ID="{AE9DA387-C845-44FD-B8FC-14F7BB5299B8}" ShortID="118024287">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="TEST_TONE" ID="{A263C6D3-4495-43D6-9B6D-90A8ECF9A9C8}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{8790C796-E9DC-498E-A4EF-2FA70AC089D9}" ShortID="356610043">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="cryopod_intro" ID="{24C68229-A724-48E2-ADEE-5CE6C569BF5D}" WorkUnitID="{C6853DD4-2788-423F-A974-124AFC8BB75D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

@@ -2,8 +2,12 @@ Game Parameter	ID	Name			Wwise Object Path	Notes
 	2032362872	SpaceVacuum			\Default Work Unit\SpaceVacuum	
 
 Audio Bus	ID	Name			Wwise Object Path	Notes
+	1167209109	AudioLog Audio Bus			\Default Work Unit\AudioLog Audio Bus	
 	2246998526	Main Audio Bus			\Default Work Unit\Main Audio Bus	
 	2723892092	External Audio Bus			\Default Work Unit\External Audio Bus	
+
+Effect plug-ins	ID	Name	Type				Notes
+	508689462	Meter (Custom)	Wwise Meter			
 
 Audio Devices	ID	Name	Type				Notes
 	2317455096	No_Output	No Output			

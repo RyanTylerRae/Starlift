@@ -145,6 +145,32 @@
 						</ObjectList>
 					</ObjectLists>
 				</Bus>
+				<Bus Name="AudioLog Audio Bus" ID="{61800870-A6A6-45C0-95D7-3C342540A48C}">
+					<ReferenceList>
+						<Reference Name="AudioDevice" PluginName="System" CompanyID="0" PluginID="174" PluginType="7">
+							<ObjectRef Name="System" ID="{A1176674-E8BB-43A3-8B0F-6D1233A16BC7}" WorkUnitID="{2DF20BCE-3947-4CC5-A409-E0165B7CF702}"/>
+						</Reference>
+					</ReferenceList>
+					<ObjectLists>
+						<ObjectList Name="Effects">
+							<EffectSlot Name="" ID="{5256E51E-C44B-44C8-983E-2E8D67417663}" ShortID="335650596">
+								<ReferenceList>
+									<Reference Name="Effect">
+										<Custom>
+											<Effect Name="Meter (Custom)" ID="{2024459C-3D66-45E9-A0FB-03BD3124D5EC}" ShortID="508689462" PluginName="Wwise Meter" CompanyID="0" PluginID="129" PluginType="3">
+												<ReferenceList>
+													<Reference Name="GameParameter">
+														<ObjectRef Name="AudioMeter" ID="{B4747A9F-A9C3-4F81-9C53-2C4B7A6004A8}" WorkUnitID="{F24C6787-A41B-4160-9B97-00F6C2C8CC2B}"/>
+													</Reference>
+												</ReferenceList>
+											</Effect>
+										</Custom>
+									</Reference>
+								</ReferenceList>
+							</EffectSlot>
+						</ObjectList>
+					</ObjectLists>
+				</Bus>
 			</ChildrenList>
 		</WorkUnit>
 	</Busses>

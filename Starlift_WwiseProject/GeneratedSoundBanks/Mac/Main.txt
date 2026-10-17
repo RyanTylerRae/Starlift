@@ -21,6 +21,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	3972341671	play_thrust_stop			\Default Work Unit\play_thrust_stop	
 	3996014237	play_cryopod_intro			\Default Work Unit\dialogue\prototype\play_cryopod_intro	
 	4105009584	play_mine_beep_far			\Default Work Unit\play_mine_beep_far	
+	4258653052	TEST_EVENT			\Default Work Unit\TEST_EVENT	
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
 	2812181674	PlayerOxygenAmount			\Default Work Unit\PlayerOxygenAmount	

@@ -2,11 +2,10 @@
 
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 /// <summary>
 /// A 3D HUD element that tracks a world object: a centred label above a progress bar framed by [ ] brackets.
-/// Built entirely in code by WorldHUDProjector.CreateElement - size, font and materials come from the
+/// Built entirely in code (via HUDBuilder) by WorldHUDProjector.CreateElement - size, font and materials come from the
 /// projector so every element looks the same. Positions itself each frame through the projector.
 /// </summary>
 public class WorldHUDElement : MonoBehaviour
@@ -47,21 +46,21 @@ public class WorldHUDElement : MonoBehaviour
         int layer = owner.gameObject.layer;
 
         // starts hidden until the first placement in LateUpdate
-        visuals = CreateChild("Visuals", transform, layer);
+        visuals = HUDBuilder.CreateChild("Visuals", transform, layer);
         visuals.SetActive(false);
 
         // the element's origin is the centre of the bar
-        bar = CreateChild("Bar", visuals.transform, layer);
+        bar = HUDBuilder.CreateChild("Bar", visuals.transform, layer);
         Vector2 barSize = new Vector2(owner.barWidth, owner.barHeight);
 
         if (owner.barBackgroundMaterial != null)
         {
-            CreateBarQuad("Background", bar.transform, barSize, 0.0f, owner.barBackgroundMaterial, 0);
+            HUDBuilder.CreateBarQuad("Background", bar.transform, barSize, 0.0f, owner.barBackgroundMaterial, 0);
         }
 
         // the ProgressBar shader is built on ShaderGraph's Canvas sub-target, which doesn't reliably
         // depth-sort, so draw order is forced with sortingOrder as well as a small step toward the camera
-        MeshRenderer fillRenderer = CreateBarQuad("Fill", bar.transform, barSize, -0.001f, owner.barFillMaterial, 1);
+        MeshRenderer fillRenderer = HUDBuilder.CreateBarQuad("Fill", bar.transform, barSize, -0.001f, owner.barFillMaterial, 1);
         if (owner.barFillMaterial != null)
         {
             fillMaterial = fillRenderer.material;
@@ -72,16 +71,16 @@ public class WorldHUDElement : MonoBehaviour
         float bracketOffsetX = owner.barWidth * 0.5f + owner.bracketGap;
         Vector2 bracketSize = new Vector2(owner.barHeight, owner.barHeight);
 
-        leftBracket = CreateText("LeftBracket", bar.transform, layer, owner, owner.bracketFontSize, owner.bracketColor,
+        leftBracket = HUDBuilder.CreateText("LeftBracket", bar.transform, layer, owner.font, owner.bracketFontSize, owner.bracketColor,
             TextAlignmentOptions.MidlineRight, new Vector2(1.0f, 0.5f), bracketSize, new Vector3(-bracketOffsetX, 0.0f, -0.002f));
         leftBracket.text = "[";
 
-        TextMeshPro rightBracket = CreateText("RightBracket", bar.transform, layer, owner, owner.bracketFontSize, owner.bracketColor,
+        TextMeshPro rightBracket = HUDBuilder.CreateText("RightBracket", bar.transform, layer, owner.font, owner.bracketFontSize, owner.bracketColor,
             TextAlignmentOptions.MidlineLeft, new Vector2(0.0f, 0.5f), bracketSize, new Vector3(bracketOffsetX, 0.0f, -0.002f));
         rightBracket.text = "]";
 
         // bottom-centre of the label sits over the bar's centre, labelGap above its top
-        label = CreateText("Label", visuals.transform, layer, owner, owner.fontSize, owner.labelColor,
+        label = HUDBuilder.CreateText("Label", visuals.transform, layer, owner.font, owner.fontSize, owner.labelColor,
             TextAlignmentOptions.Bottom, new Vector2(0.5f, 0.0f), barSize, new Vector3(0.0f, owner.barHeight * 0.5f + owner.labelGap, -0.002f));
         label.text = string.Empty;
 
@@ -220,62 +219,5 @@ public class WorldHUDElement : MonoBehaviour
         {
             Destroy(fillMaterial);
         }
-    }
-
-    private static GameObject CreateChild(string childName, Transform parent, int layer)
-    {
-        GameObject child = new GameObject(childName);
-        child.layer = layer;
-        child.transform.SetParent(parent, false);
-        return child;
-    }
-
-    // single-line 3D text that never wraps; position and size are for its RectTransform around the given pivot
-    private static TextMeshPro CreateText(string textName, Transform parent, int layer, WorldHUDProjector owner, float fontSize, Color color,
-        TextAlignmentOptions alignment, Vector2 pivot, Vector2 size, Vector3 localPosition)
-    {
-        GameObject textObject = CreateChild(textName, parent, layer);
-        TextMeshPro text = textObject.AddComponent<TextMeshPro>();
-        if (owner.font != null)
-        {
-            text.font = owner.font;
-        }
-
-        text.fontSize = fontSize;
-        text.color = color;
-        text.alignment = alignment;
-        text.textWrappingMode = TextWrappingModes.NoWrap;
-        text.overflowMode = TextOverflowModes.Overflow;
-        text.sortingOrder = 2;
-
-        RectTransform textRect = text.rectTransform;
-        textRect.pivot = pivot;
-        textRect.sizeDelta = size;
-        textRect.localPosition = localPosition;
-        return text;
-    }
-
-    // a quad faces the HUD camera when given the camera's rotation, and its UVs run left to right on screen
-    private static MeshRenderer CreateBarQuad(string quadName, Transform parent, Vector2 size, float depthOffset, Material? material, int sortingOrder)
-    {
-        GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        quad.name = quadName;
-        quad.layer = parent.gameObject.layer;
-
-        if (quad.TryGetComponent(out Collider quadCollider))
-        {
-            Destroy(quadCollider);
-        }
-
-        quad.transform.SetParent(parent, false);
-        quad.transform.localPosition = new Vector3(0.0f, 0.0f, depthOffset);
-        quad.transform.localScale = new Vector3(size.x, size.y, 1.0f);
-
-        MeshRenderer quadRenderer = quad.GetComponent<MeshRenderer>();
-        quadRenderer.sharedMaterial = material;
-        quadRenderer.shadowCastingMode = ShadowCastingMode.Off;
-        quadRenderer.receiveShadows = false;
-        quadRenderer.sortingOrder = sortingOrder;
-        return quadRenderer;
     }
 }

@@ -62,6 +62,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -83,9 +85,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7396421247339397025
 BoxCollider:
@@ -176,6 +180,56 @@ Transform:
   - {fileID: 3747321144126850747}
   m_Father: {fileID: 7930963791399367495}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2144255278018851697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7080224190365193381}
+  - component: {fileID: 495979956372919812}
+  m_Layer: 0
+  m_Name: AudiologManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7080224190365193381
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144255278018851697}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6435537035567158376}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &495979956372919812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144255278018851697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c4dcf6c5600acf4cb205e0b39150ac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudiologManager
+  meterParameter:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 8c6e9d44f780b3946942f8e839006b97, type: 2}
+  meterSilentValue: -48
+  meterLoudValue: 0
 --- !u!1 &2288457620185137888
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,6 +496,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4515472328860949503}
+  - {fileID: 7080224190365193381}
   m_Father: {fileID: 7930963791399367495}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3560828258302789976
@@ -589,7 +644,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1f9c4cc1c13a864c965a769a66d81e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  triggerList: f7e1664c
+  triggerList: f7e1664ci
   useOtherObject: 0
   data:
     idInternal: 0
@@ -599,7 +654,7 @@ MonoBehaviour:
   overrideLoadSetting: 0
   loadAsynchronous: 0
   saveDecodedBank: 0
-  unloadTriggerList: 958ca0ea
+  unloadTriggerList: 958ca0eai
   bankNameInternal: 
   valueGuidInternal: 
 --- !u!1 &8332043286263527599
@@ -792,13 +847,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 599517422265961401, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
       propertyPath: 'subtitleKeys.Array.data[2]'
-      value: WASD will thrust forward! Come land near me! You can also use Q, E,
-        SHIFT, and CTRL
+      value: WASD will thrust forward! Come land near me! You can also use Q, E, SHIFT, and CTRL
       objectReference: {fileID: 0}
     - target: {fileID: 599517422265961401, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
       propertyPath: 'subtitleKeys.Array.data[3]'
-      value: When you are outside of an oxygen bubble, you will lose air! Run out
-        of air, and you'll need to retry
+      value: When you are outside of an oxygen bubble, you will lose air! Run out of air, and you'll need to retry
       objectReference: {fileID: 0}
     - target: {fileID: 599517422265961401, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
       propertyPath: 'subtitleKeys.Array.data[4]'
@@ -806,8 +859,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 599517422265961401, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
       propertyPath: 'subtitleKeys.Array.data[5]'
-      value: Spend some time practicing in here, and then head out the door when
-        you are ready!
+      value: Spend some time practicing in here, and then head out the door when you are ready!
       objectReference: {fileID: 0}
     - target: {fileID: 599517422265961401, guid: 3c14fb39139c68f4db05c7dd421ad071, type: 3}
       propertyPath: 'subtitleKeys.Array.data[6]'

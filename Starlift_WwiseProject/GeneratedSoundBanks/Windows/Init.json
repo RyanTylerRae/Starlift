@@ -10,11 +10,21 @@
     "Type": "User",
     "GUID": "{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}",
     "Language": "SFX",
-    "Hash": "{3F6DD1E7-3891-2823-CDB5-7F6EA8A34E8E}",
+    "Hash": "{D67CDD8F-1D09-CB0B-40CB-F6DAB38A9BE8}",
     "ObjectPath": "Init",
     "ShortName": "Init",
     "Path": "Init.bnk",
     "Plugins": {
+     "Custom": [
+      {
+       "Id": "508689462",
+       "Name": "Meter (Custom)",
+       "ObjectPath": "\\Busses\\Default Work Unit\\AudioLog Audio Bus\\[Effect Slot [0]: (Meter)]\\Meter (Custom)",
+       "GUID": "{2024459C-3D66-45E9-A0FB-03BD3124D5EC}",
+       "LibName": "Wwise Meter",
+       "LibId": "8454147"
+      }
+     ],
      "AudioDevices": [
       {
        "Id": "2317455096",
@@ -36,6 +46,19 @@
     },
     "Busses": [
      {
+      "Id": "1167209109",
+      "Name": "AudioLog Audio Bus",
+      "ObjectPath": "\\Busses\\Default Work Unit\\AudioLog Audio Bus",
+      "GUID": "{61800870-A6A6-45C0-95D7-3C342540A48C}",
+      "PluginRefs": {
+       "Custom": [
+        {
+         "Id": "508689462"
+        }
+       ]
+      }
+     },
+     {
       "Id": "2246998526",
       "Name": "Main Audio Bus",
       "ObjectPath": "\\Busses\\Default Work Unit\\Main Audio Bus",
@@ -49,6 +72,12 @@
      }
     ],
     "GameParameters": [
+     {
+      "Id": "4666528",
+      "Name": "AudioMeter",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\AudioMeter",
+      "GUID": "{B4747A9F-A9C3-4F81-9C53-2C4B7A6004A8}"
+     },
      {
       "Id": "2032362872",
       "Name": "SpaceVacuum",
@@ -70,6 +99,6 @@
     ]
    }
   ],
-  "FileHash": "{34AC8BFC-00DC-51AA-11AE-1259521E40A6}"
+  "FileHash": "{D16581E6-F5C8-DB68-22A1-A71E989F39E5}"
  }
 }
