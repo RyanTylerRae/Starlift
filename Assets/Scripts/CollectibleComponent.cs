@@ -5,14 +5,30 @@ using UnityEngine;
 /// <summary>
 /// A collectible the player picks up by walking into it. Needs a trigger collider.
 /// On pickup it plays the player's ScreenJellyFlash (white edge flash) and, optionally, hides itself.
-/// Collects only once.
+/// Collects only once. With a collectibleId, the pickup is saved and the collectible stays hidden on later loads.
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class CollectibleComponent : MonoBehaviour
 {
     public bool hideOnCollect = true;
+    public string collectibleId = "";
 
     private bool isCollected = false;
+
+    private void Start()
+    {
+        if (string.IsNullOrEmpty(collectibleId))
+        {
+            Debug.LogWarning($"{name} has no collectibleId, so its pickup won't be saved", this);
+            return;
+        }
+
+        if (GameState.Instance.IsCollectibleFound(collectibleId))
+        {
+            isCollected = true;
+            gameObject.SetActive(false);
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -28,6 +44,11 @@ public class CollectibleComponent : MonoBehaviour
         }
 
         isCollected = true;
+
+        if (!string.IsNullOrEmpty(collectibleId))
+        {
+            GameState.Instance.MarkCollectibleFound(collectibleId);
+        }
 
         // the flash lives on the player, so it keeps running after this object hides
         ScreenJellyFlash? flash = target.GetComponentInChildren<ScreenJellyFlash>();

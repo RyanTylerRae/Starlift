@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ using Newtonsoft.Json;
 public class SaveGameData
 {
     public int maxOxygenTankCount = 3;
+    public List<string> foundCollectibles = new();
 }
 
 public static class SaveGame

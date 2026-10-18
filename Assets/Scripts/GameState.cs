@@ -27,4 +27,20 @@ public class GameState : MonoBehaviour
     {
         SaveGame.Save(saveData);
     }
+
+    public bool IsCollectibleFound(string collectibleId)
+    {
+        return saveData.foundCollectibles.Contains(collectibleId);
+    }
+
+    public void MarkCollectibleFound(string collectibleId)
+    {
+        if (saveData.foundCollectibles.Contains(collectibleId))
+        {
+            return;
+        }
+
+        saveData.foundCollectibles.Add(collectibleId);
+        Save();
+    }
 }
