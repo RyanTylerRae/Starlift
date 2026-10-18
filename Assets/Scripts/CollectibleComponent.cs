@@ -15,6 +15,8 @@ public class CollectibleComponent : MonoBehaviour
 
     private bool isCollected = false;
 
+    public bool IsCollected { get { return isCollected; } }
+
     private void Start()
     {
         if (string.IsNullOrEmpty(collectibleId))
@@ -55,6 +57,12 @@ public class CollectibleComponent : MonoBehaviour
         if (flash != null)
         {
             flash.Play();
+        }
+
+        CollectibleCounter? counter = target.GetComponentInChildren<CollectibleCounter>();
+        if (counter != null)
+        {
+            counter.Show();
         }
 
         if (hideOnCollect)

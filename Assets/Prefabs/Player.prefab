@@ -628,6 +628,7 @@ GameObject:
   - component: {fileID: 2688906038970250317}
   - component: {fileID: 3052383974646385776}
   - component: {fileID: 5290576142737304862}
+  - component: {fileID: 5291022172429573138}
   m_Layer: 0
   m_Name: HUD
   m_TagString: Untagged
@@ -708,6 +709,24 @@ MonoBehaviour:
   m_LayoutPriority: 1
   m_MaxWidth: -1
   m_MaxHeight: -1
+--- !u!114 &5291022172429573138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4170697872378824378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94045063f4249a04ba50a3cf0d7ea7fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CollectibleCounter
+  margin: {x: 32, y: 32}
+  fontSize: 36
+  color: {r: 1, g: 1, b: 1, a: 1}
+  font: {fileID: 0}
+  lingerDuration: 3
+  fadeOutDuration: 1
 --- !u!1 &5416576688920741889
 GameObject:
   m_ObjectHideFlags: 0
